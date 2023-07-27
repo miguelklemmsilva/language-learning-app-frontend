@@ -1,9 +1,7 @@
 import Pronunciation from "./Pronunciation";
 import ListeningButton from "../ListeningButton";
 import React, {useEffect, useState} from "react";
-import pronunciation from "./Pronunciation";
 import SpeakingOutput from "./SpeakingOutput";
-import SubmitArea from "../SubmitArea";
 import SpeakingSubmit from "./SpeakingSubmit";
 
 const Speaking = ({sentence, result, setResult, setNextQuestion, sentenceNumber, updateSentence}) => {
@@ -11,7 +9,7 @@ const Speaking = ({sentence, result, setResult, setNextQuestion, sentenceNumber,
 
     useEffect(() => {
         updateSentence(sentenceNumber, true);
-    }, []);
+    }, [sentenceNumber, updateSentence]);
 
     return (
         <div className="speaking-container">

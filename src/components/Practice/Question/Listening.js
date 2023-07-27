@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React from "react";
 import ListeningButton from "./ListeningButton";
 import AnswerInput from "./AnswerInput";
 import SubmitArea from "./SubmitArea";

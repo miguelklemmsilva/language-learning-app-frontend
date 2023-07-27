@@ -1,14 +1,10 @@
-import {useCallback, useRef, useState} from "react";
+import {useState} from "react";
 import axios from "axios";
 import useFetchSentences from "../../../hooks/useFetchSentences";
 import Question from "../Question/Question";
-import AnswerInput from "../Question/AnswerInput";
-import SubmitArea from "../Question/SubmitArea";
 import Finished from "../Finished";
 import PracticeLoading from "../PracticeLoading";
-import prepareString from "./CorrectionString";
 import "./Practice.css";
-import SpeakingOutput from "../Question/Speaking/SpeakingOutput";
 
 const Practice = () => {
     const [sentenceNumber, setSentenceNumber] = useState(0);
@@ -19,16 +15,11 @@ const Practice = () => {
     const updateSentence = (index, correct) => {
         const updatedSentences = sentences.map((sentence, idx) => {
             if (idx === index) {
-                if (correct)
-                    return {
-                        ...sentence,
-                        correct: true,
-                    };
-                else
-                    return {
-                        ...sentence,
-                        mistakes: sentence.mistakes + 1,
-                    }
+                if (correct) return {
+                    ...sentence, correct: true,
+                }; else return {
+                    ...sentence, mistakes: sentence.mistakes + 1,
+                }
             }
             return sentence;
         });
@@ -65,13 +56,12 @@ const Practice = () => {
         if (sentenceNumber >= 0) {
             return <div className="practice-wrapper">
                 <div className="question-component-wrapper">
-                    <Question sentence={getSentence()} setNextQuestion={setNextQuestion} sentenceNumber={sentenceNumber} updateSentence={updateSentence}/>
+                    <Question sentence={getSentence()} setNextQuestion={setNextQuestion} sentenceNumber={sentenceNumber}
+                              updateSentence={updateSentence}/>
                 </div>
             </div>;
-        } else
-            return <Finished sentences={sentences}/>
-    } else
-        return <PracticeLoading/>;
+        } else return <Finished sentences={sentences}/>
+    } else return <PracticeLoading/>;
 }
 
 export default Practice;

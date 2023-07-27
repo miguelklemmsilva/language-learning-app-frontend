@@ -17,7 +17,7 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence}) =
     useEffect(() => {
         if (sentence.type !== "speaking")
             textareaRef.current.focus();
-    }, []);
+    }, [sentence.type]);
 
     function cleanString(str) {
         return str

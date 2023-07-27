@@ -1,17 +1,18 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Finished({ sentences }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        sentences.map(sentence => {
+        sentences.forEach(sentence => {
             sentence.voice = null;
-        })
-        axios.post(`/user/finishlesson`, {sentences: sentences})
+        });
+        axios.post(`/user/finishlesson`, { sentences: sentences })
             .then(r => console.log(r))
-    }, []);
+            .catch(error => console.error(error));
+    }, [sentences]);
 
     return (
         <div className={"content-container"}>

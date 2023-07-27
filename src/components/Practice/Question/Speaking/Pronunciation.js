@@ -1,4 +1,4 @@
-import React, {Fragment, useRef, useState} from 'react';
+import React, {Fragment, useRef} from 'react';
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import {getTokenOrRefresh} from "./token_util";
 

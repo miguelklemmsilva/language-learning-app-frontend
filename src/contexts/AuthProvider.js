@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {createContext, useCallback, useContext, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import * as PropTypes from "prop-types";
 
 const AuthContext = createContext();
 
@@ -8,12 +9,26 @@ export function useAuthContext() {
     return useContext(AuthContext);
 }
 
+function Provider(props) {
+    return null;
+}
+
+Provider.propTypes = {
+    value: PropTypes.shape({
+        auth: PropTypes.bool,
+        name: PropTypes.string,
+        checkAuth: PropTypes.func,
+        handleDelete: PropTypes.func
+    }),
+    children: PropTypes.node
+};
+
 export function AuthProvider({ children }) {
     const [auth, setAuth] = useState(false);
     const [name, setName] = useState('');
     const navigate = useNavigate();
 
-    const checkAuth = () => {
+    const checkAuth = useCallback(() => { // Wrap checkAuth with useCallback
         axios.defaults.withCredentials = true;
         axios
             .get('/')
@@ -27,11 +42,11 @@ export function AuthProvider({ children }) {
                 if (err.response.status === 401) navigate('/login');
                 else console.log(err);
             });
-    }
+    }, [navigate]); // Make sure to include 'navigate' in the dependency array
 
     useEffect(() => {
         checkAuth();
-    }, [auth]);
+    }, [auth, checkAuth]);
 
     const handleDelete = () => {
         axios.defaults.withCredentials = true;
@@ -45,8 +60,8 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ auth, name, handleDelete, checkAuth }}>
+        <Provider value={{ auth, name, handleDelete, checkAuth }}>
             {children}
-        </AuthContext.Provider>
+        </Provider>
     );
 }
