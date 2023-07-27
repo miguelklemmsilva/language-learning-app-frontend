@@ -1,0 +1,56 @@
+/* Tooltip container */
+.word {
+    display: inline-block;
+    background: #dcdcdc;
+    border-radius: 4px;
+    text-decoration: none;
+    padding: 2px;
+    overflow: visible;
+}
+
+/* Tooltip text */
+.tooltip {
+    position: absolute;
+    padding: 6px 12px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 100;
+
+    transform: translateY(1.5rem);
+}
+
+/* Tooltip text visible on hover */
+.word:hover .tooltip {
+    opacity: 1;
+}
+
+.word:hover {
+    cursor: grab;
+}
+
+.speaking-output:focus {
+    outline: none;
+}
+
+.Mispronunciation {
+    background-color: #ffcc00;
+    text-decoration: underline;
+}
+
+.Omission {
+    background-color: gray;
+    color: white;
+}
+
+.Insertion {
+    background-color: #ff5b5b;
+    color: white;
+    text-decoration: line-through;
+}
+

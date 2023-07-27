@@ -1,0 +1,27 @@
+.answer-input-container {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+.answer-input {
+    padding: 10px;
+    height: 150px;
+    width: inherit;
+    border-radius: 20px;
+    font-family: 'Segoe UI', serif;
+    font-size: 1rem;
+    resize: none;
+    box-sizing: border-box;
+    border: 1px solid #c5c5c5;
+}
+
+.answer-input:focus {
+    outline: none;
+    border: 1px solid #a2a2a2;
+    box-shadow: 0 0 0 1px #a2a2a2;
+}
+
+.answer-input.submitted:focus {
+    border: 1px solid #c5c5c5;
+}
