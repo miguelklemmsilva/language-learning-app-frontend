@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {createContext, useCallback, useContext, useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
     const [name, setName] = useState('');
     const navigate = useNavigate();
 
-    const checkAuth = () => {
+    const checkAuth  = useCallback(() => {
         axios.defaults.withCredentials = true;
         axios
             .get('/')
@@ -27,11 +27,11 @@ export function AuthProvider({ children }) {
                 if (err.response.status === 401) navigate('/login');
                 else console.log(err);
             });
-    }
+    }, [navigate]);
 
     useEffect(() => {
         checkAuth();
-    }, []);
+    }, [checkAuth]);
 
     const handleDelete = () => {
         axios.defaults.withCredentials = true;
