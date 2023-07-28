@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
     const checkAuth  = useCallback(() => {
         axios.defaults.withCredentials = true;
         axios
-            .get('/')
+            .get('api/')
             .then(res => {
                 if (res.status === 200) {
                     setAuth(true);
@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
                 }
             })
             .catch(err => {
-                if (err.response.status === 401) navigate('api/login');
+                if (err.response.status === 401) navigate('/login');
                 else console.log(err);
             });
     }, [navigate]);
