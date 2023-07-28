@@ -9,7 +9,7 @@ function Finished({ sentences }) {
         sentences.forEach(sentence => {
             sentence.voice = null;
         });
-        axios.post(`/user/finishlesson`, { sentences: sentences })
+        axios.post(`api/user/finishlesson`, { sentences: sentences })
             .then(r => console.log(r))
             .catch(error => console.error(error));
     }, [sentences]);

@@ -13,7 +13,7 @@ function Home() {
         if (auth) {
             axios.defaults.withCredentials = true;
             axios
-                .get("/user/vocabularypreview")
+                .get("api/user/vocabularypreview")
                 .then((res) => {
                     setWordTable(res.data);
                 })

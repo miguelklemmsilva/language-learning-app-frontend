@@ -10,7 +10,7 @@ function useLoginForm(onSuccess) {
     const handleSubmit = (e) => {
         e.preventDefault();
         axios
-            .post("/auth/login", values)
+            .post("api/auth/login", values)
             .then((res) => {
                 if (res.status === 200)
                     onSuccess();

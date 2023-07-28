@@ -24,7 +24,7 @@ export function AuthProvider({ children }) {
                 }
             })
             .catch(err => {
-                if (err.response.status === 401) navigate('/login');
+                if (err.response.status === 401) navigate('api/login');
                 else console.log(err);
             });
     }, [navigate]);
@@ -37,7 +37,7 @@ export function AuthProvider({ children }) {
         axios.defaults.withCredentials = true;
         setAuth(false);
         axios
-            .get('/auth/logout')
+            .get('api/auth/logout')
             .then(res => {
                 navigate('/login');
             })

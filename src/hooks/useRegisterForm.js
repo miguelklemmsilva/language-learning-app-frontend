@@ -11,7 +11,7 @@ function useRegisterForm(onSuccess) {
     const handleSubmit = (e) => {
         e.preventDefault();
         axios
-            .post("/auth/register", values)
+            .post("api/auth/register", values)
             .then((res) => {
                 if (res.status === 201) {
                     onSuccess();

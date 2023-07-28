@@ -8,7 +8,7 @@ import "./Practice.css";
 
 const Practice = () => {
     const [sentenceNumber, setSentenceNumber] = useState(0);
-    const [sentences, setSentences] = useFetchSentences("/ai/generatesentences");
+    const [sentences, setSentences] = useFetchSentences("api/ai/generatesentences");
 
     axios.defaults.withCredentials = true;
 

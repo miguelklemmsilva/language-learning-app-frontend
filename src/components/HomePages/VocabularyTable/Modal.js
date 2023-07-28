@@ -37,7 +37,7 @@ function Modal({showModal, onClose, updateVocabTable}) {
         close();
         const validWords = await getValidWords();
         axios.defaults.withCredentials = true;
-        axios.post("/user/addvocabulary", {
+        axios.post("api/user/addvocabulary", {
             words: validWords
         }).then(updateVocabTable)
             .catch((err) => console.log(err));

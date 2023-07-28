@@ -13,7 +13,7 @@ function VocabularyTable() {
     const updateVocabTable = () => {
         axios.defaults.withCredentials = true;
         axios
-            .get("/user/vocabtable")
+            .get("api/user/vocabtable")
             .then((res) => {
                 setWordTable(res.data);
             })
@@ -22,7 +22,7 @@ function VocabularyTable() {
 
     const handleRemoveWord = (word) => {
         axios
-            .post("/user/removevocabulary", {
+            .post("api/user/removevocabulary", {
                 word_id: word.word_id,
             })
             .then((res) => {

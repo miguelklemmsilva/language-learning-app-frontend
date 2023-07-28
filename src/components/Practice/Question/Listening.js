@@ -1,10 +1,10 @@
-import React from "react";
+import React, {useState} from "react";
 import ListeningButton from "./ListeningButton";
 import AnswerInput from "./AnswerInput";
 import SubmitArea from "./SubmitArea";
 
 const Listening = ({sentence, textarea, answer, handleInputChange, handleSubmit, result, cleanString}) => {
-    const [correct, setCorrect] = React.useState(false);
+    const [correct, setCorrect] = useState(false);
 
     const onSubmit = () => {
         let correct = cleanString(answer) === cleanString(sentence.original);
