@@ -21,11 +21,10 @@ function Modal({showModal, onClose, updateVocabTable}) {
             .toLowerCase()
             .trim();
     }
-
     async function getValidWords() {
         const cleanWords = cleanString(words);
 
-        const {data} = await axios.get('http://localhost:5001/api/getvalidwords', {
+        const {data} = await axios.get('https://py-ai-api-test.azurewebsites.net/api/GetValidWords', {
             params: {
                 words: cleanWords,
             }
@@ -51,7 +50,8 @@ function Modal({showModal, onClose, updateVocabTable}) {
                     <div>Words must be separated by a space</div>
                 </div>
                 <div className={"input-wrapper"}>
-                <textarea onChange={(e) => setWords(e.target.value)} value={words} className="vocab-input" placeholder="Add your vocabulary here..."></textarea>
+                    <textarea onChange={(e) => setWords(e.target.value)} value={words} className="vocab-input"
+                              placeholder="Add your vocabulary here..."></textarea>
                 </div>
                 <div className={"modal-buttons-container"}>
                     <button className="modal-button add" onClick={onAddWords}>

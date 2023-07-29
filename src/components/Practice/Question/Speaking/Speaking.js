@@ -9,7 +9,7 @@ const Speaking = ({sentence, result, setResult, setNextQuestion, sentenceNumber,
 
     useEffect(() => {
         updateSentence(sentenceNumber, true);
-    }, [sentenceNumber, updateSentence]);
+    }, [sentenceNumber]);
 
     return (
         <div className="speaking-container">

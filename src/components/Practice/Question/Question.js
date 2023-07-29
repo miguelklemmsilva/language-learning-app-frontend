@@ -5,7 +5,7 @@ import Translation from "./Translation/Translation";
 import Speaking from "./Speaking/Speaking";
 import prepareString from "../Practice/CorrectionString";
 
-const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence}) => {
+const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence, setUpdateTrigger, updateTrigger}) => {
     const textareaRef = useRef(null);
     const [answer, setAnswer] = useState("");
     const [result, setResult] = useState(null);
@@ -57,7 +57,7 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence}) =
     if (sentence.type === "speaking")
         return <Speaking sentence={sentence} result={result} setResult={setResult}
                          setNextQuestion={setNextQuestion} updateSentence={updateSentence}
-                         sentenceNumber={sentenceNumber}/>
+                         sentenceNumber={sentenceNumber} setUpdateTrigger={setUpdateTrigger} updateTrigger={updateTrigger}/>
 };
 
 export default Question;

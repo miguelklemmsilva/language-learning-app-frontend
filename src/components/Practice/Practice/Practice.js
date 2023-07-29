@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import axios from "axios";
 import useFetchSentences from "../../../hooks/useFetchSentences";
 import Question from "../Question/Question";
@@ -12,7 +12,7 @@ const Practice = () => {
 
     axios.defaults.withCredentials = true;
 
-    const updateSentence = (index, correct) => {
+    const updateSentence = useCallback((index, correct) => {
         const updatedSentences = sentences.map((sentence, idx) => {
             if (idx === index) {
                 if (correct) return {
@@ -24,7 +24,8 @@ const Practice = () => {
             return sentence;
         });
         setSentences(updatedSentences);
-    };
+    }, [sentences, setSentences])
+
 
     const getSentence = () => {
         return sentences[sentenceNumber];
