@@ -65,7 +65,7 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
         let correct = cleanString(answer) === cleanString(comparisonString);
 
         if (!correct) {
-            const {data} = await axios.get('https://py-ai-api-test.azurewebsites.net/api/VerifySentence', {
+            const {data} = await axios.get('http://20.0.190.129:5001/api/verifySentence', {
                 params: {
                     string1: comparisonString,
                     string2: cleanString(answer),

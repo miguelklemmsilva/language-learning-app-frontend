@@ -24,7 +24,7 @@ function Modal({showModal, onClose, updateVocabTable}) {
     async function getValidWords() {
         const cleanWords = cleanString(words);
 
-        const {data} = await axios.get('https://py-ai-api-test.azurewebsites.net/api/GetValidWords', {
+        const {data} = await axios.get('http://20.0.190.129:5001/api/getvalidwords', {
             params: {
                 words: cleanWords,
             }

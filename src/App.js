@@ -7,12 +7,14 @@ import VocabularyTable from "./components/HomePages/VocabularyTable/VocabularyTa
 import Settings from "./components/HomePages/Settings/Settings";
 import {AuthProvider} from "./contexts/AuthProvider";
 import Sidebar from "./components/HomePages/Sidebar/Sidebar";
+import LandingPage from "./components/LandingPage";
 
 function App() {
     return (
         <BrowserRouter>
             <AuthProvider>
                 <Routes>
+                    <Route path="/" element={<LandingPage/>}/>
                     <Route
                         path="/home"
                         element={

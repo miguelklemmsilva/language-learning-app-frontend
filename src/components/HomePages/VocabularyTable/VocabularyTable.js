@@ -16,7 +16,6 @@ function VocabularyTable() {
             .get("api/user/vocabtable")
             .then((res) => {
                 setWordTable(res.data);
-                console.log(res.data);
             })
             .catch((err) => console.log(err));
     }
