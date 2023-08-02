@@ -70,25 +70,34 @@ const Pronunciation = ({sentence, setResult, listening, setListening}) => {
     };
 
     const startRecording = () => {
-        const streamPromise = navigator.mediaDevices.getUserMedia({audio: true});
+        if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then((stream) => {
+                    mediaRecorderRef.current = new MediaRecorder(stream);
 
-        streamPromise.then((stream) => {
-            mediaRecorderRef.current = new MediaRecorder(stream);
+                    mediaRecorderRef.current.ondataavailable = (event) => {
+                        if (event.data.size > 0)
+                            chunksRef.current.push(event.data);
+                    };
 
-            mediaRecorderRef.current.ondataavailable = (event) => {
-                if (event.data.size > 0)
-                    chunksRef.current.push(event.data);
-            };
+                    mediaRecorderRef.current.onstop = () => {
+                        const audioBlob = new Blob(chunksRef.current, { type: "audio/wav" });
+                        audioElementRef.current.src = URL.createObjectURL(audioBlob);
+                    };
 
-            mediaRecorderRef.current.onstop = () => {
-                const audioBlob = new Blob(chunksRef.current, {type: "audio/wav"});
-                // You can save the audioBlob or send it to the server for further processing.
-                audioElementRef.current.src = URL.createObjectURL(audioBlob);
-            };
-
-            mediaRecorderRef.current.start();
-        });
+                    mediaRecorderRef.current.start();
+                })
+                .catch(error => {
+                    console.error('Error accessing the microphone:', error);
+                    setResult('ERROR: Could not access the microphone. Make sure you have granted the necessary permissions.');
+                });
+        } else {
+            console.error('getUserMedia is not supported in this browser.');
+            setResult('ERROR: getUserMedia is not supported in this browser. Try using a different browser.');
+        }
     };
+
+
 
     const stopRecording = () => {
         mediaRecorderRef.current.stop();

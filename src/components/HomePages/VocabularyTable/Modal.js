@@ -21,23 +21,13 @@ function Modal({showModal, onClose, updateVocabTable}) {
             .toLowerCase()
             .trim();
     }
-    async function getValidWords() {
-        const cleanWords = cleanString(words);
-
-        const {data} = await axios.get('http://20.0.190.129:5001/api/getvalidwords', {
-            params: {
-                words: cleanWords,
-            }
-        }).catch((err) => console.log(err));
-        return data.valid_words;
-    }
 
     async function onAddWords() {
         close();
-        const validWords = await getValidWords();
+        const cleanWords = cleanString(words);
         axios.defaults.withCredentials = true;
         axios.post("api/user/addvocabulary", {
-            words: validWords
+            words: cleanWords
         }).then(updateVocabTable)
             .catch((err) => console.log(err));
     }

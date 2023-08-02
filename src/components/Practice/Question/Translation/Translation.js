@@ -58,18 +58,14 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
     };
 
     const checkTranslation = async () => {
-        let comparisonString;
-
-        comparisonString = cleanString(sentence.original);
+        const comparisonString = cleanString(sentence.original);
 
         let correct = cleanString(answer) === cleanString(comparisonString);
 
         if (!correct) {
-            const {data} = await axios.get('http://20.0.190.129:5001/api/verifySentence', {
-                params: {
-                    string1: comparisonString,
-                    string2: cleanString(answer),
-                },
+            const {data} = await axios.post('/api/ai/verifySentence', {
+                string1: comparisonString,
+                string2: cleanString(answer),
             });
             correct = data.correct;
         }
