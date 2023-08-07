@@ -11,6 +11,7 @@
     align-items: center;
     width: 100%;
     padding: 50px;
+    min-width: 200px;
 }
 
 .practice-button-wrapper {

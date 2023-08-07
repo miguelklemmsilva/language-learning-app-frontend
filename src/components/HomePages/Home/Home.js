@@ -1,28 +1,12 @@
-import { useEffect, useState } from "react";
+import {useContext} from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import "./Home.css";
 import calculateLastSeen from "../CalculateLastSeen";
-import { useAuthContext } from "../../../contexts/AuthProvider";
+import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
 
 function Home() {
-    const [wordTable, setWordTable] = useState([]);
-    const { auth } = useAuthContext();
-
-    useEffect(() => {
-        if (auth) {
-            axios.defaults.withCredentials = true;
-            axios
-                .get("api/user/vocabularypreview")
-                .then((res) => {
-                    setWordTable(res.data);
-                })
-                .catch((err) => console.log(err));
-        }
-    }, [auth]);
-
-    if (!auth)
-        return null; // If the user is not authenticated, render nothing
+    const { wordTable } = useContext(HomeRouteContext);
 
     return (
         <div className="page-container">
@@ -42,7 +26,7 @@ function Home() {
                         </tr>
                         </thead>
                         <tbody>
-                        {wordTable.map((word, index) => (
+                        {wordTable && wordTable.map((word, index) => (
                             <tr key={index}>
                                 <td className={"content-td"}>{word.word}</td>
                                 <td className={"content-td"}>{word.interval_score}</td>
@@ -50,7 +34,8 @@ function Home() {
                                     {calculateLastSeen(word.last_seen)}
                                 </td>
                             </tr>
-                        ))}
+                        ))
+                        }
                         </tbody>
                     </table>
                 </div>

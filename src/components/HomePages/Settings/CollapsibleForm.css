@@ -1,0 +1,265 @@
+.collapsible-form {
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px;
+    border: 3px solid gray;
+    user-select: none;
+    margin-bottom: 20px;
+}
+
+.collapsible-form.active-form {
+    border: 3px solid #498f00;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 20px;
+    height: 30px;
+}
+
+.header:hover {
+    cursor: pointer;
+    background-color: #f0f0f0;
+}
+
+.flag-and-name {
+    display: flex;
+    align-items: center;
+}
+
+.remove-btn-wrapper {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 30px;
+    margin-right: 10px;
+}
+
+.remove-btn {
+    border: 2px solid;
+    color: #b46969;
+    box-shadow: none;
+    height: 100%;
+    border-radius: 5px;
+}
+
+.remove-btn:hover {
+    cursor: pointer;
+    background-color: #ffb0b0;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;
+    border-radius: 0 0 20px 20px;
+    border-top: 3px solid lightgrey;
+}
+
+.countries-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+/* Hide the original radio button */
+input[type="radio"] {
+    display: none;
+}
+
+/* Style the label */
+.country .radio-label {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background-color: #ddf4ff;
+    border-radius: 20px;
+    margin: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100px;
+    border: 3px solid #24abe1;
+}
+
+/* Change the style when the radio button is selected */
+input[type="radio"]:checked + .radio-label {
+    background-color: #24abe1;
+}
+
+.flag-btn-img {
+    height: 50px;
+    border-radius: 10px;
+    user-select: none;
+}
+
+.exercise-container {
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+    margin-top: 10px;
+}
+
+.exercise-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    padding: 5px;
+}
+
+.container {
+    display: flex;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default checkbox */
+.container input[type="checkbox"] {
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #bee7ff;
+    border-radius: 5px;
+    margin-right: 20px;
+}
+
+.container:hover input[type="checkbox"] ~ .checkmark {
+    background-color: #93dcff;
+}
+
+.container input[type="checkbox"]:checked ~ .checkmark {
+    background-color: #2196F3;
+}
+
+.checkmark.form {
+    background-color: #ff3a3a;
+    border-radius: 10px;
+    transition: ease-in-out 0.2s;
+}
+
+.container:hover input[type="checkbox"] ~ .checkmark.form {
+    background-color: #5de85d;
+}
+
+.container input[type="checkbox"]:checked ~ .checkmark.active-form {
+    background-color: #498f00;
+}
+
+.activate-language-btn {
+    padding: 5px;
+    background-color: #ddf4ff;
+    border-radius: 20px;
+    margin: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: 3px solid #24abe1;
+}
+
+.save-btn {
+    padding: 5px;
+    background-color: #ddf4ff;
+    border-radius: 20px;
+    margin: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: 3px solid #24abe1;
+    color: #2196F3;
+    font-weight: bolder;
+}
+
+.save-btn.disabled {
+    background-color: #e0e0e0; /* or any other desired color for the disabled state */
+    cursor: not-allowed;
+    color: #6b6b6b;
+    border: 3px solid #a2a2a2;
+}
+
+.save-btn:hover {
+    cursor: pointer;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it appears on top of other content */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    height: auto;
+    width: auto;
+    margin: 10px;
+}
+
+.modal-content div {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.modal-content button {
+    align-self: center; /* Center the buttons */
+    margin: 10px;
+}
+
+.modal-buttons-container {
+    display: flex;
+    justify-content: center;
+    padding: 0;
+}
+
+.remove-btn.confirm {
+    height: auto;
+    padding: 15px;
+    transition: ease-in-out 0.2s;
+    width: 100%;
+    background-color: #d95767;
+    color: #F5F5F5;
+    border: 0;
+}
+
+.remove-btn.confirm:hover {
+    background-color: #d05050;
+}
+
+.remove-btn.undo {
+    height: auto;
+    padding: 15px;
+    transition: ease-in-out 0.2s;
+    background-color: #f0ecec;
+    width: 100%;
+    border: 0;
+    color: #211f1f;
+}
+
+.remove-btn.undo:hover {
+    background-color: #dadada;
+}
