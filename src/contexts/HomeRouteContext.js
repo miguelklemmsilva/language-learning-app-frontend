@@ -18,20 +18,13 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     }
 
     const languages = [{
-        name: "Spanish",
-        countries: [{name: "Spain", flag: {src: "Flags/Spanish/es.png", alt: "es flag"}}, {
-            name: "Mexico",
-            flag: {src: "Flags/Spanish/mx.png", alt: "mx flag"}
-        }, {name: "Argentina", flag: {src: "Flags/Spanish/ar.png", alt: "ar flag"}},],
-        settings: defaultSettings
+        name: "Spanish", countries: [{name: "Spain", flag: {src: "Flags/Spanish/es.png", alt: "es flag"}}, {
+            name: "Mexico", flag: {src: "Flags/Spanish/mx.png", alt: "mx flag"}
+        }, {name: "Argentina", flag: {src: "Flags/Spanish/ar.png", alt: "ar flag"}},], settings: defaultSettings
     }, {
-        name: "Portuguese",
-        countries: [{name: "Brazil", flag: {src: "Flags/Portuguese/br.png"}, alt: "br flag"}, {
-            name: "Portugal",
-            flag: {src: "Flags/Portuguese/pt.png"},
-            alt: "pt flag"
-        },],
-        settings: defaultSettings
+        name: "Portuguese", countries: [{name: "Brazil", flag: {src: "Flags/Portuguese/br.png"}, alt: "br flag"}, {
+            name: "Portugal", flag: {src: "Flags/Portuguese/pt.png"}, alt: "pt flag"
+        },], settings: defaultSettings
     }];
 
     const updateVocabTable = async () => {
@@ -48,18 +41,13 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     };
 
     const handleRemoveWord = async (word) => {
+        setWordTable((prev) => prev.filter((item) => item !== word));
         axios
             .post("api/user/removevocabulary", {word_id: word.word_id}, {
                 headers: {
                     Authorization: `Bearer ${await getAccessTokenSilently()}`,
                 }
-            })
-            .then((res) => {
-                if (res.data.success)
-                    updateVocabTable();
-                else console.error("Failed to remove word");
-            })
-            .catch((err) => console.error(err));
+            }).catch((err) => console.error(err));
     };
 
     // Load active languages from the server (similar to how you did in Settings)
@@ -167,8 +155,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
         });
     }
 
-    return (
-        <HomeRouteContext.Provider value={{
+    return (<HomeRouteContext.Provider value={{
             wordTable,
             handleRemoveWord,
             updateVocabTable,
@@ -183,6 +170,5 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
             activeLanguage
         }}>
             {children}
-        </HomeRouteContext.Provider>
-    );
+        </HomeRouteContext.Provider>);
 };

@@ -1,9 +1,7 @@
 import CollapsibleForm from "./CollapsibleForm";
 import LanguageDropdown from "./LanguageDropdown";
-import {useContext, useEffect, useState} from "react";
+import {useContext} from "react";
 import "./Settings.css";
-import axios from "axios";
-import {useAuth0} from "@auth0/auth0-react";
 import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
 
 function Settings({}) {
