@@ -22,9 +22,8 @@ const LanguageDropdown = ({onLanguageSelect, selectedOptions, languages}) => {
     };
 
     const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target) && buttonRef.current !== event.target) {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target) && buttonRef.current !== event.target)
             setShowDropdown(false);
-        }
     };
 
     useEffect(() => {

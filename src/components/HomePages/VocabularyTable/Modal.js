@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
 import './Modal.css';
 import axios from "axios";
+import {useAuth0} from "@auth0/auth0-react";
 
 function Modal({showModal, onClose, updateVocabTable}) {
     const [words, setWords] = useState('');
+    const {getAccessTokenSilently} = useAuth0();
 
     const close = () => {
         onClose();
@@ -25,11 +27,14 @@ function Modal({showModal, onClose, updateVocabTable}) {
     async function onAddWords() {
         close();
         const cleanWords = cleanString(words);
-        axios.defaults.withCredentials = true;
         axios.post("api/user/addvocabulary", {
             words: cleanWords
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getAccessTokenSilently()}`,
+            }
         }).then(updateVocabTable)
-            .catch((err) => console.log(err));
+            .catch((err) => console.error(err));
     }
 
     return (
