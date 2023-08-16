@@ -57,10 +57,11 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence, se
     if (sentence.type === "speaking")
         return <Speaking sentence={sentence} result={result} setResult={setResult}
                          setNextQuestion={() => {
-                             setResult("");
+                             setResult(null);
                              setAnswer("");
                              setNextQuestion();
-                         }} updateSentence={updateSentence}
+                         }}
+                         updateSentence={updateSentence}
                          sentenceNumber={sentenceNumber} setUpdateTrigger={setUpdateTrigger}
                          updateTrigger={updateTrigger}/>
 };

@@ -40,6 +40,13 @@
     box-shadow: 0 5px 0 #498f00;
 }
 
+.submit-btn.disabled {
+    background-color: #d3d3d3;
+    border: 3px solid #aaa;
+    box-shadow: none;
+    color: #a9a9a9;
+}
+
 .submit-wrapper.submitted.correct {
     border: 2px solid #498f00;
     background-color: #d7ffb8;

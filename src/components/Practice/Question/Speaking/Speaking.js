@@ -1,11 +1,14 @@
 import Pronunciation from "./Pronunciation";
 import ListeningButton from "../ListeningButton";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import SpeakingOutput from "./SpeakingOutput";
 import SpeakingSubmit from "./SpeakingSubmit";
 
 const Speaking = ({sentence, result, setResult, setNextQuestion, sentenceNumber, updateSentence}) => {
     const [listening, setListening] = useState(false);
+    const [output, setOutput] = useState(null);
+    const [scores, setScores] = useState(null);
+    const chunksRef = useRef([]);
 
     useEffect(() => {
         updateSentence(sentenceNumber, true);
@@ -18,11 +21,14 @@ const Speaking = ({sentence, result, setResult, setNextQuestion, sentenceNumber,
             <div className="speaking-btns-container">
                 <ListeningButton sentence={sentence}/>
                 <Pronunciation sentence={sentence} setResult={setResult} listening={listening}
-                               setListening={setListening}/>
+                               setListening={setListening} chunksRef={chunksRef} result={result}/>
             </div>
-            <SpeakingOutput result={result} sentence={sentence}/>
-            <SpeakingSubmit result={result} setNextQuestion={()=> {
+            <SpeakingOutput result={result} output={output} setOutput={setOutput} scores={scores} setScores={setScores}/>
+            <SpeakingSubmit result={result} listening={listening} setNextQuestion={()=> {
                 setListening(false);
+                setScores(null);
+                setOutput(null);
+                chunksRef.current = [];
                 setNextQuestion();
             }}/>
         </div>
