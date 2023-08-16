@@ -3,9 +3,11 @@ import React from "react";
 import axios from "axios";
 import AnswerInput from "../AnswerInput";
 import SubmitArea from "../SubmitArea";
+import {useAuth0} from "@auth0/auth0-react";
 
 const Listening = ({sentence, textarea, answer, result, handleInputChange, handleSubmit, cleanString}) => {
     const [correct, setCorrect] = React.useState(false);
+    const {getAccessTokenSilently} = useAuth0();
 
     const formatAlignment = (alignment) => {
         const items = alignment.split(' ');
@@ -66,6 +68,10 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
             const {data} = await axios.post('/api/ai/verifySentence', {
                 string1: comparisonString,
                 string2: cleanString(answer),
+            }, {
+                headers: {
+                    Authorization: `Bearer ${await getAccessTokenSilently()}`
+                }
             });
             correct = data.correct;
         }
@@ -73,9 +79,12 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
     }
 
     const onSubmit = async () => {
-        const correct = await checkTranslation();
-        setCorrect(correct);
-        handleSubmit(correct, sentence.original);
+        if (!result) {
+            const correct = await checkTranslation();
+            setCorrect(correct);
+            handleSubmit(correct, sentence.original);
+        } else
+            handleSubmit(correct, sentence.original);
     }
 
 

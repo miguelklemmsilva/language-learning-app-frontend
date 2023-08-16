@@ -1,17 +1,27 @@
-import React, { useEffect } from "react";
+import React, {useEffect} from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
 
-function Finished({ sentences }) {
+function Finished({sentences}) {
     const navigate = useNavigate();
+    const {getAccessTokenSilently} = useAuth0();
 
     useEffect(() => {
-        sentences.forEach(sentence => {
-            sentence.voice = null;
-        });
-        axios.post(`api/user/finishlesson`, { sentences: sentences })
-            .then(r => console.log(r))
-            .catch(error => console.error(error));
+        const finishLesson = async () => {
+            sentences.forEach(sentence => {
+                sentence.voice = null;
+            });
+            axios.post(`api/user/finishlesson`, {sentences: sentences}, {
+                headers: {
+                    'Authorization': `Bearer ${await getAccessTokenSilently()}`
+                }
+            })
+                .catch(error => console.error(error));
+        }
+
+        finishLesson().then(r => console.log(r))
+        ;
     }, [sentences]);
 
     return (

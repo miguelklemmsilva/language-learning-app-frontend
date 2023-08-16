@@ -60,7 +60,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
             });
             setActiveLanguage(activeLanguageResponse.data.active_language);  // assuming the server returns an array
         } catch (err) {
-            console.log(err);
+            console.error(err);
         }
     };
 
@@ -114,7 +114,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
                 setSelectedLanguages(transformedData);
                 setInitialLanguages(transformedData);
             } catch (err) {
-                console.log(err);
+                console.error(err);
             }
         };
 
@@ -133,7 +133,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
             fetchActiveLanguage()
             updateVocabTable();
         }).catch((err) => {
-            console.log(err);
+            console.error(err);
         });
     };
 
@@ -151,7 +151,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
             // if this is the user registering their first language
             if (checkIfUserIsRegistered) checkIfUserIsRegistered();
         }).catch((err) => {
-            console.log(err);
+            console.error(err);
         });
     }
 

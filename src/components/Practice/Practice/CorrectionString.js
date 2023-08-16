@@ -100,7 +100,6 @@ const wrapMistakes = (result) => {
 const prepareString = (cleanAnswer, cleanComparisonString, comparisonString) => {
     let result = surroundDifferencesWithBrackets(cleanAnswer, cleanComparisonString);
     result = matchCapitalizationAndPunctuation(comparisonString, result);
-    console.log(result);
     result = wrapMistakes(result);
     return result;
 }

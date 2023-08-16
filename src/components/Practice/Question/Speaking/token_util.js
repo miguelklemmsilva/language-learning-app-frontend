@@ -14,7 +14,7 @@ export async function getTokenOrRefresh() {
 
             return { authToken: token, region: region };
         } catch (err) {
-            console.log(err.response.data);
+            console.error(err.response.data);
             return { authToken: null, error: err.response.data };
         }
     } else {

@@ -19,10 +19,9 @@ const useFetchSentences = (url) => {
                     setSentences(response);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                 });
         }
-
         getSentences();
     }, [url]);
 

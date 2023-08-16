@@ -17,7 +17,7 @@ function useRegisterForm(onSuccess) {
                     onSuccess();
                 }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.error(err));
     };
 
     const handleChange = (e) => {

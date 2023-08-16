@@ -15,7 +15,7 @@ function useLoginForm(onSuccess) {
                 if (res.status === 200)
                     onSuccess();
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.error(err));
     };
 
     const handleChange = (e) => {
