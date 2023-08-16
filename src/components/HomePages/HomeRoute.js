@@ -21,7 +21,9 @@ const HomeRoute = ({children}) => {
                     }
                 });
                 setUserRegistered(response.data.isRegistered);
-                setLoading(false)
+                setLoading(false);
+                console.log(loading);
+                console.log(isLoading)
             } catch (err) {
                 console.error(err);
             }
@@ -39,11 +41,14 @@ const HomeRoute = ({children}) => {
     if (!isAuthenticated)
         navigate("/");
 
-    if (!userRegistered)
-        return <div className="page-container"><Settings/></div>;
+    if (!userRegistered) {
+        return <HomeRouteProvider checkIfUserIsRegistered={checkIfUserIsRegistered}>
+            <div className="page-container"><Settings/></div>;
+        </HomeRouteProvider>
+    }
 
     return (
-        <HomeRouteProvider checkIfUserIsRegistered={checkIfUserIsRegistered}>
+        <HomeRouteProvider>
             <div className="page-container">
                 <Sidebar/>
                 {children}

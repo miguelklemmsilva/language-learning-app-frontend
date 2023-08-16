@@ -1,6 +1,7 @@
 import {useState, useEffect, createContext} from 'react';
 import axios from 'axios';
 import {useAuth0} from "@auth0/auth0-react";
+import {useNavigate} from "react-router-dom";
 
 export const HomeRouteContext = createContext(undefined);
 
@@ -10,6 +11,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     const [selectedLanguages, setSelectedLanguages] = useState([]);
     const [initialLanguages, setInitialLanguages] = useState([]);
     const [activeLanguage, setActiveLanguage] = useState(null);
+    const navigate = useNavigate();
 
     const defaultSettings = {
         index: 0, exercises: {
@@ -159,7 +161,10 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
             }
         }).then(() => {
             // if this is the user registering their first language
-            if (checkIfUserIsRegistered) checkIfUserIsRegistered();
+            if (checkIfUserIsRegistered) {
+                checkIfUserIsRegistered();
+                navigate("/settings");
+            }
         }).catch((err) => {
             console.error(err);
         });
