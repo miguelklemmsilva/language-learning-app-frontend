@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useEffect} from "react";
 import "./SpeakingOutput.css";
 import Tooltip from "../Translation/Tooltip";
 import {PronunciationAssessmentResult, SpeechRecognitionResult} from "microsoft-cognitiveservices-speech-sdk";

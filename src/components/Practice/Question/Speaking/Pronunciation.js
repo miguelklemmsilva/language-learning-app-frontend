@@ -28,7 +28,7 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
             true
         )
 
-        speechConfig.speechRecognitionLanguage = 'es-MX';
+        speechConfig.speechRecognitionLanguage = sentence.locale;
 
         const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
         pronunciationAssessmentConfig.applyTo(recognizer);
