@@ -21,6 +21,7 @@ const HomeRoute = ({children}) => {
                     }
                 });
                 setUserRegistered(response.data.isRegistered);
+                setLoading(false)
             } catch (err) {
                 console.error(err);
             }
