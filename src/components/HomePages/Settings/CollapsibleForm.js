@@ -48,7 +48,7 @@ const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActi
             toggleExpanded();
         }}>
             <div className="flag-and-name">
-                <img src={selectedCountry.flag.src} alt={selectedCountry.flag.alt} className="flag-img"/>
+                <img src={selectedCountry.flag} alt="" className="flag-img"/>
                 {language.name}
                 <label className="container">
                     <input type="checkbox"
@@ -81,7 +81,7 @@ const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActi
                                onChange={handleCountryChange}
                         />
                         <label htmlFor={`country-${country.name}`} className="radio-label">
-                            <img className="flag-btn-img" src={country.flag.src} alt={country.flag.alt}/>
+                            <img className="flag-btn-img" src={country.flag} alt=""/>
                         </label>
                     </div>))}
             </div>

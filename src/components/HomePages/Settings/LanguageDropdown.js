@@ -52,8 +52,8 @@ const LanguageDropdown = ({onLanguageSelect, selectedOptions, languages}) => {
                             key={index}
                             onClick={() => handleOptionClick(option)}
                         >
-                            <img src={option.countries[option.settings.index].flag.src}
-                                 alt={option.countries[option.settings.index].flag.alt} className="flag-img"/>
+                            <img src={option.countries[option.settings.index].flag}
+                                 alt="" className="flag-img"/>
                             {option.name}
                         </div>
                     ))}

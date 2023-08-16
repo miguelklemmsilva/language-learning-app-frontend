@@ -18,13 +18,23 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     }
 
     const languages = [{
-        name: "Spanish", countries: [{name: "Spain", flag: {src: "Flags/Spanish/es.png", alt: "es flag"}}, {
-            name: "Mexico", flag: {src: "Flags/Spanish/mx.png", alt: "mx flag"}
-        }, {name: "Argentina", flag: {src: "Flags/Spanish/ar.png", alt: "ar flag"}},], settings: defaultSettings
+        name: "Spanish",
+        countries: [
+            {name: "Spain", flag: "Flags/Spanish/es.png"},
+            {name: "Mexico", flag: "Flags/Spanish/mx.png"},
+            {name: "Argentina", flag: "Flags/Spanish/ar.png"}
+        ], settings: defaultSettings
     }, {
-        name: "Portuguese", countries: [{name: "Brazil", flag: {src: "Flags/Portuguese/br.png"}, alt: "br flag"}, {
-            name: "Portugal", flag: {src: "Flags/Portuguese/pt.png"}, alt: "pt flag"
-        },], settings: defaultSettings
+        name: "Portuguese",
+        countries: [
+            {name: "Brazil", flag: "Flags/Portuguese/br.png"},
+            {name: "Portugal", flag: "Flags/Portuguese/pt.png"}
+        ], settings: defaultSettings
+    }, {
+        name: "Japanese",
+        countries: [
+            {name: "Japan", flag: "Flags/Japanese/jp.png"}
+        ], settings: defaultSettings
     }];
 
     const updateVocabTable = async () => {
@@ -156,19 +166,19 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     }
 
     return (<HomeRouteContext.Provider value={{
-            wordTable,
-            handleRemoveWord,
-            updateVocabTable,
-            handleSetActive,
-            selectedLanguages,
-            handleRemoveLanguage,
-            handleOptionsChange,
-            initialLanguages,
-            handleLanguageSelect,
-            handleSave,
-            languages,
-            activeLanguage
-        }}>
-            {children}
-        </HomeRouteContext.Provider>);
+        wordTable,
+        handleRemoveWord,
+        updateVocabTable,
+        handleSetActive,
+        selectedLanguages,
+        handleRemoveLanguage,
+        handleOptionsChange,
+        initialLanguages,
+        handleLanguageSelect,
+        handleSave,
+        languages,
+        activeLanguage
+    }}>
+        {children}
+    </HomeRouteContext.Provider>);
 };
