@@ -131,13 +131,13 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
             },
         }).then(() => {
             fetchActiveLanguage()
+            updateVocabTable();
         }).catch((err) => {
             console.log(err);
         });
     };
 
     const handleOptionsChange = (updatedLanguage) => {
-        console.log(updatedLanguage)
         setSelectedLanguages((prev) => prev.map((item) => item.name === updatedLanguage.name ? updatedLanguage : item));
     };
 

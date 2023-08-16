@@ -42,9 +42,9 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence, se
                 updateSentence(sentenceNumber, false);
             }
         } else {
-            setNextQuestion();
             setResult("");
             setAnswer("");
+            setNextQuestion();
         }
     };
 
@@ -56,8 +56,13 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence, se
                             handleSubmit={handleSubmit} result={result} answer={answer} cleanString={cleanString}/>
     if (sentence.type === "speaking")
         return <Speaking sentence={sentence} result={result} setResult={setResult}
-                         setNextQuestion={setNextQuestion} updateSentence={updateSentence}
-                         sentenceNumber={sentenceNumber} setUpdateTrigger={setUpdateTrigger} updateTrigger={updateTrigger}/>
+                         setNextQuestion={() => {
+                             setResult("");
+                             setAnswer("");
+                             setNextQuestion();
+                         }} updateSentence={updateSentence}
+                         sentenceNumber={sentenceNumber} setUpdateTrigger={setUpdateTrigger}
+                         updateTrigger={updateTrigger}/>
 };
 
 export default Question;

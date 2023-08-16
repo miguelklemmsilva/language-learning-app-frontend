@@ -10,15 +10,14 @@ const HomeRoute = ({children}) => {
     const {user, isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
     const [userRegistered, setUserRegistered] = useState(false);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
 
     const checkIfUserIsRegistered = async () => {
         if (isAuthenticated) {
             try {
-                const accessToken = await getAccessTokenSilently();
-
                 const response = await axios.get("api/user/isRegistered", {
                     headers: {
-                        'Authorization': `Bearer ${accessToken}`
+                        'Authorization': `Bearer ${await getAccessTokenSilently()}`
                     }
                 });
                 setUserRegistered(response.data.isRegistered);
@@ -29,11 +28,11 @@ const HomeRoute = ({children}) => {
     };
 
     useEffect(() => {
-        checkIfUserIsRegistered();
+        checkIfUserIsRegistered().then(() => setLoading(false));
     }, [isAuthenticated, getAccessTokenSilently, user]);
 
 
-    if (isLoading)
+    if (isLoading || loading)
         return <div>Loading...</div>;
 
     if (!isAuthenticated)

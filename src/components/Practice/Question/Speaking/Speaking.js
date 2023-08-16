@@ -21,7 +21,10 @@ const Speaking = ({sentence, result, setResult, setNextQuestion, sentenceNumber,
                                setListening={setListening}/>
             </div>
             <SpeakingOutput result={result} sentence={sentence}/>
-            <SpeakingSubmit result={result} setNextQuestion={setNextQuestion}/>
+            <SpeakingSubmit result={result} setNextQuestion={()=> {
+                setListening(false);
+                setNextQuestion();
+            }}/>
         </div>
     )
 }
