@@ -13,7 +13,7 @@ root.render(
         authorizationParams={{
             audience: "https://dev-k3jnyjgiqp886i26.uk.auth0.com/api/v2/",
             scope: "read:current_user update:current_user_metadata",
-            redirect_uri: "http://localhost:3000"
+            redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI
         }}
     >
         <App/>
