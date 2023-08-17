@@ -57,8 +57,32 @@
 }
 
 .word {
-    display: inline;
-    text-decoration: #909090 underline dotted;
+    display: inline-block;
+    background: #dcdcdc;
+    border-radius: 4px;
+    text-decoration: none;
+    padding: 2px;
+    overflow: visible;
+}
+
+.speaking-output:focus {
+    outline: none;
+}
+
+.Mispronunciation {
+    background-color: #ffcc00;
+    text-decoration: underline;
+}
+
+.Omission {
+    background-color: gray;
+    color: white;
+}
+
+.Insertion {
+    background-color: #ff5b5b;
+    color: white;
+    text-decoration: line-through;
 }
 
 .speaking-btns-container {

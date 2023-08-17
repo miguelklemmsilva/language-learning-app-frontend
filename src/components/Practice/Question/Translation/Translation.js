@@ -1,13 +1,22 @@
-import Tooltip from "./Tooltip";
 import React from "react";
 import axios from "axios";
 import AnswerInput from "../AnswerInput";
 import SubmitArea from "../SubmitArea";
 import {useAuth0} from "@auth0/auth0-react";
+import Tooltip from "@mui/material/Tooltip";
+import {styled, tooltipClasses} from "@mui/material";
 
 const Listening = ({sentence, textarea, answer, result, handleInputChange, handleSubmit, cleanString}) => {
     const [correct, setCorrect] = React.useState(false);
     const {getAccessTokenSilently} = useAuth0();
+
+    const CustomTooltip = styled(({className, ...props}) => (
+        <Tooltip {...props} classes={{popper: className}}/>
+    ))(({theme}) => ({
+        [`& .${tooltipClasses.tooltip}`]: {
+            fontSize: "0.85rem",
+        },
+    }));
 
     const formatAlignment = (alignment) => {
         const items = alignment.split(' ');
@@ -37,27 +46,72 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
         const translation = sentence.translation;
         const original = sentence.original;
 
-        return translation.split('').map((char, index) => {
+        const components = [];
+        let buffer = [];
+        let currentWord = null;
+
+        const isPunctuation = (char) => /[.,?!¡¿]/.test(char);  // regex pattern to test for punctuation
+
+        for (let index = 0; index < translation.length; index++) {
+            const char = translation[index];
             const matchedRange = alignments.find(range => index >= range.translated.start && index <= range.translated.end);
 
-            if (matchedRange) {
-                const word = original.slice(
-                    matchedRange.original.start,
-                    matchedRange.original.end + 1
-                );
+            if (matchedRange && !isPunctuation(char)) {  // Check for punctuation here
+                const word = original.slice(matchedRange.original.start, matchedRange.original.end + 1);
 
-                // Render the component around the phrase
-                return (
-                    <Tooltip key={index} text={word}>
-                        {char}
-                    </Tooltip>
-                );
+                if (currentWord && currentWord === word) {
+                    buffer.push(char);
+                } else {
+                    if (buffer.length && !isPunctuation(buffer.join(''))) {  // Check for punctuation here too
+                        components.push({
+                            index: index - buffer.length,
+                            word: currentWord,
+                            text: buffer.join('')
+                        });
+                        buffer = [];
+                    }
+                    buffer.push(char);
+                    currentWord = word;
+                }
             } else {
-                // Render the character as normal
-                return char;
+                if (buffer.length && !isPunctuation(buffer.join(''))) {  // Again, check for punctuation
+                    components.push({
+                        index: index - buffer.length,
+                        word: currentWord,
+                        text: buffer.join('')
+                    });
+                    buffer = [];
+                }
+                currentWord = null;
+                components.push(char);
+            }
+        }
+
+        if (buffer.length && !isPunctuation(buffer.join(''))) {  // One more punctuation check
+            components.push({
+                index: translation.length - buffer.length,
+                word: currentWord,
+                text: buffer.join('')
+            });
+        }
+
+        return components.map((comp, idx) => {
+            if (typeof comp === 'string')
+                return comp;
+            else {
+                // Render the tooltip around the phrase
+                return (
+                    <CustomTooltip placement="bottom" key={comp.index} title={comp.word} arrow>
+                        <div className={`word`}>
+                            {comp.text}
+                        </div>
+                    </CustomTooltip>
+                );
             }
         });
     };
+
+
 
     const checkTranslation = async () => {
         const comparisonString = cleanString(sentence.original);

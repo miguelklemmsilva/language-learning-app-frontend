@@ -1,9 +1,18 @@
 import React, {Fragment, useEffect} from "react";
 import "./SpeakingOutput.css";
-import Tooltip from "../Translation/Tooltip";
+import Tooltip from '@mui/material/Tooltip';
 import {PronunciationAssessmentResult, SpeechRecognitionResult} from "microsoft-cognitiveservices-speech-sdk";
+import {styled, tooltipClasses} from "@mui/material";
 
 const SpeakingOutput = ({result, scores, setScores, output, setOutput}) => {
+    const CustomTooltip = styled(({ className, ...props }) => (
+        <Tooltip {...props} classes={{ popper: className }} />
+    ))(({ theme }) => ({
+        [`& .${tooltipClasses.tooltip}`]: {
+            fontSize: "0.85rem",
+        },
+    }));
+
 
     // Update the textarea value on component mount
     useEffect(() => {
@@ -28,9 +37,11 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput}) => {
                 const space = index < words.length - 1 ? " " : "";
 
                 return (<Fragment key={index}>
-                    <Tooltip text={feedback} errorType={ErrorType}>
-                        {Word}
-                    </Tooltip>
+                    <CustomTooltip title={feedback} placement="bottom" arrow>
+                        <div className={`word ${ErrorType}`}>
+                            {Word}
+                        </div>
+                    </CustomTooltip>
                     {space}
                 </Fragment>);
             });
@@ -69,16 +80,16 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput}) => {
         } else if (result instanceof SpeechRecognitionResult) setOutput(result.text); else setOutput(result);
     }, [result]);
 
-        return < div className="speaking-output-container">
-            <div
-                className="speaking-output"
-                placeholder={"Start speaking!"}>
-                {output}
-            </div>
-            <div className="score-container">
-                {scores}
-            </div>
-        </div>;
+    return < div className="speaking-output-container">
+        <div
+            className="speaking-output"
+            placeholder={"Start speaking!"}>
+            {output}
+        </div>
+        <div className="score-container">
+            {scores}
+        </div>
+    </div>;
 };
 
 export default SpeakingOutput;
