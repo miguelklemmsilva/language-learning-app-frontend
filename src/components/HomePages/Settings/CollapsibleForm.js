@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import './CollapsibleForm.css';
 import CheckIcon from '@mui/icons-material/Check';
@@ -11,6 +11,11 @@ const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActi
     const selectedExercises = language.settings.exercises;
 
     const toggleExpanded = () => setIsExpanded(!isExpanded);
+
+    useEffect(() => {
+        if (isActive)
+            setIsExpanded(true);
+    }, [isActive]);
 
     const hasChangesMade = () => {
         return JSON.stringify(language.settings) !== JSON.stringify(initialSettings);

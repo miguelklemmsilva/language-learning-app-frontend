@@ -9,6 +9,7 @@ const Speaking = ({sentence, result, setResult, setNextQuestion, sentenceNumber,
     const [output, setOutput] = useState(null);
     const [scores, setScores] = useState(null);
     const chunksRef = useRef([]);
+    const audioElementRef = useRef(null);
 
     useEffect(() => {
         updateSentence(sentenceNumber, true);
@@ -21,13 +22,15 @@ const Speaking = ({sentence, result, setResult, setNextQuestion, sentenceNumber,
             <div className="speaking-btns-container">
                 <ListeningButton sentence={sentence}/>
                 <Pronunciation sentence={sentence} setResult={setResult} listening={listening}
-                               setListening={setListening} chunksRef={chunksRef} result={result}/>
+                               setListening={setListening} chunksRef={chunksRef} result={result}
+                               audioElementRef={audioElementRef}/>
             </div>
-            <SpeakingOutput result={result} output={output} setOutput={setOutput} scores={scores} setScores={setScores}/>
-            <SpeakingSubmit result={result} listening={listening} setNextQuestion={()=> {
-                setListening(false);
+            <SpeakingOutput result={result} output={output} setOutput={setOutput} scores={scores}
+                            setScores={setScores}/>
+            <SpeakingSubmit result={result} listening={listening} setNextQuestion={() => {
                 setScores(null);
                 setOutput(null);
+                audioElementRef.current.src = "";
                 chunksRef.current = [];
                 setNextQuestion();
             }}/>

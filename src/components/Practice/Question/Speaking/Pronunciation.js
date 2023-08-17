@@ -2,9 +2,8 @@ import React, {Fragment, useRef} from 'react';
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import {getTokenOrRefresh} from "./token_util";
 
-const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef, result}) => {
+const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef, result, audioElementRef}) => {
     const mediaRecorderRef = useRef(null);
-    const audioElementRef = useRef(null);
 
     const sttFromMic = async () => {
         if (listening)
@@ -64,6 +63,7 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
             setListening(false);
         }, error => {
             console.error(error);
+            complete = true;
             setResult("ERROR: Speech was cancelled. Ensure your microphone is working properly.");
             stopRecording();
             setListening(false);

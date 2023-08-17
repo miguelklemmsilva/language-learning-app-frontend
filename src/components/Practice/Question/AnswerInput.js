@@ -6,12 +6,6 @@ const AnswerInput = React.forwardRef(({value, onChange, result, onSubmit}, ref) 
         <textarea className={`answer-input ${result ? 'submitted' : ''}`}
                   ref={ref}
                   value={value}
-                  onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                          onSubmit();
-                          e.preventDefault();
-                      }
-                  }}
                   readOnly={result}
                   onChange={onChange}
                   placeholder={"Write your answer here"}
