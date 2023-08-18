@@ -10,7 +10,6 @@
 
 .welcome-message {
     text-align: center;
-    font-weight: bolder;
     font-size: 1.5rem;
     margin-bottom: 10px;
 }
@@ -31,9 +30,8 @@
     outline: none;
     background-color: transparent;
     box-shadow: none;
-    letter-spacing: 1px;
-    font-weight: 580;
     padding: 8px;
+    font-size: 15px;
 }
 
 .sidebar-buttons {

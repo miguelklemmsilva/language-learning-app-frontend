@@ -183,7 +183,8 @@ input[type="radio"]:checked + .radio-label {
     transition: background-color 0.2s;
     border: 3px solid #24abe1;
     color: #2196F3;
-    font-weight: bolder;
+    font-weight: 700;
+    font-size: 15px;
 }
 
 .save-btn.disabled {
