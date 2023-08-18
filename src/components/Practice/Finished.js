@@ -9,10 +9,12 @@ function Finished({sentences}) {
 
     useEffect(() => {
         const finishLesson = async () => {
-            sentences.forEach(sentence => {
-                sentence.voice = null;
-            });
-            axios.post(`api/user/finishlesson`, {sentences: sentences}, {
+            const filteredSentences = sentences.map(sentence => ({
+                mistakes: sentence.mistakes,
+                word: sentence.word
+            }));
+
+            axios.post(`api/user/finishlesson`, {sentences: filteredSentences}, {
                 headers: {
                     'Authorization': `Bearer ${await getAccessTokenSilently()}`
                 }
@@ -20,8 +22,7 @@ function Finished({sentences}) {
                 .catch(error => console.error(error));
         }
 
-        finishLesson().then(r => console.log(r))
-        ;
+        finishLesson().then(r => console.log(r));
     }, [sentences]);
 
     return (

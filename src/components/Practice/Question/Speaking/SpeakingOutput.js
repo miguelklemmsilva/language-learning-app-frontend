@@ -4,15 +4,14 @@ import Tooltip from '@mui/material/Tooltip';
 import {PronunciationAssessmentResult, SpeechRecognitionResult} from "microsoft-cognitiveservices-speech-sdk";
 import {styled, tooltipClasses} from "@mui/material";
 
-const SpeakingOutput = ({result, scores, setScores, output, setOutput}) => {
-    const CustomTooltip = styled(({ className, ...props }) => (
-        <Tooltip {...props} classes={{ popper: className }} />
-    ))(({ theme }) => ({
+const SpeakingOutput = ({result, scores, setScores, output, setOutput, updateSentence}) => {
+    const CustomTooltip = styled(({className, ...props}) => (
+        <Tooltip {...props} classes={{popper: className}}/>
+    ))(({theme}) => ({
         [`& .${tooltipClasses.tooltip}`]: {
             fontSize: "0.85rem",
         },
     }));
-
 
     // Update the textarea value on component mount
     useEffect(() => {
@@ -24,9 +23,8 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput}) => {
 
                 let feedback = "\n";
 
-                if (ErrorType !== "None") {
+                if (ErrorType !== "None")
                     feedback += ErrorType;
-                }
 
                 if (ErrorType !== "Omission") {
                     if (ErrorType !== "None") feedback += ": ";
@@ -49,6 +47,8 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput}) => {
             setOutput(formattedOutput);
         };
 
+        let totalScore = 0;
+
         const formatScores = () => {
             const scoreNames = [{
                 name: 'AccuracyScore', display: 'Accuracy Score'
@@ -59,8 +59,10 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput}) => {
             }, {
                 name: 'PronScore', display: 'Pronunciation Score'
             }];
+
             const formattedScores = scoreNames.map((scoreName) => {
                 const scoreValue = result.privPronJson.PronunciationAssessment[scoreName.name];
+                totalScore += scoreValue;
                 let scoreColour = '';
                 if (scoreValue >= 95) scoreColour = '#3db03d'; else if (scoreValue >= 80) scoreColour = '#ffcc00'; else scoreColour = '#cb0000';
                 return (<div className="score" key={scoreName.name}>
@@ -77,10 +79,11 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput}) => {
         if (result instanceof PronunciationAssessmentResult) {
             formatOutput();
             formatScores();
+            if (totalScore/4 >= 85) updateSentence(true); else updateSentence(false); // decides whether to mark the sentence as correct or not depending on mean score
         } else if (result instanceof SpeechRecognitionResult) setOutput(result.text); else setOutput(result);
     }, [result]);
 
-    return < div className="speaking-output-container">
+    return <div className="speaking-output-container">
         <div
             className="speaking-output"
             placeholder={"Start speaking!"}>

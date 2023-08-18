@@ -1,4 +1,6 @@
 const calculateLastSeen = (minutes) => {
+    if (!minutes)
+        return "new word"
     if (minutes < 60)
         return minutes + " minute" + (minutes === 1 ? "" : "s") + " ago";
     if ((minutes / 60) < 24)

@@ -5,7 +5,7 @@ import Translation from "./Translation/Translation";
 import Speaking from "./Speaking/Speaking";
 import prepareString from "../Practice/CorrectionString";
 
-const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence, setUpdateTrigger, updateTrigger}) => {
+const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence}) => {
     const textareaRef = useRef(null);
     const [answer, setAnswer] = useState("");
     const [result, setResult] = useState(null);
@@ -21,25 +21,25 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence, se
 
     function cleanString(str) {
         return str
-            .replace(/[^a-zA-Z\u00C0-\u017F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\uFF00-\uFFEF\u3000-\u303F\s]/g, '')
+            .replace(/[^a-zA-Z\u00C0-\u017F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\uFF00-\uFFEF\s]/g, '')
             .replace(/\s+/g, ' ')
             .toLowerCase()
             .trim();
     }
 
-    const handleSubmit = async (correct, feedback) => {
+    const handleSubmit = (correct, feedback) => {
         textareaRef.current.focus(); // focus back onto the textarea
         if (answer === "") // if the answer is empty, do nothing
             return;
         if (!result) { // if the result is empty, check the answer
             if (correct) {
                 setResult(feedback);
-                updateSentence(sentenceNumber, true);
+                updateSentence(true);
             } else {
                 const response = prepareString(cleanString(answer), cleanString(feedback), feedback);
                 setResult(response);
                 textareaRef.current.focus();
-                updateSentence(sentenceNumber, false);
+                updateSentence(false);
             }
         } else {
             setResult("");
@@ -47,6 +47,12 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence, se
             setNextQuestion();
         }
     };
+
+    const handleSpeakingSubmit = () => {
+        setResult("");
+        setAnswer("");
+        setNextQuestion();
+    }
 
     if (sentence.type === "listening")
         return <Listening sentence={sentence} textarea={textareaRef} handleInputChange={handleInputChange}
@@ -56,14 +62,7 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence, se
                             handleSubmit={handleSubmit} result={result} answer={answer} cleanString={cleanString}/>
     if (sentence.type === "speaking")
         return <Speaking sentence={sentence} result={result} setResult={setResult}
-                         setNextQuestion={() => {
-                             setResult(null);
-                             setAnswer("");
-                             setNextQuestion();
-                         }}
-                         updateSentence={updateSentence}
-                         sentenceNumber={sentenceNumber} setUpdateTrigger={setUpdateTrigger}
-                         updateTrigger={updateTrigger}/>
+                         handleSpeakingSubmit={handleSpeakingSubmit} updateSentence={updateSentence}/>
 };
 
 export default Question;

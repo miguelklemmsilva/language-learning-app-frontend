@@ -2,13 +2,15 @@ import React, {Fragment, useRef} from 'react';
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import {getTokenOrRefresh} from "./token_util";
 
-const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef, result, audioElementRef}) => {
+const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef, audioElementRef, setScores}) => {
     const mediaRecorderRef = useRef(null);
 
     const sttFromMic = async () => {
         if (listening)
             return;
 
+        setResult(null);
+        setScores(null);
         setListening(true);
 
         let complete = false;
@@ -52,7 +54,7 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
             }
         };
 
-        setTimeout(cancelRecognition, 20000);
+        setTimeout(cancelRecognition, 15000);
 
         recognizer.recognizeOnceAsync(result => {
             const pronunciationResult = sdk.PronunciationAssessmentResult.fromResult(result);
@@ -63,7 +65,7 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
             setListening(false);
         }, error => {
             console.error(error);
-            complete = true;
+            complete = false
             setResult("ERROR: Speech was cancelled. Ensure your microphone is working properly.");
             stopRecording();
             setListening(false);
@@ -98,8 +100,6 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
         }
     };
 
-
-
     const stopRecording = () => {
         mediaRecorderRef.current.stop();
         mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
@@ -108,8 +108,8 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
     return (
         <Fragment>
             <button
-                disabled={result || listening}
-                className={`question-btn ${result || listening ? "disabled" : ""}`}
+                disabled={listening}
+                className={`question-btn ${listening ? "disabled" : ""}`}
                 draggable={false}
                 onClick={sttFromMic}
             >
