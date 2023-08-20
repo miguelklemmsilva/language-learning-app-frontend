@@ -4,7 +4,7 @@ import Tooltip from '@mui/material/Tooltip';
 import {PronunciationAssessmentResult, SpeechRecognitionResult} from "microsoft-cognitiveservices-speech-sdk";
 import {styled, tooltipClasses} from "@mui/material";
 
-const SpeakingOutput = ({result, scores, setScores, output, setOutput, updateSentence}) => {
+const SpeakingOutput = ({result, scores, setScores, output, setOutput, sentence}) => {
     const CustomTooltip = styled(({className, ...props}) => (
         <Tooltip {...props} classes={{popper: className}}/>
     ))(({theme}) => ({
@@ -68,7 +68,11 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput, updateSen
                 </div>);
             });
 
-            const scores = <div className="scores">{formattedScores}</div>;
+            const scores = <Fragment>
+                <div className="">[{sentence.translation}]</div>
+                <br/>
+                <div className="scores">{formattedScores}</div>
+            </Fragment>;
 
             setScores(scores);
         };

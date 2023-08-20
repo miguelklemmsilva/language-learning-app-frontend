@@ -4,6 +4,8 @@ import Listening from "./Listening";
 import Translation from "./Translation/Translation";
 import Speaking from "./Speaking/Speaking";
 import prepareString from "../Practice/CorrectionString";
+import Tooltip from "@mui/material/Tooltip";
+import translation from "./Translation/Translation";
 
 const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence}) => {
     const textareaRef = useRef(null);
@@ -62,7 +64,8 @@ const Question = ({sentence, setNextQuestion, sentenceNumber, updateSentence}) =
                             handleSubmit={handleSubmit} result={result} answer={answer} cleanString={cleanString}/>
     if (sentence.type === "speaking")
         return <Speaking sentence={sentence} result={result} setResult={setResult}
-                         handleSpeakingSubmit={handleSpeakingSubmit} updateSentence={updateSentence}/>
+                         handleSpeakingSubmit={handleSpeakingSubmit} updateSentence={updateSentence}
+                         />
 };
 
 export default Question;

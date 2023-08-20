@@ -1,3 +1,16 @@
+const isJapanese = (text) => {
+    const regex = /[\u3000-\u303F]|[\u3040-\u309F]|[\u30A0-\u30FF]|[\uFF00-\uFFEF]|[\u4E00-\u9FAF]|[\u2605-\u2606]|[\u2190-\u2195]|\u203B/g;
+    return regex.test(text);
+};
+
+const tokenize = (text) => {
+    if (isJapanese(text)) {
+        // Consider each character as a word for Japanese
+        return [...text];
+    }
+    return text.split(' ');
+};
+
 const lcsLength = (a, b) => {
     const m = a.length;
     const n = b.length;
@@ -33,20 +46,25 @@ const printLcsDiff = (dp, a, b, i, j) => {
 
 
 const surroundDifferencesWithBrackets = (string1, string2) => {
-    const words1 = string1.split(' ');
-    const words2 = string2.split(' ');
+    const words1 = tokenize(string1);
+    const words2 = tokenize(string2);
 
     const dp = lcsLength(words1, words2);
     const result = printLcsDiff(dp, words1, words2, words1.length, words2.length);
 
-    return result.join(' ');
+    // Determine how to join the result based on the input strings
+    if (isJapanese(string1) || isJapanese(string2))
+        return result.join(''); // Join without spaces for Japanese
+    else
+        return result.join(' ');
 };
 
 const isPunctuation = (char) => {
     const latinPunctuation = ".,:;?!-'\"()[]{}<>/";
+    const japanesePunctuation = "。、・「」『』！？";
     const unicodePunctuation = /[\u2000-\u206F\u2E00-\u2E7F\u3000-\u303F]/;
 
-    return latinPunctuation.includes(char) || unicodePunctuation.test(char);
+    return latinPunctuation.includes(char) || unicodePunctuation.test(char) || japanesePunctuation.includes(char);
 };
 
 const matchCapitalizationAndPunctuation = (string1, string2) => {

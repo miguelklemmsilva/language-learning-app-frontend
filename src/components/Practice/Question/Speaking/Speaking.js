@@ -12,9 +12,8 @@ const Speaking = ({sentence, result, setResult, handleSpeakingSubmit, updateSent
     const audioElementRef = useRef(null);
 
     useEffect(() => {
-        if (updateSentence)
-            updateSentence(true);
-    }, [updateSentence]);
+        updateSentence(true);
+    }, []);
 
     const onSubmit = () => {
         setScores(null);
@@ -35,7 +34,7 @@ const Speaking = ({sentence, result, setResult, handleSpeakingSubmit, updateSent
                                audioElementRef={audioElementRef} setScores={setScores}/>
             </div>
             <SpeakingOutput result={result} output={output} setOutput={setOutput} scores={scores}
-                            setScores={setScores} updateSentence={updateSentence}/>
+                            setScores={setScores} sentence={sentence}/>
             <SpeakingSubmit result={result} listening={listening} onSubmit={onSubmit}/>
         </div>
     )
