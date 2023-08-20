@@ -1,12 +1,23 @@
 import {useContext} from "react";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import axios from "axios";
 import "./Home.css";
-import calculateLastSeen from "../CalculateLastSeen";
+import calculateLastSeen from "../calculateTime";
 import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
+import calculateTime from "../calculateTime";
 
 function Home() {
-    const { wordTable } = useContext(HomeRouteContext);
+    const {wordTable} = useContext(HomeRouteContext);
+
+    function BoxBars({ boxNumber }) {
+        const bars = [];
+
+        for (let i = 1; i <= boxNumber; i++) {
+            bars.push(<span key={i} className="box-bar" data-box={i}></span>);
+        }
+
+        return <div className="box-bars-container"><div>{bars}</div></div>;
+    }
 
     return (
         <div className="page-container">
@@ -21,7 +32,8 @@ function Home() {
                         <thead>
                         <tr>
                             <th>Word</th>
-                            <th>Interval</th>
+                            <th>Familiarity</th>
+                            <th>Due</th>
                             <th>Last practiced</th>
                         </tr>
                         </thead>
@@ -29,13 +41,13 @@ function Home() {
                         {wordTable && wordTable.map((word, index) => (
                             <tr key={index}>
                                 <td className={"content-td"}>{word.word}</td>
-                                <td className={"content-td"}>{word.interval_score}</td>
                                 <td className={"content-td"}>
-                                    {calculateLastSeen(word.last_seen)}
+                                    <BoxBars boxNumber={word.box_number} />
                                 </td>
+                                <td className={"content-td"}>{calculateTime(word.minutes_until_due)}</td>
+                                <td className={"content-td"}>{calculateTime(word.last_seen)}</td>
                             </tr>
-                        ))
-                        }
+                        ))}
                         </tbody>
                     </table>
                 </div>

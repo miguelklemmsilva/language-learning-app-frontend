@@ -13,6 +13,10 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     const [activeLanguage, setActiveLanguage] = useState(null);
     const navigate = useNavigate();
 
+    const prepWordTable = (results) => {
+        setWordTable(results);
+    }
+
     const defaultSettings = {
         index: 0, exercises: {
             translation: true, listening: true, speaking: true
@@ -39,6 +43,13 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
         ], settings: defaultSettings
     }];
 
+    languages.forEach(language => {
+        language.countries.forEach(country => {
+            const img = new Image();
+            img.src = country.flag;
+        });
+    });
+
     const updateVocabTable = async () => {
         axios
             .post("api/user/vocabtable", {}, {
@@ -47,13 +58,13 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
                 }
             })
             .then((res) => {
-                setWordTable(res.data);
+                prepWordTable(res.data);
             })
             .catch((err) => console.error(err));
     };
 
     const handleRemoveWord = async (word) => {
-        setWordTable((prev) => prev.filter((item) => item !== word));
+        prepWordTable((prev) => prev.filter((item) => item !== word));
         axios
             .post("api/user/removevocabulary", {word_id: word.word_id}, {
                 headers: {

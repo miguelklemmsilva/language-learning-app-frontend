@@ -16,7 +16,6 @@
     overflow-y: auto;
     border: 2px solid #ddd;
     border-radius: 20px;
-    min-height: 300px;
 }
 
 .table-wrapper::-webkit-scrollbar {
@@ -77,7 +76,7 @@
 
 .vocabulary-table th,
 .content-td {
-    width: 33%;
+    width: 25%;
     padding: 10px;
     text-align: center;
     border: 1px solid #ddd;
@@ -121,4 +120,45 @@
 
 .add-vocabulary-button:hover {
     cursor: pointer;
+}
+
+.box-bars-container {
+    display: flex;
+    justify-content: center; /* Center the bars */
+    gap: 2px; /* Adjust this for spacing between bars */
+    height: 100%; /* Take the full height of the container for centering */
+    align-items: center; /* Vertically center the bars */
+}
+
+.box-bar {
+    width: 8px; /* Adjust as required */
+    background-color: #333; /* This will be overridden by the box-specific colors */
+    display: inline-block;
+    margin: 1px;
+}
+
+/* Set color and height for different box numbers */
+.box-bar[data-box="1"] {
+    height: 10px;
+    background-color: red;
+}
+
+.box-bar[data-box="2"] {
+    height: 20px;
+    background-color: orange; /* Lighter than red */
+}
+
+.box-bar[data-box="3"] {
+    height: 30px;
+    background-color: yellow; /* Lighter than orange */
+}
+
+.box-bar[data-box="4"] {
+    height: 40px;
+    background-color: lightgreen; /* Lighter than yellow */
+}
+
+.box-bar[data-box="5"] {
+    height: 50px; /* Maximum height */
+    background-color: green; /* Lightest color */
 }
