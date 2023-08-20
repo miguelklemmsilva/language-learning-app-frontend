@@ -47,8 +47,6 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput, updateSen
             setOutput(formattedOutput);
         };
 
-        let totalScore = 0;
-
         const formatScores = () => {
             const scoreNames = [{
                 name: 'AccuracyScore', display: 'Accuracy Score'
@@ -62,9 +60,8 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput, updateSen
 
             const formattedScores = scoreNames.map((scoreName) => {
                 const scoreValue = result.privPronJson.PronunciationAssessment[scoreName.name];
-                totalScore += scoreValue;
                 let scoreColour = '';
-                if (scoreValue >= 95) scoreColour = '#3db03d'; else if (scoreValue >= 80) scoreColour = '#ffcc00'; else scoreColour = '#cb0000';
+                if (scoreValue >= 80) scoreColour = '#3db03d'; else if (scoreValue >= 60) scoreColour = '#ffcc00'; else scoreColour = '#cb0000';
                 return (<div className="score" key={scoreName.name}>
                     <div className="score-name">{scoreName.display}: {scoreValue}</div>
                     <div className="score-bar" style={{width: `${scoreValue}%`, backgroundColor: scoreColour}}/>
@@ -79,7 +76,6 @@ const SpeakingOutput = ({result, scores, setScores, output, setOutput, updateSen
         if (result instanceof PronunciationAssessmentResult) {
             formatOutput();
             formatScores();
-            if (totalScore/4 >= 85) updateSentence(true); else updateSentence(false); // decides whether to mark the sentence as correct or not depending on mean score
         } else if (result instanceof SpeechRecognitionResult) setOutput(result.text); else setOutput(result);
     }, [result]);
 

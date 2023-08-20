@@ -9,6 +9,9 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
         if (listening)
             return;
 
+        audioElementRef.current.src = "";
+        chunksRef.current = [];
+
         setResult(null);
         setScores(null);
         setListening(true);

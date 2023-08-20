@@ -11,6 +11,11 @@ const Speaking = ({sentence, result, setResult, handleSpeakingSubmit, updateSent
     const chunksRef = useRef([]);
     const audioElementRef = useRef(null);
 
+    useEffect(() => {
+        if (updateSentence)
+            updateSentence(true);
+    }, [updateSentence]);
+
     const onSubmit = () => {
         setScores(null);
         setOutput(null);
