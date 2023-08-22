@@ -1,4 +1,4 @@
-import Sidebar from "./Sidebar/Sidebar";
+import Sidebar from "./Navbar/Navbar";
 import {HomeRouteProvider} from "../../contexts/HomeRouteContext";
 import {useAuth0} from "@auth0/auth0-react";
 import {useNavigate} from "react-router-dom";
@@ -8,51 +8,43 @@ import Settings from "./Settings/Settings";
 
 const HomeRoute = ({children}) => {
     const {user, isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
-    const [userRegistered, setUserRegistered] = useState(false);
+    const [userRegistered, setUserRegistered] = useState(null);
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
 
     const checkIfUserIsRegistered = async () => {
         if (isAuthenticated) {
-            try {
-                const response = await axios.get("api/user/isRegistered", {
-                    headers: {
-                        'Authorization': `Bearer ${await getAccessTokenSilently()}`
-                    }
-                });
-                setUserRegistered(response.data.isRegistered);
-                setLoading(false);
-            } catch (err) {
+            axios.get("api/user/isRegistered", {
+                headers: {
+                    'Authorization': `Bearer ${await getAccessTokenSilently()}`
+                }
+            }).then((res) => {
+                setUserRegistered(res.data.isRegistered)
+            }).catch((err) => {
                 console.error(err);
-            }
+            });
         }
     };
 
     useEffect(() => {
-        checkIfUserIsRegistered().then(() => setLoading(false));
+        checkIfUserIsRegistered();
     }, [isAuthenticated, getAccessTokenSilently, user]);
 
 
-    if (isLoading || loading)
-        return <div>Loading...</div>;
+    if (isLoading || userRegistered === null) return <div>Loading...</div>;
 
-    if (!isAuthenticated)
-        navigate("/");
+    if (!isAuthenticated) navigate("/");
 
     if (!userRegistered) {
         return <HomeRouteProvider checkIfUserIsRegistered={checkIfUserIsRegistered}>
-            <div className="page-container"><Settings/></div>;
+            <div className="page-container"><Settings/></div>
+            ;
         </HomeRouteProvider>
     }
 
-    return (
-        <HomeRouteProvider>
-            <div className="page-container">
-                <Sidebar/>
-                {children}
-            </div>
-        </HomeRouteProvider>
-    )
+    return (<HomeRouteProvider>
+        <Sidebar/>
+        {children}
+    </HomeRouteProvider>)
 }
 
 export default HomeRoute;

@@ -41,6 +41,7 @@
 .table-wrapper {
     scrollbar-width: thin;
     scrollbar-color: #c1c1c1 #F5F5F5;
+    background-color: #f8f8ff;
 }
 
 .vocabulary-table {
@@ -128,10 +129,12 @@
     gap: 2px; /* Adjust this for spacing between bars */
     height: 100%; /* Take the full height of the container for centering */
     align-items: center; /* Vertically center the bars */
+    line-height: 0;
 }
 
 .box-bar {
     width: 8px; /* Adjust as required */
+    border-radius: 3px;
     background-color: #333; /* This will be overridden by the box-specific colors */
     display: inline-block;
     margin: 1px;

@@ -7,7 +7,7 @@ import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
 function Settings({}) {
     const context = useContext(HomeRouteContext);
 
-    return (<div className="page-container">
+    return (<div className="main-content">
         {context && <div className="content-container">
             {context.selectedLanguages && context.selectedLanguages.map((item) => (<CollapsibleForm
                 key={item.name}

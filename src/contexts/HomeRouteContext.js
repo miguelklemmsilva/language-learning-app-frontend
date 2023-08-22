@@ -5,6 +5,39 @@ import {useNavigate} from "react-router-dom";
 
 export const HomeRouteContext = createContext(undefined);
 
+const defaultSettings = {
+    index: 0, exercises: {
+        translation: true, listening: true, speaking: true
+    }
+}
+
+const languages = [{
+    name: "Spanish",
+    countries: [
+        {name: "Spain", flag: "Flags/Spanish/es.png"},
+        {name: "Mexico", flag: "Flags/Spanish/mx.png"},
+        {name: "Argentina", flag: "Flags/Spanish/ar.png"}
+    ], settings: defaultSettings
+}, {
+    name: "Portuguese",
+    countries: [
+        {name: "Brazil", flag: "Flags/Portuguese/br.png"},
+        {name: "Portugal", flag: "Flags/Portuguese/pt.png"}
+    ], settings: defaultSettings
+}, {
+    name: "Japanese",
+    countries: [
+        {name: "Japan", flag: "Flags/Japanese/jp.png"}
+    ], settings: defaultSettings
+}];
+
+languages.forEach(language => {
+    language.countries.forEach(country => {
+        const img = new Image();
+        img.src = country.flag;
+    });
+});
+
 export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     const [wordTable, setWordTable] = useState([]);
     const {getAccessTokenSilently} = useAuth0();
@@ -12,43 +45,6 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     const [initialLanguages, setInitialLanguages] = useState([]);
     const [activeLanguage, setActiveLanguage] = useState(null);
     const navigate = useNavigate();
-
-    const prepWordTable = (results) => {
-        setWordTable(results);
-    }
-
-    const defaultSettings = {
-        index: 0, exercises: {
-            translation: true, listening: true, speaking: true
-        }
-    }
-
-    const languages = [{
-        name: "Spanish",
-        countries: [
-            {name: "Spain", flag: "Flags/Spanish/es.png"},
-            {name: "Mexico", flag: "Flags/Spanish/mx.png"},
-            {name: "Argentina", flag: "Flags/Spanish/ar.png"}
-        ], settings: defaultSettings
-    }, {
-        name: "Portuguese",
-        countries: [
-            {name: "Brazil", flag: "Flags/Portuguese/br.png"},
-            {name: "Portugal", flag: "Flags/Portuguese/pt.png"}
-        ], settings: defaultSettings
-    }, {
-        name: "Japanese",
-        countries: [
-            {name: "Japan", flag: "Flags/Japanese/jp.png"}
-        ], settings: defaultSettings
-    }];
-
-    languages.forEach(language => {
-        language.countries.forEach(country => {
-            const img = new Image();
-            img.src = country.flag;
-        });
-    });
 
     const updateVocabTable = async () => {
         axios
@@ -58,13 +54,13 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
                 }
             })
             .then((res) => {
-                prepWordTable(res.data);
+                setWordTable(res.data);
             })
             .catch((err) => console.error(err));
     };
 
     const handleRemoveWord = async (word) => {
-        prepWordTable((prev) => prev.filter((item) => item !== word));
+        setWordTable((prev) => prev.filter((item) => item !== word));
         axios
             .post("api/user/removevocabulary", {word_id: word.word_id}, {
                 headers: {
@@ -146,6 +142,25 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
         updateVocabTable();
     }, []);
 
+
+    const getSelectedLanguageSettings = () => {
+        if (!activeLanguage) return null;  // No active language set
+
+        const activeLangObj = selectedLanguages.find(lang => lang.name === activeLanguage);
+
+        return activeLangObj ? activeLangObj.settings : null;
+    }
+
+    const getActiveCountry = () => {
+        if (!activeLanguage) return null;  // No active language set
+
+        const activeLangObj = selectedLanguages.find(lang => lang.name === activeLanguage);
+
+        if (!activeLangObj || !activeLangObj.countries) return null;  // Active language not found in the list, or it doesn't have countries
+
+        return activeLangObj.countries[activeLangObj.settings.index] || null;  // Return the active country or null if not found
+    }
+
     const handleRemoveLanguage = async (language) => {
         setSelectedLanguages((prev) => prev.filter((item) => item !== language));
         axios.post("api/user/removelanguage", {language: language.name}, {
@@ -193,7 +208,9 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
         handleLanguageSelect,
         handleSave,
         languages,
-        activeLanguage
+        activeLanguage,
+        getActiveCountry,
+        getSelectedLanguageSettings
     }}>
         {children}
     </HomeRouteContext.Provider>);

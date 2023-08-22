@@ -12,8 +12,10 @@ root.render(
         clientId="6VhazxtL7ehVyhWhXW3DdqDJsuQiztsR"
         authorizationParams={{
             audience: "https://dev-k3jnyjgiqp886i26.uk.auth0.com/api/v2/",
-            scope: "read:current_user update:current_user_metadata",
-            redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI
+            scope: "read:current_user update:current_user_metadata openid profile email",
+            redirect_uri: process.env.REACT_APP_AUTH0_REDIRECT_URI,
+            domain: "dev-k3jnyjgiqp886i26.uk.auth0.com",
+            client_id: "6VhazxtL7ehVyhWhXW3DdqDJsuQiztsR",
         }}
     >
         <App/>

@@ -3,7 +3,6 @@ import Home from "./components/HomePages/Home/./Home";
 import Practice from "./components/Practice/Practice/Practice";
 import VocabularyTable from "./components/HomePages/VocabularyTable/VocabularyTable";
 import Settings from "./components/HomePages/Settings/Settings";
-import Sidebar from "./components/HomePages/Sidebar/Sidebar";
 import LandingPage from "./components/LandingPage";
 import HomeRoute from "./components/HomePages/HomeRoute";
 

@@ -8,10 +8,6 @@ function VocabularyTable() {
     const {wordTable, handleRemoveWord, updateVocabTable} = useContext(HomeRouteContext);
     const [showModal, setShowModal] = useState(false);
 
-    useEffect(() => {
-        console.log(wordTable)
-    }, [wordTable]);
-
     const onButtonClick = useCallback(() => {
         setShowModal(true);
     }, []);
@@ -30,9 +26,7 @@ function VocabularyTable() {
         return <div className="box-bars-container"><div>{bars}</div></div>;
     }
 
-
-
-    return (<div className="page-container">
+    return (<div className="main-content">
         <div className="content-container">
             <div className={"add-vocabulary-button-wrapper"}>
                 <button className="add-vocabulary-button" onClick={onButtonClick}>ADD
@@ -69,7 +63,6 @@ function VocabularyTable() {
                         </tbody>
                     </table>
                 </div>
-
         </div>
         <Modal showModal={showModal} onClose={closeModal} updateVocabTable={updateVocabTable}/>
     </div>);

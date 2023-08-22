@@ -13,7 +13,7 @@ const Speaking = ({sentence, result, setResult, handleSpeakingSubmit, updateSent
 
     useEffect(() => {
         updateSentence(true);
-    }, []);
+    }, [sentence.word]);
 
     const onSubmit = () => {
         setScores(null);

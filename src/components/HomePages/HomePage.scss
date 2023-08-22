@@ -1,0 +1,225 @@
+.main-content {
+  margin-left: 300px;
+  display: flex;
+  background-color: #f8f8ff;
+  padding: 50px;
+  justify-content: center;
+}
+
+.content-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 1000px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.horizontal-align-txt {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.button {
+  border: none;
+  background-color: transparent;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  text-decoration: none;
+  font: inherit;
+  color: black;
+
+  .button-txt {
+    text-align: center;
+    align-self: center;
+    display: flex;
+  }
+
+  .arrow-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+    transition: transform 0.2s ease-in-out;
+    height: 100%;
+  }
+}
+
+.button:hover {
+  cursor: pointer;
+
+  .arrow-wrapper {
+    transform: translateX(5px);
+  }
+}
+
+.header-container {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  padding: 10px;
+  box-sizing: border-box;
+
+  .txt {
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.welcome-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+
+  .messages-container {
+    padding: 40px;
+    box-sizing: border-box;
+    min-width: 350px;
+    background-color: #cfdcff;
+    border-radius: 20px;
+    margin: 10px;
+    flex: 1;
+
+    .welcome-message {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #3a61ff;
+    }
+
+    .message {
+      font-size: 18px;
+    }
+  }
+
+  .practice-button-wrapper {
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 350px;
+    margin: 10px;
+    flex: 1;
+
+    .practice-btn {
+      width: 100%;
+      padding: 40px;
+      font-weight: 700;
+      background-color: #dabeff;
+      border-radius: 20px;
+      color: #5529ee;
+      font-size: 24px;
+      border: 3px solid transparent;
+      transition: border 0.2s ease-in-out;
+
+      &:hover {
+        cursor: pointer;
+        border: 3px solid #5529ee;
+      }
+    }
+  }
+}
+
+.info-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+
+  .language-settings {
+    display: flex;
+    flex: 1;
+    background-color: #cfdcff;
+    border-radius: 20px;
+    flex-direction: column;
+    min-width: 340px;
+    text-decoration: none;
+    color: inherit;
+    height: fit-content;
+    margin: 10px;
+
+    .language-settings-container {
+      transition: scale 0.2s ease-in-out;
+
+      &:hover {
+        scale: 0.95;
+      }
+
+      .header-container {
+        padding: 20px;
+      }
+
+      .info-content {
+        display: flex;
+        height: 100%;
+        flex-direction: column;
+
+        .active-exercises {
+          flex-direction: column;
+
+          .exercises-container {
+            display: flex;
+          }
+        }
+
+        .info {
+          display: flex;
+          padding: 20px;
+
+          .info-txt {
+            display: flex;
+            align-content: center;
+            flex-wrap: wrap;
+            margin-right: 10px;
+          }
+
+          .exercise {
+            padding: 5px;
+            font-size: 35px;
+          }
+        }
+      }
+    }
+  }
+
+
+  .home-table-container {
+    flex: 2 0;
+    padding: 10px;
+    background-color: #cfdcff;
+    border-radius: 20px;
+    text-decoration: none;
+    color: inherit;
+    margin: 10px;
+
+    .table-wrapper.home {
+      min-width: 300px;
+      height: auto;
+      margin: 0;
+      max-height: 300px;
+    }
+
+    .vocab-add-btn {
+      padding: 15px;
+      background-color: #dabeff;
+      border-radius: 20px;
+      border: 2px solid transparent;
+      transition: border 0.2s ease-in-out;
+      color: #5529ee;
+
+      &:hover {
+        cursor: pointer;
+        border: 2px solid #5529ee;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin: 0;
+    padding: 0;
+  }
+}
