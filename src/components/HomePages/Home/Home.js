@@ -8,6 +8,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TranslateIcon from '@mui/icons-material/Translate';
 import HearingIcon from '@mui/icons-material/Hearing';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import VocabularyTable from "../VocabularyTable/VocabularyTable";
 
 function Home() {
     const {wordTable, activeLanguage, getActiveCountry, getSelectedLanguageSettings} = useContext(HomeRouteContext);
@@ -32,7 +33,7 @@ function Home() {
     return (<div className="main-content">
         <div className="content-container">
             <div className="header-container">
-                <div className="txt">Studying {activeLanguage}</div>
+                <div className="txt"><strong>Studying {activeLanguage}</strong></div>
                 <img className="flag-btn-img" src={getActiveCountry()?.flag} alt=""/>
             </div>
             <div className="welcome-container">
@@ -93,31 +94,23 @@ function Home() {
                         <div className="horizontal-align-txt"><strong>Your due words</strong></div>
                         <Link to="/vocabularytable" className="button vocab-add-btn">
                             <div className="button-txt">
-                                Add to vocab table
+                                View Table
                             </div>
                             <div className="arrow-wrapper"><ArrowForwardIcon/></div>
                         </Link>
                     </div>
-                    <div className="table-wrapper home">
-                        <table className="vocabulary-table">
-                            <thead>
-                            <tr>
-                                <th>Word</th>
-                                <th>Familiarity</th>
-                                <th>Last practiced</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {filteredTable?.map((word, index) => (<tr key={index}>
-                                <td className={"content-td"}>{word.word}</td>
-                                <td className={"content-td"}>
-                                    <BoxBars boxNumber={word.box_number}/>
-                                </td>
-                                <td className={"content-td"}>{calculateTime(word.last_seen)} ago</td>
-                            </tr>))}
-                            </tbody>
-                        </table>
-                    </div>
+                    {filteredTable.length > 0 ? <VocabularyTable wordTable={filteredTable} isHome={true}/>
+                        : <div>
+                            <div className="header-container">You have no words to practice for {activeLanguage}!</div>
+                            <br/>
+                            <Link to="/vocabularytable" className="button vocab-add-btn">
+                                <div className="button-txt">
+                                    Add more words here
+                                </div>
+                                <div className="arrow-wrapper"><ArrowForwardIcon/></div>
+                            </Link>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

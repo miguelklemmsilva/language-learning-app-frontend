@@ -12,7 +12,8 @@ function Finished({sentences}) {
             const filteredSentences = sentences.map(sentence => ({
                 mistakes: sentence.mistakes,
                 word: sentence.word,
-                language: sentence.language
+                language: sentence.language,
+                type: sentence.type,
             }));
 
             axios.post(`api/user/finishlesson`, {sentences: filteredSentences}, {

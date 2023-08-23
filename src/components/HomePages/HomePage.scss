@@ -44,6 +44,15 @@
     transition: transform 0.2s ease-in-out;
     height: 100%;
   }
+
+  .popup-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5px;
+    transition: 0.2s ease-in-out;
+    height: 100%;
+  }
 }
 
 .button:hover {
@@ -51,6 +60,10 @@
 
   .arrow-wrapper {
     transform: translateX(5px);
+  }
+
+  .popup-wrapper {
+    transform: scale(1.2);
   }
 }
 
@@ -62,10 +75,9 @@
   box-sizing: border-box;
 
   .txt {
-    font-size: 24px;
-    font-weight: 700;
     display: flex;
     align-items: center;
+    font-size: 24px;
   }
 }
 
@@ -203,15 +215,15 @@
 
     .vocab-add-btn {
       padding: 15px;
-      background-color: #dabeff;
+      background-color: #a9c0ff;
       border-radius: 20px;
       border: 2px solid transparent;
       transition: border 0.2s ease-in-out;
-      color: #5529ee;
+      color: #002181;
 
       &:hover {
         cursor: pointer;
-        border: 2px solid #5529ee;
+        border: 2px solid #5985ff;
       }
     }
   }

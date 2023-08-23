@@ -1,5 +1,5 @@
 const calculateTime = (minutes) => {
-    if (minutes <= 0) return "now";
+    if (minutes <= 0) return null;
 
     const absMinutes = Math.abs(minutes); // take the absolute to handle negative and positive values
 
