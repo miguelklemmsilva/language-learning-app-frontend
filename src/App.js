@@ -5,6 +5,7 @@ import VocabularyTablePage from "./components/HomePages/VocabularyTable/Vocabula
 import Settings from "./components/HomePages/Settings/Settings";
 import LandingPage from "./components/LandingPage";
 import HomeRoute from "./components/HomePages/HomeRoute";
+import {HomeRouteProvider} from "./contexts/HomeRouteContext";
 
 function App() {
     return (
@@ -14,7 +15,7 @@ function App() {
                 <Route path="/home" element={<HomeRoute><Home/></HomeRoute>}/>
                 <Route path="/vocabularytable" element={<HomeRoute><VocabularyTablePage/></HomeRoute>}/>
                 <Route path="/settings" element={<HomeRoute><Settings/></HomeRoute>}/>
-                <Route path="/practice" element={<Practice/>}/>
+                <Route path="/practice" element={<HomeRouteProvider><Practice/></HomeRouteProvider>}/>
             </Routes>
         </BrowserRouter>
     );

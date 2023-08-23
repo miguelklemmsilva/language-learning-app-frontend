@@ -1,11 +1,13 @@
-import React, {useEffect} from "react";
+import React, {useContext, useEffect} from "react";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
+import {HomeRouteContext} from "../../contexts/HomeRouteContext";
 
 function Finished({sentences}) {
     const navigate = useNavigate();
     const {getAccessTokenSilently} = useAuth0();
+    const {updateVocabTable} = useContext(HomeRouteContext);
 
     useEffect(() => {
         const finishLesson = async () => {
@@ -24,7 +26,9 @@ function Finished({sentences}) {
                 .catch(error => console.error(error));
         }
 
-        finishLesson().then(r => console.log(r));
+        finishLesson().then(() => {
+            updateVocabTable();
+        });
     }, [sentences]);
 
     return (
