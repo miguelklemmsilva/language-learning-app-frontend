@@ -19,7 +19,7 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
     }));
 
     const formatAlignment = (alignment) => {
-        const items = alignment.split(' ');
+        const items = alignment.proj.split(' ');
         const formattedObjects = []
         for (const item of items) {
             const [original, translated] = item.split('-');
