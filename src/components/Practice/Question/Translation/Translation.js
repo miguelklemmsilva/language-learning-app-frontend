@@ -19,6 +19,8 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
     }));
 
     const formatAlignment = (alignment) => {
+        if (!alignment.proj)
+            return [];
         const items = alignment.proj.split(' ');
         const formattedObjects = []
         for (const item of items) {

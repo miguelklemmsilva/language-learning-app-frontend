@@ -34,7 +34,7 @@ function Home() {
         <div className="content-container">
             <div className="header-container">
                 <div className="txt"><strong>Studying {activeLanguage}</strong></div>
-                <img className="flag-btn-img" src={getActiveCountry()?.flag} alt=""/>
+                <img className="flag-img big" src={getActiveCountry()?.flag} alt=""/>
             </div>
             <div className="welcome-container">
                 <div className="messages-container">

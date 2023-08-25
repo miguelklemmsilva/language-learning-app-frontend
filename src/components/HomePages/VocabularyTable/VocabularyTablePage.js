@@ -76,7 +76,7 @@ function VocabularyTablePage() {
             </Alert>}
             <div className="header-container">
                 <div className="txt big"><strong>Your vocabulary for {activeLanguage}</strong></div>
-                <img className="flag-btn-img" src={getActiveCountry()?.flag} alt=""/>
+                <img className="flag-img big" src={getActiveCountry()?.flag} alt=""/>
             </div>
             <div className="welcome-container">
                 <div className="add-vocab-button-wrapper">

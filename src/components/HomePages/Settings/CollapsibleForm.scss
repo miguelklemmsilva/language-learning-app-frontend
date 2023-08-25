@@ -1,0 +1,42 @@
+.language-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 500px;
+    border: 1px solid black;
+    text-align: center;
+
+    .body-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .country-select {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        justify-content: center;
+
+        .radio-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border: 1px solid black;
+            margin: 10px;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+    }
+
+    /* Hide the original radio button */
+    input[type="radio"] {
+        display: none;
+    }
+}

@@ -85,6 +85,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
 
     const handleSetActive = async (languageName) => {
         setActiveLanguage(languageName);
+        console.log(languageName)
         axios.post("api/user/setactivelanguage", {language: languageName}, {
             headers: {
                 Authorization: `Bearer ${await getAccessTokenSilently()}`
