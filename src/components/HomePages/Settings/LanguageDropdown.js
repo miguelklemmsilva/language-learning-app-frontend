@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {FormControl, InputLabel} from "@mui/material";
 
 const LanguageDropdown = ({onLanguageSelect, selectedOptions, languages}) => {
     const dropdownRef = useRef(null);
@@ -39,23 +40,23 @@ const LanguageDropdown = ({onLanguageSelect, selectedOptions, languages}) => {
     };
 
     return (
-        <div className={"add-language"}>
-            <button className={`add-language-selector ${availableOptions.length === 0 ? "disabled" : ""}`}
+        <div className="add-language">
+            <button className={`button add-language-selector ${availableOptions.length === 0 ? "disabled" : ""} ${showDropdown ? "active" : ""}`}
                     ref={buttonRef}
-                    onClick={handleButtonClick}>+ Add a Language
+                    onClick={handleButtonClick}><div>Add a Language</div><div>{showDropdown ? '-' : '+'}</div>
             </button>
             {showDropdown && (
                 <div ref={dropdownRef} className="dropdown-menu">
                     {availableOptions.map((option, index) => (
-                        <div
-                            className={`dropdown-option`}
+                        <button
+                            className="button dropdown-option"
                             key={index}
                             onClick={() => handleOptionClick(option)}
                         >
                             <img src={option.countries[option.settings.index].flag}
                                  alt="" className="flag-img"/>
-                            {option.name}
-                        </div>
+                            <div className="button-txt">{option.name}</div>
+                        </button>
                     ))}
                 </div>
             )}

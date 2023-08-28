@@ -2,41 +2,166 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 500px;
-    border: 1px solid black;
+    max-width: 700px;
     text-align: center;
+    background-color: white;
 
-    .body-container {
+    .info-container {
         display: flex;
         flex-direction: column;
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-    }
-
-    .country-select {
-        display: flex;
-        flex-wrap: wrap;
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
         justify-content: center;
+        text-align: left;
+        width: auto;
+        flex: 1;
+        min-width: 200px;
 
-        .radio-label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            border: 1px solid black;
-            margin: 10px;
-            box-sizing: border-box;
-            cursor: pointer;
+        .main-info {
+            font-weight: 600;
+        }
+
+        .sub-info {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #676767;
         }
     }
 
-    /* Hide the original radio button */
-    input[type="radio"] {
-        display: none;
+    .header-container.form {
+        display: flex;
+        justify-content: normal;
+        gap: 20px;
+        background-color: #f5f5f5;
+        padding: 20px;
+
+        .flag-container {
+            display: grid;
+            place-items: center;
+            padding: 10px;
+            background-color: #e7e7e7;
+            border-radius: 10px;
+            height: 40px;
+
+            .flag-img {
+                margin-right: 0;
+            }
+        }
+
+        .radio-wrapper {
+            display: grid;
+            place-items: center;
+
+            .radio-input {
+                height: 1.2em;
+                width: 100%;
+            }
+        }
+
+        .remove-btn-wrapper {
+            display: grid;
+            place-items: center;
+
+            .remove-button {
+                background-color: #fee3ea;
+                padding: 10px;
+                border-radius: 10px;
+                color: #bb0040;
+                transition: 0.2s ease-in-out;
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: #bb0040;
+                    color: #fee3ea;
+                }
+            }
+        }
+    }
+
+    .body-container {
+        display: flex;
+        border: 1px solid #e7e7e7;
+        flex-direction: column;
+        width: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        gap: 15px;
+
+        .country-select {
+            display: flex;
+            width: 100%;
+            box-sizing: border-box;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            .countries-container {
+                display: flex;
+                gap: 10px;
+
+                .radio-label {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    box-sizing: border-box;
+                    cursor: pointer;
+                    padding: 10px;
+                    border-radius: 10px;
+                    border: 1px solid #e7e7e7;
+
+                    .flag-img {
+                        margin-bottom: 2px;
+                    }
+
+                    &.active {
+                        background-color: #e7e7e7;
+                    }
+                }
+
+                /* Hide the original radio button */
+                input[type="radio"] {
+                    display: none;
+                }
+            }
+        }
+
+        .exercises-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            font: inherit;
+
+            .checkbox {
+                font: inherit;
+            }
+        }
+
+        .save-btn {
+            border-radius: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 3px solid transparent;
+            background-color: #3a61ff;
+            color: white;
+            font-weight: 600;
+            transition: 0.2s ease-in-out;
+
+            &:hover {
+                color: #3a61ff;
+                background-color: white;
+                border: 3px solid #3a61ff;
+            }
+
+            &.disabled {
+                background-color: #e1e1e1;
+                color: white;
+
+                &:hover {
+                    cursor: auto;
+                    background-color: #e1e1e1;
+                    border: 3px solid transparent;
+                }
+            }
+        }
     }
 }
