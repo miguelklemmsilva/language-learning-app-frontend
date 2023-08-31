@@ -1,0 +1,43 @@
+.practice-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 50px;
+}
+
+.practice-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    max-width: 1000px;
+
+    .top-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #9f9f9f;
+        padding: 5px;
+        width: 90%;
+
+        .progress-bar-container {
+            width: 100%;
+            display: grid;
+            height: 4px;
+        }
+    }
+}
+
+.question-component-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-radius: 30px;
+    width: 100%;
+    align-content: center;
+    flex-wrap: wrap;
+}

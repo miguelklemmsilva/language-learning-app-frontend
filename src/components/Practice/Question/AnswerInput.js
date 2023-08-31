@@ -1,14 +1,14 @@
 import React from "react";
-import "./AnswerInput.css";
+import "./AnswerInput.scss";
 
 const AnswerInput = React.forwardRef(({value, onChange, result, onSubmit}, ref) => (
     <div className="answer-input-container">
         <textarea className={`answer-input ${result ? 'submitted' : ''}`}
                   ref={ref}
                   value={value}
-                  readOnly={result}
+                  disabled={result}
                   onChange={onChange}
-                  placeholder={"Write your answer here"}
+                  placeholder="Write your answer here"
         />
     </div>
 ));

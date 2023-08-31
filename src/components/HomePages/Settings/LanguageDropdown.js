@@ -43,6 +43,7 @@ const LanguageDropdown = ({onLanguageSelect, selectedOptions, languages}) => {
         <div className="add-language">
             <button className={`button add-language-selector ${availableOptions.length === 0 ? "disabled" : ""} ${showDropdown ? "active" : ""}`}
                     ref={buttonRef}
+                    disabled={availableOptions.length === 0}
                     onClick={handleButtonClick}><div>Add a Language</div><div>{showDropdown ? '-' : '+'}</div>
             </button>
             {showDropdown && (

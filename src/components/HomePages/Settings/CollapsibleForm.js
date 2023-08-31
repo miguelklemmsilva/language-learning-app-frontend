@@ -67,7 +67,7 @@ const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActi
             <div className="country-select">
                 <div className="info-container">
                     <div className="main-info">Country</div>
-                    <div className="sub-info">Select the language's region. Effects dialect and accents.</div>
+                    <div className="sub-info">Select the language's region. Affects dialect and accents.</div>
                 </div>
                 <div className="countries-container">
                     {language.countries.map((country, index) => (<div key={index} className="country">

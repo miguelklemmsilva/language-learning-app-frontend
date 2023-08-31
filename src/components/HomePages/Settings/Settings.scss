@@ -25,12 +25,17 @@
         border: 3px solid transparent;
         color: white;
         border-radius: 10px;
-    }
 
-    .add-language-selector.active {
-        background-color: white;
-        color: #3a61ff;
-        border: 3px solid #3a61ff;
+        &.active {
+            background-color: white;
+            color: #3a61ff;
+            border: 3px solid #3a61ff;
+        }
+
+        &.disabled {
+            opacity: 0.5;
+            cursor: initial;
+        }
     }
 
     .dropdown-menu {

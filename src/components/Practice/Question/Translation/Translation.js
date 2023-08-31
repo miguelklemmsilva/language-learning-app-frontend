@@ -1,13 +1,13 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import AnswerInput from "../AnswerInput";
-import SubmitArea from "../SubmitArea";
+import TranslationSubmitArea from "./TranslationSubmitArea";
 import {useAuth0} from "@auth0/auth0-react";
 import Tooltip from "@mui/material/Tooltip";
-import {styled, tooltipClasses} from "@mui/material";
+import {ClickAwayListener, styled, tooltipClasses} from "@mui/material";
 
-const Listening = ({sentence, textarea, answer, result, handleInputChange, handleSubmit, cleanString}) => {
-    const [correct, setCorrect] = React.useState(false);
+const Translation = ({sentence, textarea, answer, result, handleInputChange, handleSubmit, cleanString, handleNextSentence}) => {
+    const [correct, setCorrect] = useState(false);
     const {getAccessTokenSilently} = useAuth0();
 
     const CustomTooltip = styled(({className, ...props}) => (
@@ -17,6 +17,11 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
             fontSize: "0.85rem",
         },
     }));
+
+    const setSentenceCorrectness = (isCorrect) => {
+        handleSubmit(isCorrect, sentence.original);
+        handleNextSentence(isCorrect);
+    };
 
     const formatAlignment = (alignment) => {
         if (!alignment.proj)
@@ -113,8 +118,6 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
         });
     };
 
-
-
     const checkTranslation = async () => {
         const comparisonString = cleanString(sentence.original);
 
@@ -135,24 +138,22 @@ const Listening = ({sentence, textarea, answer, result, handleInputChange, handl
     }
 
     const onSubmit = async () => {
-        if (!result) {
-            const correct = await checkTranslation();
-            setCorrect(correct);
-            handleSubmit(correct, sentence.original);
-        } else
-            handleSubmit(correct, sentence.original);
+        const correct = await checkTranslation();
+        setCorrect(correct);
+        handleSubmit(correct, sentence.original);
     }
 
-
     return (
-        <div className={"question-container"}>
-            <div className="question-type">Translate the sentence</div>
+        <div className="question-container">
+            <div className="question-type">Translate the sentence into {sentence.language}</div>
             <div className="translation-text">{renderTranslation()}</div>
             <AnswerInput ref={textarea} value={answer} result={result} onChange={handleInputChange}
                          onSubmit={onSubmit}/>
-            <SubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer}/>
+            <TranslationSubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer}
+                                   setSentenceCorrectness={setSentenceCorrectness}
+            />
         </div>
     );
 }
 
-export default Listening;
+export default Translation;

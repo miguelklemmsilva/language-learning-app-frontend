@@ -1,13 +1,41 @@
 import React, {Fragment, useRef} from 'react';
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import {getTokenOrRefresh} from "./token_util";
+import MicIcon from '@mui/icons-material/Mic';
+import MicNoneIcon from '@mui/icons-material/MicNone';
 
-const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef, audioElementRef, setScores}) => {
+const SpeakingInput = ({sentence, setResult, listening, setListening, chunksRef, audioElementRef, setScores}) => {
     const mediaRecorderRef = useRef(null);
+    const recognizerRef = useRef(null);
 
     const sttFromMic = async () => {
-        if (listening)
-            return;
+        const tokenObj = await getTokenOrRefresh();
+        const speechConfig = sdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
+        speechConfig.setProperty(sdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs, "3000");
+        speechConfig.setProperty(sdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, "3000");
+
+        const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+
+        const pronunciationAssessmentConfig = new sdk.PronunciationAssessmentConfig(sentence.original, sdk.PronunciationAssessmentGradingSystem.HundredMark, sdk.PronunciationAssessmentGranularity.Phoneme, true)
+
+        speechConfig.speechRecognitionLanguage = sentence.locale;
+
+        if (recognizerRef.current) {
+            // If already listening, stop recognition and recording
+            if (listening) {
+                if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+                    stopRecording();
+                }
+                recognizerRef.current.stopContinuousRecognitionAsync();
+                recognizerRef.current = null; // Clear the ref
+                setListening(false);
+                return;
+            }
+        }
+
+        const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+        pronunciationAssessmentConfig.applyTo(recognizer);
+        recognizerRef.current = recognizer; // Store it in the ref
 
         audioElementRef.current.src = "";
         chunksRef.current = [];
@@ -17,25 +45,6 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
         setListening(true);
 
         let complete = false;
-
-        const tokenObj = await getTokenOrRefresh();
-        const speechConfig = sdk.SpeechConfig.fromAuthorizationToken(tokenObj.authToken, tokenObj.region);
-        speechConfig.setProperty(sdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs, "3000");
-        speechConfig.setProperty(sdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs, "3000");
-
-        const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
-
-        const pronunciationAssessmentConfig = new sdk.PronunciationAssessmentConfig(
-            sentence.original,
-            sdk.PronunciationAssessmentGradingSystem.HundredMark,
-            sdk.PronunciationAssessmentGranularity.Phoneme,
-            true
-        )
-
-        speechConfig.speechRecognitionLanguage = sentence.locale;
-
-        const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-        pronunciationAssessmentConfig.applyTo(recognizer);
 
         recognizer.recognizing = function (s, e) {
             setResult(e.result);
@@ -77,17 +86,16 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
 
     const startRecording = () => {
         if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
-            navigator.mediaDevices.getUserMedia({ audio: true })
+            navigator.mediaDevices.getUserMedia({audio: true})
                 .then((stream) => {
                     mediaRecorderRef.current = new MediaRecorder(stream);
 
                     mediaRecorderRef.current.ondataavailable = (event) => {
-                        if (event.data.size > 0)
-                            chunksRef.current.push(event.data);
+                        if (event.data.size > 0) chunksRef.current.push(event.data);
                     };
 
                     mediaRecorderRef.current.onstop = () => {
-                        const audioBlob = new Blob(chunksRef.current, { type: "audio/wav" });
+                        const audioBlob = new Blob(chunksRef.current, {type: "audio/wav"});
                         audioElementRef.current.src = URL.createObjectURL(audioBlob);
                     };
 
@@ -108,24 +116,17 @@ const Pronunciation = ({sentence, setResult, listening, setListening, chunksRef,
         mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
     };
 
-    return (
-        <Fragment>
-            <button
-                disabled={listening}
-                className={`question-btn ${listening ? "disabled" : ""}`}
-                draggable={false}
-                onClick={sttFromMic}
-            >
-                <img
-                    className="question-btn-img"
-                    src={"./MicrophoneButton.png"}
-                    alt="speaking-button"
-                />
-            </button>
-            <audio ref={audioElementRef} controls/>
-        </Fragment>
-    );
+    return (<Fragment>
+        <button
+            className={`question-btn button ${listening ? "listening" : ""}`}
+            draggable={false}
+            onClick={sttFromMic}
+        >
+            {listening ? <MicIcon sx={{font: "inherit"}}/> : <MicNoneIcon sx={{font: "inherit"}}/>}
+        </button>
+        <audio ref={audioElementRef} controls/>
+    </Fragment>);
 };
 
 
-export default Pronunciation;
+export default SpeakingInput;

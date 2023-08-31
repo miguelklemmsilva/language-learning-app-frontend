@@ -4,6 +4,10 @@
   background-color: #f8f8ff;
   padding: 50px;
   justify-content: center;
+
+  &.practice {
+    margin-left: 0;
+  }
 }
 
 .content-container {
@@ -30,6 +34,19 @@
   font: inherit;
   color: black;
 
+  &.blue {
+    color: white;
+    background-color: #3a61ff;
+    transition: background-color 0.2s ease-in-out;
+    border: 2px solid transparent;
+
+    &:hover {
+      background-color: white;
+      color: #3a61ff;
+      border: 2px solid #3a61ff;
+    }
+  }
+
   .button-txt {
     text-align: center;
     align-self: center;
@@ -37,9 +54,8 @@
   }
 
   .arrow-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
     margin-left: 5px;
     transition: transform 0.2s ease-in-out;
     height: 100%;
@@ -210,7 +226,6 @@
       }
     }
   }
-
 
   .home-table-container {
     flex: 2 0;

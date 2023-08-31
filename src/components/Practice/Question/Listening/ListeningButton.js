@@ -1,6 +1,7 @@
 import React, {useRef} from "react";
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
-const ListeningButton = ({ sentence, textarea }) => {
+const ListeningButton = ({ sentence }) => {
     const audioRef = useRef(null);
 
     const base64ToArrayBuffer = () => {
@@ -14,9 +15,6 @@ const ListeningButton = ({ sentence, textarea }) => {
 
     const synthesiseText = () => {
         try {
-            if (textarea)
-                textarea.current.focus();
-
             if (audioRef.current) {
                 audioRef.current.pause();
                 audioRef.current.currentTime = 0;
@@ -36,15 +34,12 @@ const ListeningButton = ({ sentence, textarea }) => {
 
     return (
         <button
-            className="question-btn"
+            className="question-btn button"
             draggable={false}
             onClick={synthesiseText}
+            onMouseDown={(e) => e.preventDefault()}
         >
-            <img
-                className="question-btn-img"
-                src={"./VolumeButton.png"}
-                alt={"speak-button"}
-            />
+            <VolumeUpIcon sx={{font: "inherit"}}/>
         </button>
     );
 }

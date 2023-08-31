@@ -1,0 +1,79 @@
+.question-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 700px;
+  width: 100%;
+
+  .question-btn {
+    flex: 1;
+    padding: 20px;
+    border-radius: 30px;
+    margin: 10px;
+    font-size: 4rem;
+    background-color: white;
+    border: 3px solid #3a61ff;
+    color: #3a61ff;
+    box-shadow: 0 5px 0 #3a61ff;
+
+    &.listening {
+      border: 3px solid #ff5b5b;
+      color: #ff5b5b;
+        box-shadow: 0 5px 0 #ff5b5b;
+    }
+
+    &:active {
+      box-shadow: none;
+      transform: translateY(5px);
+    }
+  }
+}
+
+.question-type {
+  font-size: 2rem;
+  font-weight: 700;
+  width: 100%;
+  padding: 10px;
+}
+
+.translation-text {
+  font-size: 1.2rem;
+  padding: 10px;
+}
+
+.word {
+  display: inline-block;
+  background: #dcdcdc;
+  border-radius: 4px;
+  text-decoration: none;
+  padding: 2px;
+  overflow: visible;
+}
+
+.speaking-output:focus {
+  outline: none;
+}
+
+.Mispronunciation {
+  background-color: #ffcc00;
+  text-decoration: underline;
+}
+
+.Omission {
+  background-color: gray;
+  color: white;
+}
+
+.Insertion {
+  background-color: #ff5b5b;
+  color: white;
+  text-decoration: line-through;
+}
+
+.speaking-btns-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+

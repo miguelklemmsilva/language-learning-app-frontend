@@ -1,10 +1,12 @@
 import {useCallback, useEffect, useState} from "react";
-import axios from "axios";
+import CloseIcon from '@mui/icons-material/Close';
 import useFetchSentences from "../../../hooks/useFetchSentences";
 import Question from "../Question/Question";
 import Finished from "../Finished";
 import PracticeLoading from "../PracticeLoading";
-import "./Practice.css";
+import "./Practice.scss";
+import {LinearProgress} from "@mui/material";
+import {Link} from "react-router-dom";
 
 const Practice = () => {
     const [sentenceNumber, setSentenceNumber] = useState(0);
@@ -12,9 +14,10 @@ const Practice = () => {
     const [sentences, setSentences] = useFetchSentences("api/ai/generatesentences");
 
     useEffect(() => {
-        if (sentences)
-            setSentence(sentences[sentenceNumber]);
+        if (sentences) setSentence(sentences[sentenceNumber]);
     }, [sentenceNumber, sentences]);
+
+    const correctSentences = sentences ? sentences.filter(sentence => sentence.correct).length : 0;
 
     const updateSentence = useCallback((correct) => {
         const updatedSentences = sentences.map((sentence, idx) => {
@@ -30,35 +33,52 @@ const Practice = () => {
         setSentences(updatedSentences);
     }, [sentences, setSentences, sentenceNumber])
 
-    const setNextQuestion = () => {
-        let nextSentence = -1;
 
-        for (let i = sentenceNumber + 1; i < sentences.length; i++) {
-            if (!sentences[i].correct) {
-                nextSentence = i;
-                break;
-            }
-        }
+    useEffect(() => {
+        if (!sentences) return;
+        const setNextQuestion = () => {
+            let nextSentence = -1;
 
-        if (nextSentence === -1) {
-            for (let i = 0; i <= sentenceNumber; i++) {
+            for (let i = sentenceNumber + 1; i < sentences.length; i++) {
                 if (!sentences[i].correct) {
                     nextSentence = i;
                     break;
                 }
             }
-        }
 
-        setSentenceNumber(nextSentence);
-    };
+            if (nextSentence === -1) {
+                for (let i = 0; i <= sentenceNumber; i++) {
+                    if (!sentences[i].correct) {
+                        nextSentence = i;
+                        break;
+                    }
+                }
+            }
+
+            setSentenceNumber(nextSentence);
+        };
+
+        setNextQuestion();
+    }, [sentences]);
+
 
     if (sentences) {
         if (sentenceNumber >= 0) {
-            return <div className="practice-wrapper">
-                <div className="question-component-wrapper">
-                    {sentence &&
-                        <Question sentence={sentence} setNextQuestion={setNextQuestion} sentenceNumber={sentenceNumber}
-                                  updateSentence={updateSentence}/>}
+            return <div className="main-content practice">
+                <div className="practice-container">
+                    <div className="top-container"><Link to="/home">
+                        <div style={{display: "grid"}}><CloseIcon sx={{color: "#9f9f9f"}}/></div>
+                    </Link>
+                        <div className="progress-bar-container"><LinearProgress variant="determinate"
+                                                                                value={correctSentences * 100 / sentences.length}/>
+                        </div>
+                        <div>{correctSentences}/{sentences.length}</div>
+                    </div>
+                    <div className="question-component-wrapper">
+                        {sentence && <Question sentence={sentence}
+                                               sentenceNumber={sentenceNumber}
+                                               updateSentence={updateSentence}/>}
+                    </div>
                 </div>
             </div>;
         } else return <Finished sentences={sentences}/>

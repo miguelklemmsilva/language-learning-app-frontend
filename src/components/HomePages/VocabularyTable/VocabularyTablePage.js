@@ -80,7 +80,7 @@ function VocabularyTablePage() {
             </div>
             <div className="welcome-container">
                 <div className="add-vocab-button-wrapper">
-                    <button className="add-vocab-button button" onClick={() => setOpenModal(true)}>
+                    <button className="add-vocab-button button blue" onClick={() => setOpenModal(true)}>
                         <div className="button-txt">Add Vocabulary</div>
                         <div className="popup-wrapper"><ArrowOutwardIcon/></div>
                     </button>
@@ -100,7 +100,7 @@ function VocabularyTablePage() {
             <div className="modal-container big">
                 <div className="header-container">
                     <div className="txt">
-                        <div>Add vocabulary to your <strong>{activeLanguage}</strong> vocabulary list</div>
+                        <div>Add to your <strong>{activeLanguage}</strong> vocabulary list</div>
                     </div>
                 </div>
                 <textarea className="txt-field" placeholder="Add your vocabulary here..."

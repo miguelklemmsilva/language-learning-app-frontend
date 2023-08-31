@@ -1,9 +1,9 @@
 import React, {useState} from "react";
 import ListeningButton from "./ListeningButton";
-import AnswerInput from "./AnswerInput";
-import SubmitArea from "./SubmitArea";
+import AnswerInput from "../AnswerInput";
+import ListeningSubmitArea from "./ListeningSubmitArea";
 
-const Listening = ({sentence, textarea, answer, handleInputChange, handleSubmit, result, cleanString}) => {
+const Listening = ({sentence, textarea, answer, handleInputChange, handleSubmit, result, cleanString, handleNextSentence}) => {
     const [correct, setCorrect] = useState(false);
 
     const onSubmit = () => {
@@ -18,12 +18,12 @@ const Listening = ({sentence, textarea, answer, handleInputChange, handleSubmit,
     }
 
     return (
-        <div className={"question-container listening"}>
+        <div className="question-container">
             <div className="question-type">Write what you hear</div>
             <ListeningButton sentence={sentence} textarea={textarea}/>
             <AnswerInput ref={textarea} value={answer} result={result} onChange={handleInputChange}
                          onSubmit={onSubmit}/>
-            <SubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer}/>
+            <ListeningSubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer} handleNextSentence={handleNextSentence}/>
         </div>
     );
 }

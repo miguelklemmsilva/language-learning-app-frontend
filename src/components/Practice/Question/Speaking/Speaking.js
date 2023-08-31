@@ -1,35 +1,31 @@
-import Pronunciation from "./Pronunciation";
-import ListeningButton from "../ListeningButton";
-import React, {useEffect, useRef, useState} from "react";
+import SpeakingInput from "./SpeakingInput";
+import ListeningButton from "../Listening/ListeningButton";
+import React, {useRef, useState} from "react";
 import SpeakingOutput from "./SpeakingOutput";
 import SpeakingSubmit from "./SpeakingSubmit";
 
-const Speaking = ({sentence, result, setResult, handleSpeakingSubmit, updateSentence}) => {
+const Speaking = ({sentence, result, setResult, handleNextSentence}) => {
     const [listening, setListening] = useState(false);
     const [output, setOutput] = useState(null);
     const [scores, setScores] = useState(null);
     const chunksRef = useRef([]);
     const audioElementRef = useRef(null);
 
-    useEffect(() => {
-        updateSentence(true);
-    }, [sentence.word]);
-
     const onSubmit = () => {
         setScores(null);
         setOutput(null);
         audioElementRef.current.src = "";
         chunksRef.current = [];
-        handleSpeakingSubmit();
+        handleNextSentence(true);
     }
 
     return (
-        <div className="speaking-container">
+        <div className="question-container">
             <div className="question-type">Repeat the sentence</div>
             <div className="translation-text">{sentence.original}</div>
             <div className="speaking-btns-container">
                 <ListeningButton sentence={sentence}/>
-                <Pronunciation sentence={sentence} setResult={setResult} listening={listening}
+                <SpeakingInput sentence={sentence} setResult={setResult} listening={listening}
                                setListening={setListening} chunksRef={chunksRef}
                                audioElementRef={audioElementRef} setScores={setScores}/>
             </div>
