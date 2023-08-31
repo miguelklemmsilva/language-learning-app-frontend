@@ -47,6 +47,12 @@
     }
   }
 
+  &.generic {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+  }
+
   .button-txt {
     text-align: center;
     align-self: center;
@@ -162,6 +168,18 @@
         border: 3px solid #5529ee;
       }
     }
+  }
+}
+
+.form-btn-container {
+  display: flex;
+  gap: 5px;
+  .vocab-table-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    color: #5529ee;
+    background-color: #dabeff;
   }
 }
 

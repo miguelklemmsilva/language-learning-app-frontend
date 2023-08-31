@@ -6,16 +6,29 @@ import Finished from "../Finished";
 import PracticeLoading from "../PracticeLoading";
 import "./Practice.scss";
 import {LinearProgress} from "@mui/material";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useAuth0} from "@auth0/auth0-react";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const Practice = () => {
     const [sentenceNumber, setSentenceNumber] = useState(0);
     const [sentence, setSentence] = useState(null);
-    const [sentences, setSentences] = useFetchSentences("api/ai/generatesentences");
+    const [sentences, setSentences, error] = useFetchSentences("api/ai/generatesentences");
+    const {isAuthenticated, isLoading} = useAuth0();
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (sentences) setSentence(sentences[sentenceNumber]);
     }, [sentenceNumber, sentences]);
+
+    useEffect(() => {
+        if (isAuthenticated == null)
+            return;
+        if (!isAuthenticated && !isLoading)
+            navigate("/");
+        if (error && error.code === 0)
+            navigate("/settings");
+    }, [isAuthenticated, isLoading, error]);
 
     const correctSentences = sentences ? sentences.filter(sentence => sentence.correct).length : 0;
 
@@ -61,6 +74,18 @@ const Practice = () => {
         setNextQuestion();
     }, [sentences]);
 
+    if (error) return (
+        <div className="main-content practice">
+            <div className="practice-container">
+                <h1>No words to practice!</h1>
+                <h2>Add some words into your vocabulary table to practice</h2>
+                <Link to={"/vocabularytable"} className="button blue generic" style={{width: "100%"}}>
+                    <div className="button-txt">Go to vocabulary table</div>
+                    <div className="arrow-wrapper"><ArrowForwardIcon/></div>
+                </Link>
+            </div>
+        </div>
+    );
 
     if (sentences) {
         if (sentenceNumber >= 0) {

@@ -5,6 +5,7 @@ import {useAuth0} from "@auth0/auth0-react";
 const useFetchSentences = (url) => {
     const [sentences, setSentences] = useState();
     const {getAccessTokenSilently} = useAuth0();
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         async function getSentences() {
@@ -20,12 +21,14 @@ const useFetchSentences = (url) => {
                 })
                 .catch((err) => {
                     console.error(err);
+                    if (err.response && err.response.status === 400)
+                        setError(err.response.data);
                 });
         }
         getSentences();
-    }, [url]);
+    }, [url, getAccessTokenSilently]);
 
-    return [sentences, setSentences];
+    return [sentences, setSentences, error];
 };
 
 export default useFetchSentences;

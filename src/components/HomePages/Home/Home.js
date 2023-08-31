@@ -12,7 +12,7 @@ import VocabularyTable from "../VocabularyTable/VocabularyTable";
 
 function Home() {
     const {wordTable, activeLanguage, getActiveCountry, getSelectedLanguageSettings} = useContext(HomeRouteContext);
-    const {user, isAuthenticated, isLoading} = useAuth0();
+    const {user} = useAuth0();
 
     const filteredTable = wordTable.filter((word) => {
         return word.minutes_until_due <= 0;
@@ -46,10 +46,15 @@ function Home() {
                     </div>
                 </div>
                 <div className="practice-button-wrapper">
-                    <Link to="/practice" className="practice-btn button">
+                    {wordTable.length > 0 ? <Link to="/practice" className="practice-btn button">
                         <div className="button-txt">PRACTICE</div>
                         <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
-                    </Link>
+                    </Link> :
+                        <Link to="/vocabularytable" className="practice-btn button">
+                            <div className="button-txt">ADD TO YOUR VOCABULARY TABLE</div>
+                            <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
+                        </Link>
+                    }
                 </div>
             </div>
             <div className="info-container">

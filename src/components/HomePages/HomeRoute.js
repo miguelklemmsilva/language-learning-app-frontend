@@ -29,19 +29,23 @@ const HomeRoute = ({children}) => {
         checkIfUserIsRegistered();
     }, [isAuthenticated, getAccessTokenSilently, user]);
 
+    useEffect(() => {
+        if (isAuthenticated == null)
+            return;
+        if (!isAuthenticated && !isLoading) {
+            navigate("/");
+        }
+    }, [isAuthenticated, isLoading]);
 
-    if (isLoading || userRegistered === null) return <div>Loading...</div>;
-
-    if (!isAuthenticated) navigate("/");
+    if (isLoading || userRegistered === null) return null;
 
     if (!userRegistered) {
         return <HomeRouteProvider checkIfUserIsRegistered={checkIfUserIsRegistered}>
-            <div className="page-container"><Settings/></div>
-            ;
+            <div className="page-container" style={{marginLeft: "-300px"}}><Settings/></div>
         </HomeRouteProvider>
     }
 
-    return (<HomeRouteProvider>
+    return (<HomeRouteProvider checkIfUserIsRegistered={checkIfUserIsRegistered}>
         <Sidebar/>
         {children}
     </HomeRouteProvider>)

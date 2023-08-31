@@ -85,7 +85,6 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
 
     const handleSetActive = async (languageName) => {
         setActiveLanguage(languageName);
-        console.log(languageName)
         axios.post("api/user/setactivelanguage", {language: languageName}, {
             headers: {
                 Authorization: `Bearer ${await getAccessTokenSilently()}`
@@ -169,7 +168,8 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
                 Authorization: `Bearer ${await getAccessTokenSilently()}`
             },
         }).then(() => {
-            fetchActiveLanguage()
+            checkIfUserIsRegistered();
+            fetchActiveLanguage();
             updateVocabTable();
         }).catch((err) => {
             console.error(err);

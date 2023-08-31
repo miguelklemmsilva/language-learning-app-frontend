@@ -2,11 +2,13 @@ import React, {useEffect, useState} from 'react';
 import './CollapsibleForm.scss';
 import {Checkbox, FormControlLabel, FormGroup, styled} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
+import {Link} from "react-router-dom";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActive, initialSettings, handleSave}) => {
     const StyledFormControlLabel = styled(FormControlLabel)({
         '& .MuiTypography-body1': {
-            fontFamily: 'inherit',  // set the desired font here
+            fontFamily: 'inherit',
         },
     });
 
@@ -103,9 +105,15 @@ const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActi
                                            value="speaking" className="checkbox"/>} label="Speaking"/>
                 </FormGroup>
             </div>
-            <button className={`button save-btn ${hasChangesMade() ? "" : "disabled"}`} onClick={handleSave}
-                    disabled={!hasChangesMade()}>Save
-            </button>
+            <div className="form-btn-container">
+                <button className={`button save-btn ${hasChangesMade() ? "" : "disabled"}`} onClick={handleSave}
+                        disabled={!hasChangesMade()}>Save
+                </button>
+                {isActive && <Link className="button vocab-table-btn" to={"/vocabularytable"}>
+                    <div className="button-txt">See Table</div>
+                    <div className="arrow-wrapper"><ArrowForwardIcon/></div>
+                </Link>}
+            </div>
         </div>
     </div>);
 };
