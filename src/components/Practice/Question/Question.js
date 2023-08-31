@@ -18,7 +18,6 @@ const Question = ({sentence, updateSentence}) => {
         return str
             .replace(/[^a-zA-Z\u00C0-\u017F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\uFF00-\uFFEF\s]/g, '')
             .replace(/\s+/g, ' ')
-            .toLowerCase()
             .trim();
     }
 
