@@ -33,7 +33,6 @@ const languages = [{
     name: "German",
     countries: [
         {name: "Germany", flag: "Flags/German/de.png"},
-        {name: "Switzerland", flag: "Flags/German/ch.png"}
     ], settings: defaultSettings
 }];
 
