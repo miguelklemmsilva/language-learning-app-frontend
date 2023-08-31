@@ -23,4 +23,17 @@
             border: 1px solid #c5c5c5;
         }
     }
+
+    .characters-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+
+        .word {
+            display: grid;
+            place-items: center;
+            padding: 7px;
+            border-radius: 5px;
+        }
+    }
 }

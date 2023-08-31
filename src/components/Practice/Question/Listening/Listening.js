@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import ListeningButton from "./ListeningButton";
 import AnswerInput from "../AnswerInput";
 import ListeningSubmitArea from "./ListeningSubmitArea";
@@ -22,7 +22,7 @@ const Listening = ({sentence, textarea, answer, handleInputChange, handleSubmit,
             <div className="question-type">Write what you hear</div>
             <ListeningButton sentence={sentence} textarea={textarea}/>
             <AnswerInput ref={textarea} value={answer} result={result} onChange={handleInputChange}
-                         onSubmit={onSubmit}/>
+                         onSubmit={onSubmit} language={sentence.language}/>
             <ListeningSubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer} handleNextSentence={handleNextSentence}/>
         </div>
     );

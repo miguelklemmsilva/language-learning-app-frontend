@@ -148,7 +148,7 @@ const Translation = ({sentence, textarea, answer, result, handleInputChange, han
             <div className="question-type">Translate the sentence into {sentence.language}</div>
             <div className="translation-text">{renderTranslation()}</div>
             <AnswerInput ref={textarea} value={answer} result={result} onChange={handleInputChange}
-                         onSubmit={onSubmit}/>
+                         onSubmit={onSubmit} language={sentence.language}/>
             <TranslationSubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer}
                                    setSentenceCorrectness={setSentenceCorrectness}
             />

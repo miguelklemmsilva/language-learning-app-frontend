@@ -34,6 +34,17 @@ const languages = [{
     countries: [
         {name: "Germany", flag: "Flags/German/de.png"},
     ], settings: defaultSettings
+}, {
+    name: "Italian",
+    countries: [
+        {name: "Italy", flag: "Flags/Italian/it.png"},
+    ], settings: defaultSettings
+}, {
+    name: "French",
+    countries: [
+        {name: "France", flag: "Flags/French/fr.png"},
+        {name: "Canada", flag: "Flags/French/ca.png"}
+    ], settings: defaultSettings
 }];
 
 languages.forEach(language => {
