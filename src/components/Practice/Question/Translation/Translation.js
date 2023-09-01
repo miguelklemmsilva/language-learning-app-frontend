@@ -102,7 +102,7 @@ const Translation = ({sentence, textarea, answer, result, handleInputChange, han
             });
         }
 
-        return components.map((comp, idx) => {
+        return components.map((comp) => {
             if (typeof comp === 'string')
                 return comp;
             else {

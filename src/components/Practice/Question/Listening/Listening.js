@@ -3,7 +3,16 @@ import ListeningButton from "./ListeningButton";
 import AnswerInput from "../AnswerInput";
 import ListeningSubmitArea from "./ListeningSubmitArea";
 
-const Listening = ({sentence, textarea, answer, handleInputChange, handleSubmit, result, cleanString, handleNextSentence}) => {
+const Listening = ({
+                       sentence,
+                       textarea,
+                       answer,
+                       handleInputChange,
+                       handleSubmit,
+                       result,
+                       cleanString,
+                       handleNextSentence
+                   }) => {
     const [correct, setCorrect] = useState(false);
 
     const onSubmit = () => {
@@ -19,11 +28,14 @@ const Listening = ({sentence, textarea, answer, handleInputChange, handleSubmit,
 
     return (
         <div className="question-container">
-            <div className="question-type">Write what you hear</div>
+            <div className="question-type">Write what you hear
+                <div className="help-txt">Click the speaker button to listen to the sentence</div>
+            </div>
             <ListeningButton sentence={sentence} textarea={textarea}/>
             <AnswerInput ref={textarea} value={answer} result={result} onChange={handleInputChange}
                          onSubmit={onSubmit} language={sentence.language}/>
-            <ListeningSubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer} handleNextSentence={handleNextSentence}/>
+            <ListeningSubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer}
+                                 handleNextSentence={handleNextSentence}/>
         </div>
     );
 }

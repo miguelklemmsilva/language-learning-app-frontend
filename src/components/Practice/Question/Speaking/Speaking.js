@@ -21,7 +21,11 @@ const Speaking = ({sentence, result, setResult, handleNextSentence}) => {
 
     return (
         <div className="question-container">
-            <div className="question-type">Repeat the sentence</div>
+            <div className="question-type">Repeat the sentence
+                <div className="help-txt">Press the speaker button to listen to the sentence. Press the microphone
+                    button and start speaking.
+                </div>
+            </div>
             <div className="translation-text">{sentence.original}</div>
             <div className="speaking-btns-container">
                 <ListeningButton sentence={sentence}/>

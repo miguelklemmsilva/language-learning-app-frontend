@@ -59,10 +59,13 @@ const SpeakingInput = ({sentence, setResult, listening, setListening, chunksRef,
         startRecording();
 
         const cancelRecognition = () => {
-            if (!complete) {
-                recognizer.stopContinuousRecognitionAsync();
-                recognizer.close();
-                setResult("ERROR: Speech recognition timed out. Ensure your microphone is working properly.");
+            if (!complete && recognizerRef.current) {
+                if (mediaRecorderRef.current && mediaRecorderRef.current.state === "recording") {
+                    stopRecording();
+                }
+                recognizerRef.current.stopContinuousRecognitionAsync();
+                recognizerRef.current = null; // Clear the ref
+                setListening(false);
             }
         };
 
