@@ -1,33 +1,48 @@
-import {useContext, useEffect} from "react";
+import {useContext} from "react";
 import {Link} from "react-router-dom";
 import "../HomePage.scss";
 import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
-import calculateTime from "../calculateTime";
 import {useAuth0} from "@auth0/auth0-react";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TranslateIcon from '@mui/icons-material/Translate';
 import HearingIcon from '@mui/icons-material/Hearing';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import VocabularyTable from "../VocabularyTable/VocabularyTable";
+import {useNavigate} from "react-router-dom";
 
 function Home() {
-    const {wordTable, activeLanguage, getActiveCountry, getSelectedLanguageSettings} = useContext(HomeRouteContext);
+    const {
+        wordTable, activeLanguage, getActiveCountry, getSelectedLanguageSettings, selectedLanguages, handleSave
+    } = useContext(HomeRouteContext);
     const {user} = useAuth0();
+    const navigate = useNavigate();
 
     const filteredTable = wordTable.filter((word) => {
         return word.minutes_until_due <= 0;
     });
 
-    function BoxBars({boxNumber}) {
-        const bars = [];
-
-        for (let i = 1; i <= boxNumber; i++) {
-            bars.push(<span key={i} className="box-bar" data-box={i}></span>);
+    const practiceButton = () => {
+        if (filteredTable.length > 0 && (getSelectedLanguageSettings()?.exercises.translation || getSelectedLanguageSettings()?.exercises.listening || getSelectedLanguageSettings()?.exercises.speaking)) {
+            return <button onClick={async () => {
+                handleSave(selectedLanguages.filter(lang => lang.name === activeLanguage)[0]);
+                // fuck it good enough
+                await new Promise(resolve => setTimeout(resolve, 100));
+                navigate("/practice");
+            }} className="practice-btn button">
+                <div className="button-txt">PRACTICE</div>
+                <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
+            </button>
+        } else if (filteredTable.length <= 0) {
+            return <Link to="/vocabularytable" className="practice-btn button">
+                <div className="button-txt">ADD TO VOCABULARY TABLE</div>
+                <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
+            </Link>
+        } else {
+            return <Link to="/settings" className="practice-btn button">
+                <div className="button-txt">SELECT EXERCISES</div>
+                <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
+            </Link>
         }
-
-        return <div className="box-bars-container">
-            <div>{bars}</div>
-        </div>;
     }
 
     return (<div className="main-content">
@@ -46,15 +61,7 @@ function Home() {
                     </div>
                 </div>
                 <div className="practice-button-wrapper">
-                    {wordTable.length > 0 ? <Link to="/practice" className="practice-btn button">
-                        <div className="button-txt">PRACTICE</div>
-                        <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
-                    </Link> :
-                        <Link to="/vocabularytable" className="practice-btn button">
-                            <div className="button-txt">ADD TO YOUR VOCABULARY TABLE</div>
-                            <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
-                        </Link>
-                    }
+                    {practiceButton()}
                 </div>
             </div>
             <div className="info-container">
@@ -104,18 +111,17 @@ function Home() {
                             <div className="arrow-wrapper"><ArrowForwardIcon/></div>
                         </Link>
                     </div>
-                    {filteredTable.length > 0 ? <VocabularyTable wordTable={filteredTable} isHome={true}/>
-                        : <div>
-                            <div className="header-container">You have no words to practice for {activeLanguage}!</div>
-                            <br/>
-                            <Link to="/vocabularytable" className="button vocab-add-btn">
-                                <div className="button-txt">
-                                    Add more words here
-                                </div>
-                                <div className="arrow-wrapper"><ArrowForwardIcon/></div>
-                            </Link>
+                    {filteredTable.length > 0 ? <VocabularyTable wordTable={filteredTable} isHome={true}/> : <div>
+                        <div className="header-container">You have no words to practice for {activeLanguage}!
                         </div>
-                    }
+                        <br/>
+                        <Link to="/vocabularytable" className="button vocab-add-btn">
+                            <div className="button-txt">
+                                Add more words here
+                            </div>
+                            <div className="arrow-wrapper"><ArrowForwardIcon/></div>
+                        </Link>
+                    </div>}
                 </div>
             </div>
         </div>

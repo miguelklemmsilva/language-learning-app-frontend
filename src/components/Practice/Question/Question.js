@@ -21,6 +21,12 @@ const Question = ({sentence, updateSentence}) => {
             .trim();
     }
 
+    function cleanEmptyArea(str) {
+        return str
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
     const handleGetResult = (correct, feedback) => {
         if (correct)
             setResult(feedback);
@@ -45,7 +51,7 @@ const Question = ({sentence, updateSentence}) => {
     if (sentence.type === "translation") return <Translation sentence={sentence} textarea={textareaRef}
                                                              handleInputChange={handleInputChange}
                                                              handleSubmit={handleGetResult} result={result}
-                                                             answer={answer} cleanString={cleanString}
+                                                             answer={answer} cleanString={cleanString} cleanEmptyArea={cleanEmptyArea}
                                                              handleNextSentence={handleNextSentence}/>
     if (sentence.type === "speaking") return <Speaking sentence={sentence} result={result} setResult={setResult}
                                                        updateSentence={updateSentence} handleNextSentence={handleNextSentence}/>

@@ -6,7 +6,7 @@ import {useAuth0} from "@auth0/auth0-react";
 import Tooltip from "@mui/material/Tooltip";
 import {ClickAwayListener, styled, tooltipClasses} from "@mui/material";
 
-const Translation = ({sentence, textarea, answer, result, handleInputChange, handleSubmit, cleanString, handleNextSentence}) => {
+const Translation = ({sentence, textarea, answer, result, handleInputChange, handleSubmit, cleanString, handleNextSentence, cleanEmptyArea}) => {
     const [correct, setCorrect] = useState(false);
     const {getAccessTokenSilently} = useAuth0();
 
@@ -24,9 +24,9 @@ const Translation = ({sentence, textarea, answer, result, handleInputChange, han
     };
 
     const formatAlignment = (alignment) => {
-        if (!alignment.proj)
+        if (!alignment)
             return [];
-        const items = alignment.proj.split(' ');
+        const items = alignment.split(' ');
         const formattedObjects = []
         for (const item of items) {
             const [original, translated] = item.split('-');
@@ -119,14 +119,14 @@ const Translation = ({sentence, textarea, answer, result, handleInputChange, han
     };
 
     const checkTranslation = async () => {
-        const comparisonString = cleanString(sentence.original);
+        const comparisonString = cleanEmptyArea(sentence.original);
 
         let correct = cleanString(answer) === cleanString(comparisonString);
 
         if (!correct) {
             const {data} = await axios.post('/api/ai/verifySentence', {
                 string1: comparisonString,
-                string2: cleanString(answer),
+                string2: cleanEmptyArea(answer),
             }, {
                 headers: {
                     Authorization: `Bearer ${await getAccessTokenSilently()}`

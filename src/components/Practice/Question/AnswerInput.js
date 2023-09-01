@@ -17,8 +17,20 @@ const AnswerInput = forwardRef(({ value, onChange, result, language }, ref) => {
     const characters = charactersByLanguage[language] || [];
 
     const handleCharacterClick = (char) => {
-        const newValue = value + char;
+        // Get the current cursor position
+        const start = ref.current.selectionStart;
+        const end = ref.current.selectionEnd;
+
+        // Insert the character at this position
+        const newValue = value.substring(0, start) + char + value.substring(end);
+
+        // Set the new value
         onChange({ target: { value: newValue } });
+
+        // Move the cursor right after the inserted character
+        setTimeout(() => {
+            ref.current.selectionStart = ref.current.selectionEnd = start + char.length;
+        }, 0);
     };
 
     const toggleCase = () => {

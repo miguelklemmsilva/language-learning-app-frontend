@@ -205,8 +205,8 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
         }).then(() => {
             // if this is the user registering their first language
             if (checkIfUserIsRegistered) {
-                checkIfUserIsRegistered();
-                navigate("/settings");
+                if (!checkIfUserIsRegistered())
+                    navigate("/settings");
             }
         }).catch((err) => {
             console.error(err);

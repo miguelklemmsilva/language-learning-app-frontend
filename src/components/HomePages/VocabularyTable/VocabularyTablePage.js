@@ -9,9 +9,18 @@ import {CircularProgress, Modal, Alert} from "@mui/material";
 import PublishIcon from "@mui/icons-material/Publish";
 import axios from "axios";
 import {useAuth0} from "@auth0/auth0-react";
+import {useNavigate} from "react-router-dom";
 
 function VocabularyTablePage() {
-    const {wordTable, activeLanguage, getActiveCountry, updateVocabTable} = useContext(HomeRouteContext);
+    const {
+        wordTable,
+        activeLanguage,
+        getActiveCountry,
+        updateVocabTable,
+        getSelectedLanguageSettings,
+        handleSave,
+        selectedLanguages
+    } = useContext(HomeRouteContext);
     const [openModal, setOpenModal] = useState(false);
     const [openConfirmModal, setOpenConfirmModal] = useState(false);
     const [words, setWords] = useState('');
@@ -19,12 +28,17 @@ function VocabularyTablePage() {
     const [isAddingVocabulary, setIsAddingVocabulary] = useState(false);
     const [alert, setAlert] = useState({open: false, message: '', type: ''});
     const [isAlertHovered, setIsAlertHovered] = useState(false);
+    const filteredTable = wordTable.filter((word) => {
+        return word.minutes_until_due <= 0;
+    });
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (alert.open && !isAlertHovered) {
             const timer = setTimeout(() => {
                 if (!isAlertHovered) {
-                    setAlert({ ...alert, open: false });
+                    setAlert({...alert, open: false});
                 }
             }, 5000);  // Close alert after 5 seconds if not hovered
 
@@ -48,7 +62,9 @@ function VocabularyTablePage() {
         }).then((result) => {
             setOpenModal(false);
             setIsAddingVocabulary(false);
-            if (result.data.addedWords.length === 0) return setAlert({open: true, message: `No words added`, type: 'error'});
+            if (result.data.addedWords.length === 0) return setAlert({
+                open: true, message: `No words added`, type: 'error'
+            });
             setAlert({open: true, message: `Added words: ${result.data.addedWords}`, type: 'success'});  // Update the alert state here
             updateVocabTable();
         }).catch((err) => {
@@ -85,12 +101,18 @@ function VocabularyTablePage() {
                         <div className="popup-wrapper"><ArrowOutwardIcon/></div>
                     </button>
                 </div>
-                <div className="practice-button-wrapper">
-                    <Link to="/practice" className="practice-btn button">
-                        <div className="button-txt">PRACTICE</div>
-                        <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
-                    </Link>
-                </div>
+                {filteredTable.length > 0 && (getSelectedLanguageSettings()?.exercises.translation || getSelectedLanguageSettings()?.exercises.listening || getSelectedLanguageSettings()?.exercises.speaking) &&
+                    <div className="practice-button-wrapper">
+                        <button onClick={async () => {
+                            handleSave(selectedLanguages.filter(lang => lang.name === activeLanguage)[0]);
+                            // fuck it good enough
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                            navigate("/practice");
+                        }} className="practice-btn button">
+                            <div className="button-txt">PRACTICE</div>
+                            <div className="arrow-wrapper"><ArrowForwardIcon fontSize="inherit"/></div>
+                        </button>
+                    </div>}
             </div>
             <div className="vocab-table-page-wrapper">
                 <VocabularyTable wordTable={wordTable}/>
