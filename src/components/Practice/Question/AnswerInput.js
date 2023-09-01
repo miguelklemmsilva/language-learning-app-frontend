@@ -55,6 +55,7 @@ const AnswerInput = forwardRef(({ value, onChange, result, language }, ref) => {
                             onClick={() => handleCharacterClick(isUppercase ? char.toUpperCase() : char)}
                             onMouseDown={(e) => e.preventDefault()}
                             className="button word"
+                            disabled={result}
                     >
                         {isUppercase ? char.toUpperCase() : char}
                     </button>
