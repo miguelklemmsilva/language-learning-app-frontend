@@ -27,7 +27,7 @@ const TranslationSubmitArea = ({onSubmit, result, correct, answer, setSentenceCo
     if (!result) return (<div className="submit-wrapper">
         <button
             className={`button blue submit-btn${answer ? '' : ' inactive'}`}
-            disabled={!answer}
+            disabled={isLoading || !answer}
             onClick={() => {
                 onSubmit();
                 setIsLoading(true);
