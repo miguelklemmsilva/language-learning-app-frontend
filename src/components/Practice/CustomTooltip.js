@@ -22,8 +22,9 @@ const CustomTooltip = (props) => {
 
     return (<ClickAwayListener onClickAway={handleTooltipClose}>
         <div style={{display: "inline-block"}}>
-            <TooltipStyled onClose={handleTooltipClose} open={open} {...props}>
-                <div className="button" style={{display: "inline-block"}} onMouseEnter={handleTooltipOpen} onClick={handleTooltipOpen}
+            <TooltipStyled open={open} {...props}>
+                <div className="button" style={{display: "inline-block"}} onMouseEnter={handleTooltipOpen}
+                     onClick={handleTooltipOpen} onMouseLeave={handleTooltipClose}
                      onMouseDown={(e) => e.preventDefault()}>{props.children}</div>
             </TooltipStyled>
         </div>
