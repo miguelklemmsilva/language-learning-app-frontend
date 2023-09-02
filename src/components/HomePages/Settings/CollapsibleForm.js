@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './CollapsibleForm.scss';
-import {Checkbox, FormControlLabel, FormGroup, styled} from "@mui/material";
+import {Checkbox, FormControlLabel, FormGroup, Radio, RadioGroup, styled} from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import {Link} from "react-router-dom";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -44,13 +44,21 @@ const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActi
     return (<div className="language-form">
         <div className="header-container form">
             <div className="radio-wrapper">
-                <input type="radio"
-                       name="active"
-                       value={language.name}
-                       checked={isActive}
-                       onChange={setActive}
-                       className="radio-input"
-                />
+                <RadioGroup
+                    aria-labelledby="demo-controlled-radio-buttons-group"
+                    name="active"
+                    value={language.name}
+                    onChange={setActive}
+                >
+                    <FormControlLabel value={language.name} control={<Radio/>} label="" checked={isActive} className="radio-input"/>
+                </RadioGroup>
+                {/*<input type="radio"*/}
+                {/*       name="active"*/}
+                {/*       value={language.name}*/}
+                {/*       checked={isActive}*/}
+                {/*       onChange={setActive}*/}
+                {/*       className="radio-input"*/}
+                {/*/>*/}
             </div>
             <div className="flag-container">
                 <img className={`flag-img header ${isActive ? 'active' : ''}`} src={selectedCountry.flag} alt=""/>

@@ -3,10 +3,70 @@
   flex-direction: column;
   gap: 15px;
   padding: 10px;
+  border-radius: 15px;
+
+  .feedback {
+    display: flex;
+    border-radius: 10px;
+    padding: 10px;
+    gap: 15px;
+
+    .visual-feedback {
+      display: grid;
+      place-items: center;
+      min-width: 50px;
+      min-height: 50px;
+      max-width: 50px;
+      max-height: 50px;
+      border-radius: 50%;
+      font-size: 2rem;
+      background-color: white;
+    }
+
+    .feedback-title {
+        font-weight: 600;
+        font-size: 1.6rem;
+    }
+  }
+
+  &.correct {
+    background-color: #deffc4;
+    color: #48a900;
+
+    .eval {
+      background-color: #58cc02;
+      color: white;
+      border: 2px solid transparent;
+
+      &:hover {
+        background-color: transparent;
+        border: 2px solid #58cc02;
+        color: #58cc02;
+      }
+    }
+  }
+
+  &.incorrect {
+    background-color: #ffe0e0;
+    color: #ff464b;
+
+    .eval {
+      background-color: #ff464b;
+      color: white;
+      border: 2px solid transparent;
+
+      &:hover {
+        background-color: transparent;
+        border: 2px solid #ff464b;
+        color: #ff464b;
+      }
+    }
+  }
 
   .sentence-eval-buttons-wrapper {
     display: flex;
-    gap: 5px;
+    flex-direction: column;
+    gap: 25px;
     width: 100%;
 
     .eval {
@@ -17,65 +77,9 @@
       transition: 0.2s ease-in-out;
     }
 
-    .correct {
-      background-color: #2ae16f;
-      color: black;
-      border: 2px solid transparent;
-
-      &:hover {
-        background-color: transparent;
-        border: 2px solid #2ae16f;
-      }
-    }
-
-    .incorrect {
-      background-color: #ff5c60;
-      color: white;
-      border: 2px solid transparent;
-
-      &:hover {
-        background-color: transparent;
-        border: 2px solid #ff5c60;
-        color: #ff5c60;
-      }
-    }
-
-    .next {
-        background-color: #3a61ff;
-        color: white;
-
-        &:hover {
-        }
-    }
-  }
-}
-
-.feedback {
-  display: flex;
-  flex-direction: column;
-  border-radius: 10px;
-  padding: 10px;
-
-  &.correct {
-    border: 2px solid #2ae16f;
-    background-color: #f7fff8;
-  }
-
-  &.incorrect {
-    border: 2px solid #ff5c60;
-    background-color: #ffebec;
-  }
-
-  .ai-feedback {
-    display: inline;
-    font-weight: 600;
-
-    &.correct {
-      color: #2ae16f;
-    }
-
-    &.incorrect {
-      color: #ff5c60;
+    .change-result {
+      color: inherit;
+      text-decoration: underline;
     }
   }
 }
@@ -83,7 +87,6 @@
 .mistake {
   display: inline;
   text-decoration: underline;
-  font-weight: 600;
 }
 
 .submit-btn {
@@ -109,6 +112,16 @@
 
     &:hover {
       background-color: #ffdf00;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .submit-wrapper {
+    .feedback {
+      .visual-feedback {
+        display: none;
+      }
     }
   }
 }

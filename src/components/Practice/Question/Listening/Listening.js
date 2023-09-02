@@ -34,7 +34,7 @@ const Listening = ({
             <ListeningButton sentence={sentence} textarea={textarea}/>
             <AnswerInput ref={textarea} value={answer} result={result} onChange={handleInputChange}
                          onSubmit={onSubmit} language={sentence.language}/>
-            <ListeningSubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer}
+            <ListeningSubmitArea sentence={sentence} onSubmit={onSubmit} result={result} correct={correct} answer={answer}
                                  handleNextSentence={handleNextSentence}/>
         </div>
     );

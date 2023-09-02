@@ -23,7 +23,7 @@ const SpeakingSubmit = ({result, onSubmit, listening}) => {
             <div className="submit-wrapper">
                 <button disabled={listening} className={`submit-btn blue eval button ${listening ? 'inactive' : ''}`}
                 onClick={onSubmit}>
-                    <div className="button-txt">Next Question&nbsp;</div>
+                    <div className="button-txt">CONTINUE&nbsp;</div>
                     <div className="arrow-wrapper"><ArrowForwardIcon/></div>
                 </button>
             </div>

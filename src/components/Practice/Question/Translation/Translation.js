@@ -6,7 +6,17 @@ import {useAuth0} from "@auth0/auth0-react";
 import Tooltip from "@mui/material/Tooltip";
 import CustomTooltip from "../../CustomTooltip";
 
-const Translation = ({sentence, textarea, answer, result, handleInputChange, handleSubmit, cleanString, handleNextSentence, cleanEmptyArea}) => {
+const Translation = ({
+                         sentence,
+                         textarea,
+                         answer,
+                         result,
+                         handleInputChange,
+                         handleSubmit,
+                         cleanString,
+                         handleNextSentence,
+                         cleanEmptyArea
+                     }) => {
     const [correct, setCorrect] = useState(false);
     const {getAccessTokenSilently} = useAuth0();
 
@@ -115,24 +125,24 @@ const Translation = ({sentence, textarea, answer, result, handleInputChange, han
 
         let correct = cleanString(answer) === cleanString(comparisonString);
 
-        if (!correct) {
-            const {data} = await axios.post('/api/ai/verifySentence', {
-                string1: comparisonString,
-                string2: cleanEmptyArea(answer),
-            }, {
-                headers: {
-                    Authorization: `Bearer ${await getAccessTokenSilently()}`
-                }
-            });
-            correct = data.correct;
-        }
-        return correct;
+        if (correct)
+            return {correct: true, exact: true};
+
+        const {data} = await axios.post('/api/ai/verifySentence', {
+            string1: comparisonString,
+            string2: cleanEmptyArea(answer),
+        }, {
+            headers: {
+                Authorization: `Bearer ${await getAccessTokenSilently()}`
+            }
+        });
+        return data;
     }
 
     const onSubmit = async () => {
         const correct = await checkTranslation();
         setCorrect(correct);
-        handleSubmit(correct, sentence.original);
+        handleSubmit(correct.correct, sentence.original);
     }
 
     return (
