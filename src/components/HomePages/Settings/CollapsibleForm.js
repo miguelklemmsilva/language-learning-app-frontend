@@ -52,13 +52,6 @@ const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActi
                 >
                     <FormControlLabel value={language.name} control={<Radio/>} label="" checked={isActive} className="radio-input"/>
                 </RadioGroup>
-                {/*<input type="radio"*/}
-                {/*       name="active"*/}
-                {/*       value={language.name}*/}
-                {/*       checked={isActive}*/}
-                {/*       onChange={setActive}*/}
-                {/*       className="radio-input"*/}
-                {/*/>*/}
             </div>
             <div className="flag-container">
                 <img className={`flag-img header ${isActive ? 'active' : ''}`} src={selectedCountry.flag} alt=""/>

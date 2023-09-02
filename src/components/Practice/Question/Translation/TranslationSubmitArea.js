@@ -91,9 +91,12 @@ const TranslationSubmitArea = ({onSubmit, result, correct, answer, setSentenceCo
             {!correct.correct && !correct.error && <button className="button change-result" onClick={() => {
                 handleCorrectClick();
             }}>The translation was correct</button>}
-            {correct.correct && !correct.exact && <button className="button change-result" onClick={() => {
-                handleIncorrectClick();
-            }}>The translation was incorrect</button>}
+            {correct.correct && !correct.exact && <>
+                <button className="button change-result" onClick={() => {
+                    handleIncorrectClick();
+                }}>The translation was incorrect
+                </button>
+            </>}
         </div>
     </div>);
 };
