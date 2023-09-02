@@ -41,6 +41,11 @@
     transition: 0.25s ease-in-out;
     color: #b0b0b0;
 
+    .nav-link-wrapper {
+      color: inherit;
+        text-decoration: none;
+    }
+
     &.active {
       border-top: 2px solid #578bff;
       color: #578bff;
@@ -60,7 +65,6 @@
 }
 
 .img-wrapper {
-  margin-right: 15px;
 }
 
 .section.top {
@@ -74,6 +78,8 @@
 
   .nav-link-container {
     justify-content: center;
+    text-decoration: none;
+    color: black;
   }
 
   .nav-title {
@@ -93,6 +99,7 @@
 
   .nav-link-container {
     display: flex;
+    gap: 15px;
     align-items: center;
     flex-wrap: wrap;
     color: black;

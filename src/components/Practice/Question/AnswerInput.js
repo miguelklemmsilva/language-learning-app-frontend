@@ -11,7 +11,7 @@ const charactersByLanguage = {
     French: ["à", "â", "æ", "ç", "é", "è", "ê", "ë", "î", "ï", "ô", "œ", "ù", "û", "ü"],
 };
 
-const AnswerInput = forwardRef(({ value, onChange, result, language }, ref) => {
+const AnswerInput = forwardRef(({value, onChange, result, language}, ref) => {
     const [isUppercase, setIsUppercase] = useState(false);
 
     const characters = charactersByLanguage[language] || [];
@@ -25,7 +25,7 @@ const AnswerInput = forwardRef(({ value, onChange, result, language }, ref) => {
         const newValue = value.substring(0, start) + char + value.substring(end);
 
         // Set the new value
-        onChange({ target: { value: newValue } });
+        onChange({target: {value: newValue}});
 
         // Move the cursor right after the inserted character
         setTimeout(() => {
@@ -37,8 +37,7 @@ const AnswerInput = forwardRef(({ value, onChange, result, language }, ref) => {
         setIsUppercase(prev => !prev);
     };
 
-    return (
-        <div className="answer-input-container">
+    return (<div className="answer-input-container">
             <textarea className={`answer-input ${result ? 'submitted' : ''}`}
                       ref={ref}
                       value={value}
@@ -46,23 +45,21 @@ const AnswerInput = forwardRef(({ value, onChange, result, language }, ref) => {
                       onChange={onChange}
                       placeholder="Write your answer here"
             />
-            <div className="characters-container">
-                <button onClick={toggleCase} className="button word">
-                    {isUppercase ? <div className="button-txt"><ArrowDownwardIcon sx={{font: "inherit"}}/></div> : <ArrowUpwardIcon sx={{font: "inherit"}}/>}
-                </button>
-                {characters.map(char => (
-                    <button key={char}
-                            onClick={() => handleCharacterClick(isUppercase ? char.toUpperCase() : char)}
-                            onMouseDown={(e) => e.preventDefault()}
-                            className="button word"
-                            disabled={result}
-                    >
-                        {isUppercase ? char.toUpperCase() : char}
-                    </button>
-                ))}
-            </div>
-        </div>
-    );
+        {characters.length > 0 && <div className="characters-container">
+            <button onClick={toggleCase} className="button word">
+                {isUppercase ? <div className="button-txt"><ArrowDownwardIcon sx={{font: "inherit"}}/></div> :
+                    <ArrowUpwardIcon sx={{font: "inherit"}}/>}
+            </button>
+            {characters.map(char => (<button key={char}
+                                             onClick={() => handleCharacterClick(isUppercase ? char.toUpperCase() : char)}
+                                             onMouseDown={(e) => e.preventDefault()}
+                                             className="button word"
+                                             disabled={result}
+            >
+                {isUppercase ? char.toUpperCase() : char}
+            </button>))}
+        </div>}
+    </div>);
 });
 
 export default AnswerInput;

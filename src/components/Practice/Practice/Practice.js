@@ -92,12 +92,12 @@ const Practice = () => {
             return <div className="main-content practice">
                 <div className="practice-container">
                     <div className="top-container"><Link to="/home">
-                        <div style={{display: "grid"}}><CloseIcon sx={{color: "#9f9f9f"}}/></div>
+                        <div style={{display: "grid", padding: "10px"}}><CloseIcon sx={{color: "#9f9f9f"}}/></div>
                     </Link>
                         <div className="progress-bar-container"><LinearProgress variant="determinate"
                                                                                 value={correctSentences * 100 / sentences.length}/>
                         </div>
-                        <div>{correctSentences}/{sentences.length}</div>
+                        <div style={{padding: "10px"}}>{correctSentences}/{sentences.length}</div>
                     </div>
                     <div className="question-component-wrapper">
                         {sentence && <Question sentence={sentence}
