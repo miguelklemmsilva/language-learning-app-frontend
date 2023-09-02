@@ -1,18 +1,10 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useEffect} from "react";
 import "./SpeakingOutput.scss";
-import Tooltip from '@mui/material/Tooltip';
 import {PronunciationAssessmentResult, SpeechRecognitionResult} from "microsoft-cognitiveservices-speech-sdk";
-import {styled, tooltipClasses} from "@mui/material";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CustomTooltip from "../../CustomTooltip";
 
 const SpeakingOutput = ({result, scores, setScores, output, setOutput, sentence}) => {
-    const CustomTooltip = styled(({className, ...props}) => (
-        <Tooltip {...props} classes={{popper: className}}/>))(({theme}) => ({
-        [`& .${tooltipClasses.tooltip}`]: {
-            fontSize: "0.85rem",
-        },
-    }));
-
     function ScoreCircle({scoreValue, color}) {
         const radius = 21;
         const circumference = 2 * Math.PI * radius;

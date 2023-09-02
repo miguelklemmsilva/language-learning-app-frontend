@@ -1,4 +1,4 @@
-import {useContext} from "react";
+import React, {useContext} from "react";
 import {Link} from "react-router-dom";
 import "../HomePage.scss";
 import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
@@ -9,6 +9,7 @@ import HearingIcon from '@mui/icons-material/Hearing';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import VocabularyTable from "../VocabularyTable/VocabularyTable";
 import {useNavigate} from "react-router-dom";
+import ScrollToTop from "../../../ScrollToTop";
 
 function Home() {
     const {

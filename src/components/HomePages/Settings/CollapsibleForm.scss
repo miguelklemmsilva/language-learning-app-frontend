@@ -146,6 +146,8 @@
             font-weight: 600;
             transition: 0.2s ease-in-out;
             flex: 3;
+            display: grid;
+            place-items: center;
 
             &:hover {
                 color: #3a61ff;

@@ -1,22 +1,14 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import axios from "axios";
 import AnswerInput from "../AnswerInput";
 import TranslationSubmitArea from "./TranslationSubmitArea";
 import {useAuth0} from "@auth0/auth0-react";
 import Tooltip from "@mui/material/Tooltip";
-import {ClickAwayListener, styled, tooltipClasses} from "@mui/material";
+import CustomTooltip from "../../CustomTooltip";
 
 const Translation = ({sentence, textarea, answer, result, handleInputChange, handleSubmit, cleanString, handleNextSentence, cleanEmptyArea}) => {
     const [correct, setCorrect] = useState(false);
     const {getAccessTokenSilently} = useAuth0();
-
-    const CustomTooltip = styled(({className, ...props}) => (
-        <Tooltip {...props} classes={{popper: className}}/>
-    ))(({theme}) => ({
-        [`& .${tooltipClasses.tooltip}`]: {
-            fontSize: "0.85rem",
-        },
-    }));
 
     const setSentenceCorrectness = (isCorrect) => {
         handleSubmit(isCorrect, sentence.original);

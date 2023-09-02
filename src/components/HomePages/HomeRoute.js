@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import Settings from "./Settings/Settings";
+import Footer from "./Footer";
 
 const HomeRoute = ({children}) => {
     const {user, isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
@@ -48,6 +49,7 @@ const HomeRoute = ({children}) => {
     return (<HomeRouteProvider checkIfUserIsRegistered={checkIfUserIsRegistered}>
         <Sidebar/>
         {children}
+        <Footer/>
     </HomeRouteProvider>)
 }
 
