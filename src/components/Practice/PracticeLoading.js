@@ -2,7 +2,7 @@ import React from "react";
 import {Skeleton} from "@mui/material";
 
 const PracticeLoading = () => (
-    <div className="main-content practice">
+    <div className="main-content no-margin">
         <div className="question-container">
             <div className="top-container"><Skeleton/></div>
             <div className="question-component-wrapper">

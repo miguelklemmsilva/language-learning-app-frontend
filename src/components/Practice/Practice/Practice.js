@@ -75,7 +75,7 @@ const Practice = () => {
     }, [sentences]);
 
     if (error) return (
-        <div className="main-content practice">
+        <div className="main-content no-margin">
             <div className="practice-container">
                 <h1>No words to practice!</h1>
                 <h2>Add some words into your vocabulary table to practice</h2>
@@ -89,7 +89,7 @@ const Practice = () => {
 
     if (sentences) {
         if (sentenceNumber >= 0) {
-            return <div className="main-content practice">
+            return <div className="main-content no-margin">
                 <div className="practice-container">
                     <div className="top-container"><Link to="/home">
                         <div style={{display: "grid", padding: "10px"}}><CloseIcon sx={{color: "#9f9f9f"}}/></div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {memo} from 'react';
 import './Navbar.scss';
 import {Link, useLocation} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
@@ -25,11 +25,11 @@ const Navbar = () => {
                     <div className="section top">
                         <Link to="/" className="nav-link-container">
                             <div className="img-wrapper">
-                                <img className="nav-icon" src="OOjs_UI_icon_language-ltr.svg.png"/>
+                                <img className="nav-icon" alt="" src="/CapyLogo.ico"/>
                             </div>
                             <div className="nav-link-wrapper">
                                 <div className="nav-title">
-                                    Language Learning
+                                    BabbleBara
                                 </div>
                             </div>
                         </Link>
@@ -107,4 +107,4 @@ const Navbar = () => {
     );
 };
 
-export default React.memo(Navbar);
+export default memo(Navbar);

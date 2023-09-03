@@ -128,15 +128,19 @@ const Translation = ({
         if (correct)
             return {correct: true, exact: true};
 
-        const {data} = await axios.post('/api/ai/verifySentence', {
-            string1: comparisonString,
-            string2: cleanEmptyArea(answer),
-        }, {
-            headers: {
-                Authorization: `Bearer ${await getAccessTokenSilently()}`
-            }
-        });
-        return data;
+        try {
+            const {data} = await axios.post('/api/ai/verifySentence', {
+                string1: comparisonString,
+                string2: cleanEmptyArea(answer),
+            }, {
+                headers: {
+                    Authorization: `Bearer ${await getAccessTokenSilently()}`
+                }
+            });
+            return data;
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     const onSubmit = async () => {

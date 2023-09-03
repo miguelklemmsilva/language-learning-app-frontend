@@ -5,7 +5,7 @@
   padding: 50px;
   justify-content: center;
 
-  &.practice {
+  &.no-margin {
     margin-left: 0;
   }
 }
@@ -24,6 +24,11 @@
   flex-wrap: wrap;
 }
 
+.true-center {
+  display: grid;
+    place-items: center;
+}
+
 .button {
   border: none;
   background-color: transparent;
@@ -33,6 +38,9 @@
   text-decoration: none;
   font: inherit;
   color: black;
+  padding: 0;
+  padding-block: 0;
+  padding-inline: 0;
 
   &.blue {
     color: white;
