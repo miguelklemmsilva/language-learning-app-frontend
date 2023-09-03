@@ -36,7 +36,7 @@ const LandingPage = () => {
 
     return (<div className="main-content no-margin">
             <div style={{maxWidth: "2000px"}}>
-                <div className="welcome-container">
+                <div className="welcome-lp-container">
                     <div className="welcome-info">
                         <div className="slogan">Babble Today, Fluent Tomorrow</div>
                         <div className="">Achieve fluency through translation, listening, and speaking
