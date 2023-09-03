@@ -47,7 +47,7 @@ const LandingPage = () => {
                         </div>
                     </div>
 
-                    {isAuthenticated ? isAuth() : null}
+                    {isAuthenticated ? isAuth() : <button onClick={() => loginWithRedirect()}>Log In</button>}
                 </div>
             </div>
         </div>)
