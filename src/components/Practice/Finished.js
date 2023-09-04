@@ -26,19 +26,19 @@ function Finished({sentences}) {
                 <div className="collapsible-form-container">
                     {sentences && sentences.map((sentence, idx) => (<div key={idx} className="language-form">
                         <div className="header-container form">
-                            {sentence.translation && <div className="info-container finished">
+                            {sentence.type === 'translation' && <div className="info-container finished">
                                 <div className="main-info">
                                     <TranslateIcon fontSize="inherit"/>
                                 </div>
                                 <div className="sub-info">Translation</div>
                             </div>}
-                            {sentence.listening && <div className="info-container finished">
+                            {sentence.type === 'listening' && <div className="info-container finished">
                                 <div className="main-info">
                                     <HearingIcon fontSize="inherit"/>
                                 </div>
                                 <div className="sub-info">Listening</div>
                             </div>}
-                            {sentence.speaking && <div className="info-container finished">
+                            {sentence.type === 'speaking' && <div className="info-container finished">
                                 <div className="main-info">
                                     <RecordVoiceOverIcon fontSize="inherit"/>
                                 </div>

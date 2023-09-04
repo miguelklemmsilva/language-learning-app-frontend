@@ -98,7 +98,7 @@ const SpeakingInput = ({sentence, setResult, listening, setListening, chunksRef,
                     };
 
                     mediaRecorderRef.current.onstop = () => {
-                        const audioBlob = new Blob(chunksRef.current, {type: "audio/wav"});
+                        const audioBlob = new Blob(chunksRef.current, {type: "audio/mpeg"});
                         audioElementRef.current.src = URL.createObjectURL(audioBlob);
                     };
 
