@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useContext, useEffect, useState} from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import useFetchSentences from "../../../hooks/useFetchSentences";
 import Question from "../Question/Question";
@@ -9,25 +9,25 @@ import {LinearProgress} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import {useAuth0} from "@auth0/auth0-react";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import axios from "axios";
+import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
 
 const Practice = () => {
     const [sentenceNumber, setSentenceNumber] = useState(0);
     const [sentence, setSentence] = useState(null);
     const [sentences, setSentences, error] = useFetchSentences("api/ai/generatesentences");
-    const {isAuthenticated, isLoading} = useAuth0();
+    const {isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
     const navigate = useNavigate();
+    const {updateVocabTable} = useContext(HomeRouteContext);
 
     useEffect(() => {
         if (sentences) setSentence(sentences[sentenceNumber]);
     }, [sentenceNumber, sentences]);
 
     useEffect(() => {
-        if (isAuthenticated == null)
-            return;
-        if (!isAuthenticated && !isLoading)
-            navigate("/");
-        if (error && error.code === 0)
-            navigate("/settings");
+        if (isAuthenticated == null) return;
+        if (!isAuthenticated && !isLoading) navigate("/");
+        if (error && error.code === 0) navigate("/settings");
     }, [isAuthenticated, isLoading, error]);
 
     const correctSentences = sentences ? sentences.filter(sentence => sentence.correct).length : 0;
@@ -68,24 +68,55 @@ const Practice = () => {
                 }
             }
 
+            if (nextSentence === -1) {
+                const finishLesson = async () => {
+                    const filteredSentences = sentences.map(sentence => ({
+                        mistakes: sentence.mistakes, word: sentence.word, language: sentence.language, type: sentence.type,
+                    }));
+
+                    axios.post(`api/user/finishlesson`, {sentences: filteredSentences}, {
+                        headers: {
+                            'Authorization': `Bearer ${await getAccessTokenSilently()}`
+                        }
+                    })
+                        .catch(error => console.error(error));
+                }
+
+                finishLesson().then(() => {
+                    updateVocabTable();
+                });
+            }
+
             setSentenceNumber(nextSentence);
         };
 
         setNextQuestion();
     }, [sentences]);
 
-    if (error) return (
-        <div className="main-content no-margin">
-            <div className="practice-container">
-                <h1>No words to practice!</h1>
-                <h2>Add some words into your vocabulary table to practice</h2>
-                <Link to={"/vocabularytable"} className="button blue generic" style={{width: "100%"}}>
-                    <div className="button-txt">Go to vocabulary table</div>
+    if (error) {
+        if (error.code)
+            return (<div className="main-content no-margin">
+                <div className="practice-container">
+                    <h1>No words to practice!</h1>
+                    <h2>Add some words into your vocabulary table to practice</h2>
+                    <Link to={"/vocabularytable"} className="button blue generic" style={{width: "100%"}}>
+                        <div className="button-txt">Go to vocabulary table</div>
+                        <div className="arrow-wrapper"><ArrowForwardIcon/></div>
+                    </Link>
+                </div>
+            </div>);
+        else
+            return (<div className="main-content no-margin">
+                <div className="practice-container">
+                    <h1>Something went wrong while generating sentences!</h1>
+                    <h2>Try logging out then logging back in or switching to another language and switching back.</h2>
+                </div>
+                <Link to={"/home"} className="button blue generic" style={{width: "100%"}}>
+                    <div className="button-txt">Go Home</div>
                     <div className="arrow-wrapper"><ArrowForwardIcon/></div>
                 </Link>
-            </div>
-        </div>
-    );
+            </div>);
+    }
 
     if (sentences) {
         if (sentenceNumber >= 0) {

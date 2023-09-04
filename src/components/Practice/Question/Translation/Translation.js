@@ -5,6 +5,7 @@ import TranslationSubmitArea from "./TranslationSubmitArea";
 import {useAuth0} from "@auth0/auth0-react";
 import Tooltip from "@mui/material/Tooltip";
 import CustomTooltip from "../../CustomTooltip";
+import ListeningButton from "../Listening/ListeningButton";
 
 const Translation = ({
                          sentence,
@@ -155,7 +156,7 @@ const Translation = ({
             <div className="translation-text">{renderTranslation()}</div>
             <AnswerInput ref={textarea} value={answer} result={result} onChange={handleInputChange}
                          onSubmit={onSubmit} language={sentence.language}/>
-            <TranslationSubmitArea onSubmit={onSubmit} result={result} correct={correct} answer={answer}
+            <TranslationSubmitArea sentence={sentence} onSubmit={onSubmit} result={result} correct={correct} answer={answer}
                                    setSentenceCorrectness={setSentenceCorrectness}
             />
         </div>

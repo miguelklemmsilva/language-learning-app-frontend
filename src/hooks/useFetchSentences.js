@@ -23,8 +23,6 @@ const useFetchSentences = (url) => {
                     console.error(err);
                     if (err.response && err.response.status === 400)
                         setError(err.response.data);
-                    else
-                        logout();
                 });
         }
         getSentences();

@@ -26,7 +26,7 @@
 
 .true-center {
   display: grid;
-    place-items: center;
+  place-items: center;
 }
 
 .button {
@@ -182,6 +182,7 @@
 .form-btn-container {
   display: flex;
   gap: 5px;
+
   .vocab-table-btn {
     flex: 1;
     padding: 10px;

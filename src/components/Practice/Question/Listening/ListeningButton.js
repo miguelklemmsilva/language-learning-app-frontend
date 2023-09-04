@@ -1,7 +1,7 @@
 import React, {useRef} from "react";
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
-const ListeningButton = ({ sentence }) => {
+const ListeningButton = ({ sentence, small }) => {
     const audioRef = useRef(null);
 
     const base64ToArrayBuffer = () => {
@@ -34,7 +34,8 @@ const ListeningButton = ({ sentence }) => {
 
     return (
         <button
-            className="question-btn button"
+            className={`${!small && 'question-btn'} button`}
+            style={small && {color: "inherit", fontSize: "1.5rem"}}
             draggable={false}
             onClick={synthesiseText}
             onMouseDown={(e) => e.preventDefault()}
