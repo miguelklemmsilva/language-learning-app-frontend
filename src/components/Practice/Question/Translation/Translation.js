@@ -140,6 +140,7 @@ const Translation = ({
             return data;
         } catch (e) {
             console.error(e);
+            return {correct: false, exact: false};
         }
     }
 
