@@ -20,6 +20,8 @@ const HomeRoute = ({children}) => {
                 }
             }).then((res) => {
                 setUserRegistered(res.data.isRegistered)
+                if (!res.data.isRegistered)
+                    navigate("/settings");
             }).catch((err) => {
                 console.error(err);
             });
@@ -42,7 +44,7 @@ const HomeRoute = ({children}) => {
 
     if (!userRegistered) {
         return <HomeRouteProvider checkIfUserIsRegistered={checkIfUserIsRegistered}>
-            <div className="page-container" style={{marginLeft: "-300px"}}><Settings/></div>
+            <div><Settings/></div>
         </HomeRouteProvider>
     }
 
