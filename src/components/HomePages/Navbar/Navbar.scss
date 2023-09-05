@@ -93,6 +93,16 @@
   }
 }
 
+.nav-link-container.logout {
+  margin-top: 30px;
+}
+
+.nav-link-container.logout:hover {
+  background-color: #ffc6c6;
+  color: #ff7070;
+  cursor: pointer;
+}
+
 .section.center {
   height: 500px;
   justify-content: center;
@@ -120,16 +130,6 @@
     font-size: 20px;
     color: #b0b0b0;
     transition: background-color 0.25s ease-in-out, margin-right 0.2s ease-out;
-  }
-
-  .nav-link-container.logout {
-    margin-top: 30px;
-  }
-
-  .nav-link-container.logout:hover {
-    background-color: #ffc6c6;
-    color: #ff7070;
-    cursor: pointer;
   }
 
   .nav-link-container.active {

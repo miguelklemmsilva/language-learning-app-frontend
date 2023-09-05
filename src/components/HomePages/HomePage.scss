@@ -8,6 +8,10 @@
   &.no-margin {
     margin-left: 0;
   }
+
+  &.lp {
+    gap: 20px
+  }
 }
 
 .content-container {
@@ -41,6 +45,7 @@
   padding: 0;
   padding-block: 0;
   padding-inline: 0;
+  transition: 0.2s ease-in-out;
 
   &.blue {
     color: white;

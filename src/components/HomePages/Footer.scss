@@ -1,0 +1,11 @@
+.footer-container {
+  padding: 50px;
+  margin-left: 300px;
+}
+
+@media (max-width: 720px) {
+  .footer-container {
+    margin-bottom: 100px;
+    margin-left: 0;
+  }
+}

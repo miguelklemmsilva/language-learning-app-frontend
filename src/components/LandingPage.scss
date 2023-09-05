@@ -1,10 +1,16 @@
-.welcome-lp-container {
+.lp-container {
+  max-width: 2000px;
   display: flex;
-  min-height: 700px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lp-info-container {
+  display: flex;
   flex: 1;
+  padding: 50px;
   background-color: white;
   border-radius: 25px;
-  padding: 20px;
   flex-wrap: wrap;
   gap: 15px;
 
@@ -17,15 +23,34 @@
     align-content: center;
     flex-wrap: wrap;
 
+    .lp-point {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .welcome-buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+    }
+
     .nav-link-container {
       min-width: 400px;
       max-width: 700px;
       flex: 1 0;
       padding: 10px;
-      border-radius: 20px;
+      border-radius: 15px;
       font-weight: 600;
       gap: 5px;
       font-size: 20px;
+      box-sizing: border-box;
+    }
+
+    .logout {
+      border: 2px solid #ff7070;
+      color: #ff7070;
     }
 
     .slogan {

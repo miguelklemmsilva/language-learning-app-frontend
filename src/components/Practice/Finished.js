@@ -13,10 +13,6 @@ import ListeningButton from "./Question/Listening/ListeningButton";
 function Finished({sentences}) {
     const navigate = useNavigate();
 
-    useEffect(() => {
-        console.log(sentences);
-    }, []);
-
     return (<div className="main-content no-margin">
         <div className="content-container">
             <h1 style={{textAlign: 'center'}}>

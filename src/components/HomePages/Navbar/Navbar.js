@@ -24,12 +24,9 @@ const Navbar = () => {
                 <div className="sections desktop">
                     <div className="section top">
                         <Link to="/" className="nav-link-container">
-                            <div className="img-wrapper">
-                                <img className="nav-icon" alt="" src="/CapyLogo.ico"/>
-                            </div>
                             <div className="nav-link-wrapper">
                                 <div className="nav-title">
-                                    BabbleBara
+                                    PolyBara
                                 </div>
                             </div>
                         </Link>
