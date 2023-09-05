@@ -153,7 +153,9 @@ const Translation = ({
 
     return (
         <div className="question-container">
-            <div className="question-type">Translate the sentence into {sentence.language}</div>
+            <div className="question-type">Translate the sentence into {sentence.language}
+                <div className="help-txt">Click on the highlighted words for help!</div>
+            </div>
             <div className="translation-text">{renderTranslation()}</div>
             <AnswerInput ref={textarea} value={answer} result={result} onChange={handleInputChange}
                          onSubmit={onSubmit} language={sentence.language}/>

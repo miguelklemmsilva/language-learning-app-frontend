@@ -54,7 +54,7 @@ function Home() {
             </div>
             <div className="welcome-container">
                 <div className="messages-container">
-                    <div className="welcome-message">Hello {user.nickname}!</div>
+                    <div className="welcome-message">Hello {user.name || user.nickname}!</div>
                     <div className="message">You
                         have <strong>{filteredTable.length}</strong> {filteredTable.length === 1 ? "word" : "words"} to
                         practice
@@ -76,7 +76,7 @@ function Home() {
                             </div>
                         </div>
                         <div className="info-content">
-                            <div className="active-country info">
+                            <div className="info">
                                 <div className="info-txt">
                                     <div>Studying <strong>{activeLanguage}</strong> from</div>
                                 </div>

@@ -3,7 +3,6 @@
   display: flex;
   background-color: #f8f8ff;
   padding: 50px;
-  justify-content: center;
 
   &.no-margin {
     margin-left: 0;
@@ -119,10 +118,12 @@
 
 .header-container {
   display: flex;
+  flex-wrap: wrap;
   align-content: center;
   justify-content: space-between;
   padding: 10px;
   box-sizing: border-box;
+  gap: 5px;
 
   .txt {
     display: flex;
@@ -139,7 +140,6 @@
   .messages-container {
     padding: 40px;
     box-sizing: border-box;
-    min-width: 350px;
     background-color: #cfdcff;
     border-radius: 20px;
     margin: 10px;
@@ -161,7 +161,6 @@
     display: flex;
     justify-content: center;
     box-sizing: border-box;
-    min-width: 350px;
     margin: 10px;
     flex: 1;
 
@@ -209,7 +208,6 @@
     background-color: #cfdcff;
     border-radius: 20px;
     flex-direction: column;
-    min-width: 340px;
     text-decoration: none;
     color: inherit;
     height: fit-content;
@@ -242,6 +240,7 @@
         .info {
           display: flex;
           padding: 20px;
+          flex-wrap: wrap;
 
           .info-txt {
             display: flex;
@@ -295,5 +294,10 @@
   .main-content {
     margin: 0;
     padding: 5px;
+  }
+  .lp-container {
+    .lp-info-container {
+      padding: 5px;
+    }
   }
 }
