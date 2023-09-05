@@ -68,7 +68,7 @@ function Home() {
             <div className="info-container">
                 <Link to="/settings" className="language-settings">
                     <div className="language-settings-container">
-                        <div className="header-container">
+                        <div className="header-container" style={{flexWrap: "nowrap"}}>
                             <strong>Language Settings</strong>
                             <div className="button">
                                 <div className="button-txt">Configure</div>
