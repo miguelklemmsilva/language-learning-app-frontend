@@ -54,7 +54,7 @@ function Home() {
             </div>
             <div className="welcome-container">
                 <div className="messages-container">
-                    <div className="welcome-message">Hello {user.name || user.nickname}!</div>
+                    <div className="welcome-message">Hello {user.nickname}!</div>
                     <div className="message">You
                         have <strong>{filteredTable.length}</strong> {filteredTable.length === 1 ? "word" : "words"} to
                         practice
