@@ -73,7 +73,7 @@ const LandingPage = () => {
 
 
     return (<>
-            <div className="main-content no-margin">
+            <div style={{justifyContent: "normal"}} className="main-content no-margin">
                 <div className="lp-container">
                     <div className="lp-info-container">
                         <div className="welcome-info">
