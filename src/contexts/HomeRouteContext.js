@@ -85,7 +85,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
             }).catch((err) => console.error(err));
     };
 
-    // Load active languages from the server (similar to how you did in Settings)
+    // Load active languages from the server
     const fetchActiveLanguage = async () => {
         try {
             const activeLanguageResponse = await axios.get("api/user/getactivelanguage", {
