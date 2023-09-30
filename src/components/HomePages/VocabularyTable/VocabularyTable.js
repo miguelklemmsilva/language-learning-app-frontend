@@ -1,6 +1,15 @@
-import React, {useCallback, useContext, useEffect, useState} from "react";
+import React, {useContext, useState} from "react";
 import {
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Paper, Pagination, PaginationItem
+    Pagination,
+    PaginationItem,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    TableSortLabel
 } from '@mui/material';
 import './VocabularyTable.scss';
 import calculateTime from "../calculateTime";
@@ -15,7 +24,7 @@ const VocabularyTable = ({wordTable, isHome}) => {
     const totalElements = wordTable.length;
     const x = (page - 1) * rowsPerPage + 1;
     const y = Math.min(page * rowsPerPage, totalElements);  // Taking the smaller of the two values to handle the last page
-
+    const context = useContext(HomeRouteContext);
 
     const handleSortRequest = (property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -52,6 +61,13 @@ const VocabularyTable = ({wordTable, isHome}) => {
 
         return colors.map((color, index) => <div key={index} className={`bar ${color}`}></div>);
     };
+
+    const getDictionaryLink = (word) => {
+        if (!context.activeLanguage) return null;
+        const country = context.activeLanguage;
+        console.log(`https://www.collinsdictionary.com/dictionary/${country}-english/${word.replace(' ', '-')}`)
+        return `https://www.collinsdictionary.com/dictionary/${country.toLowerCase()}-english/${word.replace(' ', '-')}`;
+    }
 
     if (wordTable.length === 0) {
         return <div>
@@ -109,7 +125,7 @@ const VocabularyTable = ({wordTable, isHome}) => {
                 </TableHead>
                 <TableBody>
                     {sortedWordTable.map((word) => (<TableRow key={word.word_id}>
-                        <TableCell>{word.word}</TableCell>
+                        <TableCell><a href={getDictionaryLink(word.word)} target="_blank" rel="noopener noreferrer">{word.word}</a></TableCell>
                         <TableCell>{renderBars(word.box_number)}</TableCell>
                         {!isHome && <TableCell>{calculateTime(word.minutes_until_due) === null ? "now" : "In " + calculateTime(word.minutes_until_due)}</TableCell>}
                         <TableCell>{calculateTime(word.last_seen) === null ? "just now" : calculateTime(word.last_seen) + " ago"}</TableCell>
