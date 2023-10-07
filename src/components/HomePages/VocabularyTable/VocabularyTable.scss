@@ -1,10 +1,8 @@
-.content-container {
+.table {
+
   .vocab-table-wrapper {
     border-radius: 20px;
     background-color: white;
-  }
-
-  table {
   }
 
   .home {
@@ -82,17 +80,28 @@
     padding: 6px;
     font-size: 16px;
 
-    .delete-btn {
+    .generic-btn {
       border-radius: 10px;
-      color: #b46969;
       font-weight: 600;
       padding: 8px;
       border: 2px solid transparent;
       box-sizing: border-box;
-      transition: border 0.2s ease-in-out;
+      width: 100px;
 
-      &:hover {
-        border: 2px solid #b46969;
+      &.delete-btn {
+        color: #b46969;
+
+        &:hover {
+          border: 2px solid #b46969;
+        }
+      }
+
+      &.add-btn {
+        color: #3a61ff;
+
+        &:hover {
+          border: 2px solid #3a61ff;
+        }
       }
     }
   }

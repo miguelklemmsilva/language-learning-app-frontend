@@ -1,5 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {FormControl, InputLabel} from "@mui/material";
 
 const LanguageDropdown = ({onLanguageSelect, selectedOptions, languages}) => {
     const dropdownRef = useRef(null);
@@ -41,7 +40,7 @@ const LanguageDropdown = ({onLanguageSelect, selectedOptions, languages}) => {
 
     return (
         <div className="add-language">
-            <button className={`button add-language-selector ${availableOptions.length === 0 ? "disabled" : ""} ${showDropdown ? "active" : ""}`}
+            <button className={`button add-language-selector ${availableOptions.length === 0 ? "disabled" : ""} ${showDropdown ? "active" : ""} dropdown-button`}
                     ref={buttonRef}
                     disabled={availableOptions.length === 0}
                     onClick={handleButtonClick}><div>Add a Language</div><div>{showDropdown ? '-' : '+'}</div>

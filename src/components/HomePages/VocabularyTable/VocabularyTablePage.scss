@@ -25,25 +25,37 @@
 
 .vocab-table-page-wrapper {
   margin: 10px;
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 10px;
+
+    .category-square {
+      text-align: center;
+      border: transparent 3px solid;
+      background-color: #dabeff;
+      font-weight: 700;
+      color: #5529ee;
+      padding: 20px;
+      border-radius: 15px;
+
+      &:hover {
+        border: 3px solid #5529ee;
+        transform: scale(1.02);
+      }
+    }
+  }
 }
 
 .modal-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-height: 90vh; // max height is 90% of viewport height
-  max-width: 1000px;
   background-color: white;
   border-radius: 30px;
   display: flex;
   flex-direction: column;
   padding: 2rem;
-
-  &.big {
-    width: 80%;
-    height: 70%;
-  }
+  gap: 10px;
 
   .txt-field {
     margin-top: 10px;
@@ -54,6 +66,7 @@
     border-radius: 10px;
     border: 2px solid #e6e6e6;
     padding: 12px;
+    min-height: 200px;
 
     &:focus {
       outline: none;
@@ -61,40 +74,36 @@
     }
   }
 
+  .submit-vocab-button {
+    flex: 3;
+    padding: 10px;
+    box-sizing: border-box;
+    font-weight: 600;
+    border-radius: 20px;
+  }
+
+  .close-modal-button {
+    flex: 1;
+    padding: 10px;
+    border: 3px solid #3a61ff;
+    border-radius: 20px;
+    color: #3a61ff;
+    font-weight: 600;
+    transition: 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #d3dcff;
+    }
+  }
+
+  .add-words-btn {
+    padding: 10px;
+    border-radius: 20px;
+  }
+
   .modal-buttons-container {
     display: flex;
-
-    .submit-vocab-button {
-      flex: 3;
-      padding: 10px;
-      box-sizing: border-box;
-      border: 3px solid transparent;
-      background-color: #3a61ff;
-      color: white;
-      font-weight: 600;
-      border-radius: 20px;
-      margin: 5px;
-      transition: 0.2s ease-in-out;
-
-      &:hover {
-        border: 3px solid #0031ff;
-      }
-    }
-
-    .close-modal-button {
-      flex: 1;
-      padding: 10px;
-      border: 3px solid #3a61ff;
-      margin: 5px;
-      border-radius: 20px;
-      color: #3a61ff;
-      font-weight: 600;
-      transition: 0.2s ease-in-out;
-
-      &:hover {
-        background-color: #d3dcff;
-      }
-    }
+    gap: 5px;
 
     .confirm-button {
       flex: 3;
@@ -111,20 +120,20 @@
         border: 3px solid #0031ff;
       }
     }
+  }
 
-    .cancel-button {
-      flex: 1;
-      padding: 10px;
-      margin: 5px;
-      border: 3px solid #3a61ff;
-      border-radius: 20px;
-      color: #3a61ff;
-      font-weight: 600;
-      transition: 0.2s ease-in-out;
+  .cancel-button {
+    flex: 1;
+    padding: 10px;
+    margin: 5px;
+    border: 3px solid #3a61ff;
+    border-radius: 20px;
+    color: #3a61ff;
+    font-weight: 600;
+    transition: 0.2s ease-in-out;
 
-      &:hover {
-        background-color: #d3dcff;
-      }
+    &:hover {
+      background-color: #d3dcff;
     }
   }
 }

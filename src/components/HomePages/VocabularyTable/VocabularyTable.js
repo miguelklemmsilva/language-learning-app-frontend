@@ -1,21 +1,13 @@
 import React, {useContext, useState} from "react";
 import {
-    Pagination,
-    PaginationItem,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TableSortLabel
+    Pagination, PaginationItem, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel
 } from '@mui/material';
 import './VocabularyTable.scss';
 import calculateTime from "../calculateTime";
 import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
+import CircularProgress from '@mui/material/CircularProgress';
 
-const VocabularyTable = ({wordTable, isHome}) => {
+const VocabularyTable = ({wordTable, isHome, isCategoryView, addWords, isAddingVocabulary}) => {
     const {handleRemoveWord} = useContext(HomeRouteContext);
     const [order, setOrder] = useState('asc');
     const [orderBy, setOrderBy] = useState('word');
@@ -65,7 +57,6 @@ const VocabularyTable = ({wordTable, isHome}) => {
     const getDictionaryLink = (word) => {
         if (!context.activeLanguage) return null;
         const country = context.activeLanguage;
-        console.log(`https://www.collinsdictionary.com/dictionary/${country}-english/${word.replace(' ', '-')}`)
         return `https://www.collinsdictionary.com/dictionary/${country.toLowerCase()}-english/${word.replace(' ', '-')}`;
     }
 
@@ -75,8 +66,8 @@ const VocabularyTable = ({wordTable, isHome}) => {
             <div>Add some using the Add Vocabulary button</div>
         </div>
     }
-    return (<div>
-         <TableContainer component={Paper} className={`vocab-table-wrapper ${isHome ? 'home' : ''}`}>
+    return (<div className="table">
+        <TableContainer component={Paper} className={`vocab-table-wrapper ${isHome ? 'home' : ''}`}>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -99,18 +90,17 @@ const VocabularyTable = ({wordTable, isHome}) => {
                                 <div className="arrow-balancer"/>
                                 Familiarity
                             </TableSortLabel>
-                        </TableCell>
-                        {!isHome && <TableCell>
-                            <TableSortLabel
-                                active={orderBy === "minutes_until_due"}
-                                direction={orderBy === "minutes_until_due" ? order : 'asc'}
-                                onClick={() => handleSortRequest("minutes_until_due")}
-                            >
-                                <div className="arrow-balancer"/>
-                                Due
-                            </TableSortLabel>
-                        </TableCell>}
-                        <TableCell>
+                        </TableCell> {!isHome && !isCategoryView && <TableCell>
+                        <TableSortLabel
+                            active={orderBy === "minutes_until_due"}
+                            direction={orderBy === "minutes_until_due" ? order : 'asc'}
+                            onClick={() => handleSortRequest("minutes_until_due")}
+                        >
+                            <div className="arrow-balancer"/>
+                            Due
+                        </TableSortLabel>
+                    </TableCell>}
+                        {!isCategoryView && <TableCell>
                             <TableSortLabel
                                 active={orderBy === "last_seen"}
                                 direction={orderBy === "last_seen" ? order : 'asc'}
@@ -119,20 +109,27 @@ const VocabularyTable = ({wordTable, isHome}) => {
                                 <div className="arrow-balancer"/>
                                 Last practiced
                             </TableSortLabel>
-                        </TableCell>
-                        {!isHome && <TableCell>Remove</TableCell>}
+                        </TableCell>}
+                        {!isHome && <TableCell></TableCell>}
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {sortedWordTable.map((word) => (<TableRow key={word.word_id}>
-                        <TableCell><a href={getDictionaryLink(word.word)} target="_blank" rel="noopener noreferrer">{word.word}</a></TableCell>
+                        <TableCell><a href={getDictionaryLink(word.word)} target="_blank"
+                                      rel="noopener noreferrer">{word.word}</a></TableCell>
                         <TableCell>{renderBars(word.box_number)}</TableCell>
-                        {!isHome && <TableCell>{calculateTime(word.minutes_until_due) === null ? "now" : "In " + calculateTime(word.minutes_until_due)}</TableCell>}
-                        <TableCell>{calculateTime(word.last_seen) === null ? "just now" : calculateTime(word.last_seen) + " ago"}</TableCell>
+                        {!isHome && !isCategoryView &&
+                            <TableCell>{calculateTime(word.minutes_until_due) === null ? "now" : "In " + calculateTime(word.minutes_until_due)}</TableCell>}
+                        {!isCategoryView &&
+                            <TableCell>{calculateTime(word.last_seen) === null ? "just now" : calculateTime(word.last_seen) + " ago"}</TableCell>}
                         {!isHome && <TableCell className="remove-word-td">
-                            <button onClick={() => handleRemoveWord(word)} className="button delete-btn">
-                                REMOVE
-                            </button>
+                            {(!word.foundInWordTable && isCategoryView) && <button className="button add-btn generic-btn" onClick={() => addWords([word.word])}>
+                                {isAddingVocabulary ? <CircularProgress size={22} sx={{fontSize: "11px"}} /> : 'Add'}
+                            </button>}
+                            {(word.foundInWordTable || !isCategoryView) &&
+                                <button onClick={() => handleRemoveWord(word)} className="button delete-btn generic-btn">
+                                    REMOVE
+                                </button>}
                         </TableCell>}
                     </TableRow>))}
                 </TableBody>

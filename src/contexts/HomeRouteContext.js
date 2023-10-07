@@ -61,6 +61,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     const [initialLanguages, setInitialLanguages] = useState([]);
     const [activeLanguage, setActiveLanguage] = useState(null);
     const navigate = useNavigate();
+    const [categories, setCategories] = useState([]);
 
     const updateVocabTable = async () => {
         axios
@@ -76,7 +77,7 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     };
 
     const handleRemoveWord = async (word) => {
-        setWordTable((prev) => prev.filter((item) => item !== word));
+        setWordTable((prev) => prev.filter((item) => item.word_id !== word.word_id));
         axios
             .post("api/user/removevocabulary", {word_id: word.word_id}, {
                 headers: {
@@ -100,12 +101,12 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
     };
 
     const handleSetActive = async (languageName) => {
-        setActiveLanguage(languageName);
         axios.post("api/user/setactivelanguage", {language: languageName}, {
             headers: {
                 Authorization: `Bearer ${await getAccessTokenSilently()}`
             }
         }).then(() => {
+            setActiveLanguage(languageName);
             updateVocabTable();
         }).catch((err) => {
             console.error(err);
@@ -122,6 +123,21 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
 
         handleSave({...language, settings: defaultSettings})
     };
+
+    useEffect(() => {
+        if (!activeLanguage) return;  // No active language set
+        const getCategories = async () => {
+            await axios.post("api/user/getcategories", {}, {
+                headers: {
+                    Authorization: `Bearer ${await getAccessTokenSilently()}`
+                }
+            }).then((res) => {
+               setCategories(res.data)
+            });
+        };
+
+        getCategories();
+    }, [activeLanguage]);
 
     useEffect(() => {
         const fetchLanguages = async () => {
@@ -227,7 +243,8 @@ export const HomeRouteProvider = ({children, checkIfUserIsRegistered}) => {
         languages,
         activeLanguage,
         getActiveCountry,
-        getSelectedLanguageSettings
+        getSelectedLanguageSettings,
+        categories
     }}>
         {children}
     </HomeRouteContext.Provider>);
