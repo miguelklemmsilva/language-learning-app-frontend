@@ -6,6 +6,8 @@
   "private": true,
   "dependencies": {
     "@auth0/auth0-react": "^2.2.0",
+    "@aws-amplify/core": "^6.3.11",
+    "@aws-amplify/ui-react": "^6.2.0",
     "@azure/msal-browser": "^2.38.0",
     "@azure/msal-react": "^1.5.9",
     "@emotion/react": "^11.11.1",
