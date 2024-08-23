@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "proxy": "http://localhost:5000",
+  "homepage": "https://miguel4521.github.io/language-learning-app-frontend",
   "private": true,
   "dependencies": {
     "@auth0/auth0-react": "^2.2.0",
