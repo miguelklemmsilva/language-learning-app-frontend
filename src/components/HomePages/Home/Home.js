@@ -2,24 +2,21 @@ import React, {useContext} from "react";
 import {Link} from "react-router-dom";
 import "../HomePage.scss";
 import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
-import {useAuth0} from "@auth0/auth0-react";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import TranslateIcon from '@mui/icons-material/Translate';
 import HearingIcon from '@mui/icons-material/Hearing';
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import VocabularyTable from "../VocabularyTable/VocabularyTable";
 import {useNavigate} from "react-router-dom";
-import ScrollToTop from "../../../ScrollToTop";
 
 function Home() {
     const {
-        wordTable, activeLanguage, getActiveCountry, getSelectedLanguageSettings, selectedLanguages, handleSave
+        wordTable, activeLanguage, getActiveCountry, getSelectedLanguageSettings, selectedLanguages, handleSave, signOut
     } = useContext(HomeRouteContext);
-    const {user} = useAuth0();
     const navigate = useNavigate();
 
     const filteredTable = wordTable.filter((word) => {
-        return word.minutes_until_due <= 0;
+        return word.minutesUntilDue <= 0;
     });
 
     const practiceButton = () => {
@@ -47,14 +44,14 @@ function Home() {
     }
 
     return (<div className="main-content">
-        <div className="content-container">
+        {<div className="content-container">
             <div className="header-container">
                 <div className="txt"><strong>Studying {activeLanguage}</strong></div>
                 <img className="flag-img big" src={getActiveCountry()?.flag} alt=""/>
             </div>
             <div className="welcome-container">
                 <div className="messages-container">
-                    <div className="welcome-message">Hello {user.nickname}!</div>
+                    {/* <div className="welcome-message">Hello {user.nickname}!</div> */}
                     <div className="message">You
                         have <strong>{filteredTable.length}</strong> {filteredTable.length === 1 ? "word" : "words"} to
                         practice
@@ -125,7 +122,7 @@ function Home() {
                     </div>}
                 </div>
             </div>
-        </div>
+        </div>}
     </div>);
 }
 

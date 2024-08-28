@@ -1,60 +1,13 @@
-import {useAuth0} from "@auth0/auth0-react";
 import "./LandingPage.scss";
-import {Link} from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
+import {useNavigate} from "react-router-dom";
 import React from "react";
-import TableChartIcon from "@mui/icons-material/TableChart";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import HearingIcon from "@mui/icons-material/Hearing";
 import TranslateIcon from "@mui/icons-material/Translate";
 import Footer from "./HomePages/Footer";
 
 const LandingPage = () => {
-    const {user, isAuthenticated, loginWithRedirect, logout} = useAuth0();
-
-    function isAuth() {
-        return (
-            <div className="welcome-info">
-                <h3>Welcome {user.name}!</h3>
-                <div className="welcome-buttons-container">
-                    <Link className="nav-link-container button blue" to="/home">
-                        <div className="img-wrapper true-center">
-                            <HomeIcon fontSize="inherit"/>
-                        </div>
-                        <div className="nav-link-wrapper">
-                            <div className="nav-title">Home</div>
-                        </div>
-                    </Link>
-                    <Link className="nav-link-container button blue" to="/vocabularytable">
-                        <div className="img-wrapper true-center">
-                            <TableChartIcon fontSize="inherit"/>
-                        </div>
-                        <div className="nav-link-wrapper">
-                            <div className="nav-title">Vocabulary Table</div>
-                        </div>
-                    </Link>
-                    <Link className="landing-page nav-link-container button blue" to="/settings">
-                        <div className="img-wrapper true-center">
-                            <SettingsIcon fontSize="inherit"/>
-                        </div>
-                        <div className="nav-link-wrapper">
-                            <div className="nav-title">Language Settings</div>
-                        </div>
-                    </Link>
-                    <div className="nav-link-container button logout"
-                         onClick={() => logout({logoutParams: {returnTo: window.location.origin}})}>
-                        <div className="nav-link-wrapper">
-                            <div className="nav-title">Log out</div>
-                        </div>
-                        <div className="img-wrapper true-center">
-                            <LogoutIcon fontSize="inherit"/>
-                        </div>
-                    </div>
-                </div>
-            </div>)
-    }
+    const navigate = useNavigate();
 
     function notAuth() {
         return (
@@ -62,7 +15,7 @@ const LandingPage = () => {
                 <div className="welcome-buttons-container">
                     <button
                         className="button blue nav-link-container"
-                        onClick={() => loginWithRedirect()}
+                        onClick={() => navigate("/home")}
                     >
                         Start Now!
                     </button>
@@ -83,7 +36,7 @@ const LandingPage = () => {
                                 list that aligns with your goals.
                             </div>
                         </div>
-                        {isAuthenticated ? isAuth() : notAuth()}
+                        {notAuth()}
                     </div>
                     <div className="lp-info-container">
                         <div className="welcome-info">
@@ -153,18 +106,17 @@ const LandingPage = () => {
                             </div>
                         </div>
                     </div>
-                    {!isAuthenticated && (
+                    
                         <div className="lp-info-container">
                             <div className="welcome-info">
                                 <div style={{alignItems: "center"}} className="welcome-buttons-container">
                                     <h2>Ready to Dive Into a Fluent Future?</h2>
                                     <button className="button blue nav-link-container"
-                                            onClick={() => loginWithRedirect()}>Start Today
+                                            onClick={() => navigate("/home")}>Start Today
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    )}
                 </div>
             </div>
             <Footer/>

@@ -4,7 +4,7 @@ import {useContext} from "react";
 import "./Settings.scss";
 import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
 
-function Settings({}) {
+function Settings() {
     const context = useContext(HomeRouteContext);
 
     return (<div className="main-content">

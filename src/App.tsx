@@ -1,21 +1,18 @@
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./components/HomePages/Home/Home";
 import Practice from "./components/Practice/Practice/Practice";
 import VocabularyTablePage from "./components/HomePages/VocabularyTable/VocabularyTablePage";
 import Settings from "./components/HomePages/Settings/Settings";
 import LandingPage from "./components/LandingPage";
 import HomeRoute from "./components/HomePages/HomeRoute";
-import { HomeRouteProvider } from "./contexts/HomeRouteContext";
-import ScrollToTop from "./ScrollToTop";
 import { Amplify } from "aws-amplify";
-import type { WithAuthenticatorProps } from "@aws-amplify/ui-react";
-import { withAuthenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
 const userPoolId = "eu-west-2_RIZsiBQTD";
 const userPoolClientId = "6oqt0poampv75tagretkn6prib";
 const domain = "https://poly-bara.auth.eu-west-2.amazoncognito.com";
-const identityPoolId = "eu-west-2:5661328e-c0d9-4db0-927b-8a1d2a48723e";
+const identityPoolId = "eu-west-2:ec40ba46-ed92-4570-abf5-e19b036e1bd6";
+const region = "eu-west-2";
 
 Amplify.configure({
   Auth: {
@@ -26,7 +23,7 @@ Amplify.configure({
       userPoolClientId,
       // OPTIONAL - Set to true to use your identity pool's unauthenticated role when user is not logged in
       allowGuestAccess: true,
-      identityPoolId,
+      identityPoolId: "",
       // OPTIONAL - This is used when autoSignIn is enabled for Auth.signUp
       // 'code' is used for Auth.confirmSignUp, 'link' is used for email link verification
       signUpVerificationMethod: "code", // 'code' | 'link'
@@ -48,14 +45,19 @@ Amplify.configure({
       },
     },
   },
+  API: {
+    REST: {
+      LanguageLearningApp: {
+        endpoint: "https://93lmq6rvx4.execute-api.eu-west-2.amazonaws.com/prod",
+        region,
+      },
+    },
+  },
 });
 
-function App({ signOut, user }: WithAuthenticatorProps) {
-  return <div>{user?.signInDetails?.loginId}</div>;
-
+function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route
@@ -85,9 +87,9 @@ function App({ signOut, user }: WithAuthenticatorProps) {
         <Route
           path="/practice"
           element={
-            <HomeRouteProvider>
+            <HomeRoute>
               <Practice />
-            </HomeRouteProvider>
+            </HomeRoute>
           }
         />
       </Routes>
@@ -95,4 +97,4 @@ function App({ signOut, user }: WithAuthenticatorProps) {
   );
 }
 
-export default withAuthenticator(App);
+export default App;

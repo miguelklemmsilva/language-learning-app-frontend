@@ -61,9 +61,7 @@ const CollapsibleForm = ({language, onRemove, onOptionsChange, setActive, isActi
                 <div className="sub-info">{selectedCountry.name}</div>
             </div>
             <div className="remove-btn-wrapper">
-                <button className="button remove-button" onClick={(e) => {
-                    onRemove();
-                }}><DeleteIcon/></button>
+                <button className="button remove-button" onClick={onRemove}><DeleteIcon/></button>
             </div>
         </div>
         <div className="body-container">
