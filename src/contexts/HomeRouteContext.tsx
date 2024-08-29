@@ -1,5 +1,4 @@
-import { useState, useEffect, createContext } from "react";
-import axios from "axios";
+import { useState, useEffect, createContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { get, post, put, del } from "aws-amplify/api";
@@ -66,276 +65,326 @@ languages.forEach((language) => {
   });
 });
 
-export const HomeRouteProvider = ({
-  children,
-  activeLanguage,
-  setActiveLanguage,
-  signOut,
-  user,
-}) => {
-  const [wordTable, setWordTable] = useState([]);
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [initialLanguages, setInitialLanguages] = useState([]);
+export const HomeRouteProvider = ({ children, signOut, user }) => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState([]);
 
-  const updateVocabTable = async () => {
+  const [state, setState] = useState(() => ({
+    wordTable: [],
+    selectedLanguages: [],
+    initialLanguages: [],
+    categories: [],
+    activeLanguage: null,
+    isLoading: true,
+  }));
+
+  const initializeData = useCallback(async () => {
+    setState((prevState) => ({ ...prevState, isLoading: true }));
     const authToken =
       (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
 
     try {
-      const request = get({
+      // Step 1: Fetch active language
+      const userResponse = await get({
         apiName: "LanguageLearningApp",
-        path: `/vocabulary?language=${activeLanguage}`,
-        options: {
-          headers: {
-            Authorization: authToken,
+        path: "/user",
+        options: { headers: { Authorization: authToken } },
+      }).response;
+      const { activeLanguage } = await userResponse.body.json();
+
+      // Step 2: Fetch user's languages
+      const languagesResponse = await get({
+        apiName: "LanguageLearningApp",
+        path: "/languages",
+        options: { headers: { Authorization: authToken } },
+      }).response;
+      const fetchedLanguages = await languagesResponse.body.json();
+
+      const transformedLanguages = fetchedLanguages.map((entry) => ({
+        ...languages.find((language) => language.name === entry.language),
+        settings: {
+          index: languages
+            .find((language) => language.name === entry.language)
+            .countries.findIndex((country) => country.name === entry.country),
+          exercises: {
+            translation: entry.translation,
+            listening: entry.listening,
+            speaking: entry.speaking,
           },
         },
-      });
+      }));
 
-      const response = await request.response;
-      const { body } = response;
-      const fetchedResponse = await body.json();
-      console.log(fetchedResponse);
-      setWordTable(fetchedResponse);
-    } catch (e) {
-      console.error("POST call failed: ", JSON.parse(await e.response.body));
+      // Step 3: Fetch vocabulary table for active language
+      let wordTable = [];
+      if (activeLanguage) {
+        const vocabResponse = await get({
+          apiName: "LanguageLearningApp",
+          path: `/vocabulary?language=${activeLanguage}`,
+          options: { headers: { Authorization: authToken } },
+        }).response;
+        wordTable = await vocabResponse.body.json();
+      }
+
+      // Update state with all fetched data
+      setState((prevState) => ({
+        ...prevState,
+        wordTable,
+        selectedLanguages: transformedLanguages,
+        initialLanguages: transformedLanguages,
+        activeLanguage,
+        isLoading: false,
+      }));
+    } catch (error) {
+      console.error("Initialization failed:", error);
+      setState((prevState) => ({ ...prevState, isLoading: false }));
     }
-  };
+  }, []);
 
-  const handleRemoveWord = async (word) => {
-    setWordTable((prev) =>
-      prev.filter((item) =>  item.word !== word.word)
-    );
+  useEffect(() => {
+    initializeData();
+  }, [initializeData]);
 
-    console.log(word.word);
+  const updateVocabTable = useCallback(
+    async (language) => {
+      const languageToUse = language || state.activeLanguage;
+      if (!languageToUse) return;
 
-    const authToken =
-      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-
-    try {
-      del({
-        apiName: "LanguageLearningApp",
-        path: `/vocabulary?language=${activeLanguage}&word=${word.word}`,
-        options: {
-          headers: {
-            Authorization: authToken,
-          },
-        },
-      });
-    } catch (e) {
-      console.error("DELETE call failed: ", JSON.parse(await e.response.body));
-    }
-  };
-
-  const handleSetActive = async (languageName: string) => {
-    try {
       const authToken =
         (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
 
-      put({
-        apiName: "LanguageLearningApp",
-        path: "/user",
-        options: {
-          headers: {
-            Authorization: authToken,
-          },
-          body: {
-            activeLanguage: languageName,
-          },
-        },
-      });
-      setActiveLanguage(languageName);
-      updateVocabTable();
-    } catch (e) {
-      console.error("POST call failed: ", JSON.parse(await e.response.body));
-    }
-  };
-
-  const handleLanguageSelect = (language) => {
-    setSelectedLanguages((prev) => {
-      if (!prev.length) handleSetActive(language.name);
-      return [...prev, language];
-    });
-
-    setInitialLanguages((prev) => [...prev, { ...language }]);
-
-    handleSave({ ...language, settings: defaultSettings });
-  };
-
-  // useEffect(() => {
-  //     if (!activeLanguage) return;  // No active language set
-  //     const getCategories = async () => {
-  //         await axios.post("api/user/getcategories", {}, {
-  //             headers: {
-  //                 Authorization: `Bearer ${await getAccessTokenSilently()}`
-  //             }
-  //         }).then((res) => {
-  //            setCategories(res.data)
-  //         });
-  //     };
-
-  //     getCategories();
-  // }, [activeLanguage]);
-
-  const fetchLanguages = async () => {
-    const authToken =
-      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-    try {
-      const request = get({
-        apiName: "LanguageLearningApp",
-        path: "/languages",
-        options: {
-          headers: {
-            Authorization: authToken,
-          },
-        },
-      });
-
-      const response = await request.response;
-      const { body } = response;
-      const fetchedSettings = await body.json();
-
-      const transformedData = fetchedSettings.map((entry) => {
-        return {
-          ...languages.find((language) => language.name === entry.language),
-          settings: {
-            index: languages
-              .find((language) => language.name === entry.language)
-              .countries.findIndex((country) => country.name === entry.country),
-            exercises: {
-              translation: entry.translation,
-              listening: entry.listening,
-              speaking: entry.speaking,
+      try {
+        const request = get({
+          apiName: "LanguageLearningApp",
+          path: `/vocabulary?language=${languageToUse}`,
+          options: {
+            headers: {
+              Authorization: authToken,
             },
           },
+        });
+
+        const response = await request.response;
+        const { body } = response;
+        const fetchedResponse = await body.json();
+        setState((prevState) => ({ ...prevState, wordTable: fetchedResponse }));
+      } catch (e) {
+        console.error("GET call failed: ", e);
+      }
+    },
+    [state.activeLanguage]
+  );
+
+  useEffect(() => {
+    if (state.activeLanguage) {
+      updateVocabTable(state.activeLanguage);
+    }
+  }, [state.activeLanguage, updateVocabTable]);
+
+  const handleRemoveWord = useCallback(
+    async (word) => {
+      setState((prevState) => ({
+        ...prevState,
+        wordTable: prevState.wordTable.filter(
+          (item) => item.word !== word.word
+        ),
+      }));
+
+      const authToken =
+        (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+
+      try {
+        await del({
+          apiName: "LanguageLearningApp",
+          path: `/vocabulary?language=${state.activeLanguage}&word=${word.word}`,
+          options: {
+            headers: {
+              Authorization: authToken,
+            },
+          },
+        });
+      } catch (e) {
+        console.error("DELETE call failed: ", e);
+      }
+    },
+    [state.activeLanguage]
+  );
+
+  const handleSetActive = useCallback(
+    async (languageName) => {
+      try {
+        const authToken =
+          (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+
+        await put({
+          apiName: "LanguageLearningApp",
+          path: "/user",
+          options: {
+            headers: {
+              Authorization: authToken,
+            },
+            body: {
+              activeLanguage: languageName,
+            },
+          },
+        });
+        setState((prevState) => ({
+          ...prevState,
+          activeLanguage: languageName,
+        }));
+        await updateVocabTable(languageName);
+      } catch (e) {
+        console.error("PUT call failed: ", e);
+      }
+    },
+    [updateVocabTable]
+  );
+
+  const handleLanguageSelect = useCallback(
+    (language) => {
+      setState((prevState) => {
+        const newSelectedLanguages = [...prevState.selectedLanguages, language];
+        if (newSelectedLanguages.length === 1) {
+          handleSetActive(language.name);
+        }
+        return {
+          ...prevState,
+          selectedLanguages: newSelectedLanguages,
+          initialLanguages: [...prevState.initialLanguages, { ...language }],
         };
       });
 
-      setSelectedLanguages(transformedData);
-      setInitialLanguages(transformedData);
-    } catch (e) {
-      console.error("POST call failed: ", JSON.parse(await e.response.body));
-    }
-  };
+      handleSave({ ...language, settings: defaultSettings });
+    },
+    [handleSetActive]
+  );
 
-  useEffect(() => {
-    console.log(user);
-    fetchLanguages();
-    updateVocabTable();
+  const handleRemoveLanguage = useCallback(
+    async (language) => {
+      setState((prevState) => ({
+        ...prevState,
+        selectedLanguages: prevState.selectedLanguages.filter(
+          (item) => item !== language
+        ),
+      }));
+
+      const authToken =
+        (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+
+      try {
+        const request = del({
+          apiName: "LanguageLearningApp",
+          path: `/language?language=${language.name}`,
+          options: {
+            headers: {
+              Authorization: authToken,
+            },
+          },
+        });
+
+        const response = await request.response;
+        const { body } = response;
+        const fetchedResponse = await body.json();
+
+        setState((prevState) => ({
+          ...prevState,
+          activeLanguage: fetchedResponse.activeLanguage,
+        }));
+        updateVocabTable();
+      } catch (e) {
+        console.error("DELETE call failed: ", e);
+      }
+    },
+    [updateVocabTable]
+  );
+
+  const handleOptionsChange = useCallback((updatedLanguage) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedLanguages: prevState.selectedLanguages.map((item) =>
+        item.name === updatedLanguage.name ? updatedLanguage : item
+      ),
+    }));
   }, []);
 
-  const getSelectedLanguageSettings = () => {
-    if (!activeLanguage) return null; // No active language set
+  const handleSave = useCallback(
+    async (language) => {
+      setState((prevState) => ({
+        ...prevState,
+        initialLanguages: prevState.initialLanguages.map((item) =>
+          item.name === language.name ? language : item
+        ),
+      }));
 
-    const activeLangObj = selectedLanguages.find(
-      (lang) => lang.name === activeLanguage
+      const authToken =
+        (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+
+      try {
+        await put({
+          apiName: "LanguageLearningApp",
+          path: "/language",
+          options: {
+            headers: {
+              Authorization: authToken,
+            },
+            body: {
+              language: language.name,
+              country: language.countries[language.settings.index].name,
+              translation: language.settings.exercises.translation,
+              listening: language.settings.exercises.listening,
+              speaking: language.settings.exercises.speaking,
+            },
+          },
+        });
+
+        if (!state.activeLanguage) {
+          setState((prevState) => ({
+            ...prevState,
+            activeLanguage: language.name,
+          }));
+          navigate("/settings");
+        }
+      } catch (e) {
+        console.error("PUT call failed: ", e);
+      }
+    },
+    [navigate, state.activeLanguage]
+  );
+
+  const getSelectedLanguageSettings = useCallback(() => {
+    if (!state.activeLanguage) return null;
+
+    const activeLangObj = state.selectedLanguages.find(
+      (lang) => lang.name === state.activeLanguage
     );
 
     return activeLangObj ? activeLangObj.settings : null;
-  };
+  }, [state.activeLanguage, state.selectedLanguages]);
 
-  const getActiveCountry = () => {
-    if (!activeLanguage) return null; // No active language set
+  const getActiveCountry = useCallback(() => {
+    if (!state.activeLanguage) return null;
 
-    const activeLangObj = selectedLanguages.find(
-      (lang) => lang.name === activeLanguage
+    const activeLangObj = state.selectedLanguages.find(
+      (lang) => lang.name === state.activeLanguage
     );
 
-    if (!activeLangObj || !activeLangObj.countries) return null; // Active language not found in the list, or it doesn't have countries
+    if (!activeLangObj || !activeLangObj.countries) return null;
 
-    return activeLangObj.countries[activeLangObj.settings.index] || null; // Return the active country or null if not found
-  };
-
-  const handleRemoveLanguage = async (language) => {
-    setSelectedLanguages((prev) => prev.filter((item) => item !== language));
-
-    const authToken =
-      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-
-    try {
-      const request = del({
-        apiName: "LanguageLearningApp",
-        path: `/language?language=${language.name}`,
-        options: {
-          headers: {
-            Authorization: authToken,
-          },
-        },
-      });
-
-      const response = await request.response;
-      const { body } = response;
-      const fetchedResponse = await body.json();
-
-      setActiveLanguage(fetchedResponse.activeLanguage);
-      updateVocabTable();
-    } catch (e) {
-      console.error("POST call failed: ", JSON.parse(await e.response.body));
-    }
-  };
-
-  const handleOptionsChange = (updatedLanguage) => {
-    setSelectedLanguages((prev) =>
-      prev.map((item) =>
-        item.name === updatedLanguage.name ? updatedLanguage : item
-      )
-    );
-  };
-
-  const handleSave = async (language) => {
-    setInitialLanguages((prev) =>
-      prev.map((item) => (item.name === language.name ? language : item))
-    );
-    const authToken =
-      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-
-    try {
-      put({
-        apiName: "LanguageLearningApp",
-        path: "/language",
-        options: {
-          headers: {
-            Authorization: authToken,
-          },
-          body: {
-            language: language.name,
-            country: language.countries[language.settings.index].name,
-            translation: language.settings.exercises.translation,
-            listening: language.settings.exercises.listening,
-            speaking: language.settings.exercises.speaking,
-          },
-        },
-      });
-
-      if (!activeLanguage) {
-        setActiveLanguage(language.name);
-        navigate("/settings");
-      }
-    } catch (e) {
-      console.log("POST call failed: ", JSON.parse(e.response.body));
-    }
-  };
+    return activeLangObj.countries[activeLangObj.settings.index] || null;
+  }, [state.activeLanguage, state.selectedLanguages]);
 
   return (
     <HomeRouteContext.Provider
       value={{
-        wordTable,
-        handleRemoveWord,
+        ...state,
         updateVocabTable,
+        handleRemoveWord,
         handleSetActive,
-        selectedLanguages,
+        handleLanguageSelect,
         handleRemoveLanguage,
         handleOptionsChange,
-        initialLanguages,
-        handleLanguageSelect,
         handleSave,
-        languages,
-        activeLanguage,
-        getActiveCountry,
         getSelectedLanguageSettings,
-        categories,
+        getActiveCountry,
+        languages,
         signOut,
         user,
       }}
@@ -344,3 +393,5 @@ export const HomeRouteProvider = ({
     </HomeRouteContext.Provider>
   );
 };
+
+export default HomeRouteProvider;

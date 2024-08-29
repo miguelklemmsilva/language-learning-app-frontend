@@ -1,5 +1,12 @@
 import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
-import { useTheme, View, Image, Text, Heading, Button } from "@aws-amplify/ui-react";
+import {
+  useTheme,
+  View,
+  Image,
+  Text,
+  Heading,
+  Button,
+} from "@aws-amplify/ui-react";
 import { ReactNode } from "react";
 
 const components = {
@@ -8,10 +15,10 @@ const components = {
 
     return (
       <View textAlign="center" padding={tokens.space.large}>
-        <Image
-          alt="Amplify logo"
-          src="https://docs.amplify.aws/assets/logo-dark.svg"
-        />
+        {/* Replace the Amplify logo with your branding */}
+        <Text fontSize={tokens.fontSizes.xl} fontWeight="bold">
+          PolyBara
+        </Text>
       </View>
     );
   },
@@ -22,7 +29,7 @@ const components = {
     return (
       <View textAlign="center" padding={tokens.space.large}>
         <Text color={tokens.colors.neutral[80]}>
-          &copy; All Rights Reserved
+          &copy; {new Date().getFullYear()} PolyBara. All Rights Reserved.
         </Text>
       </View>
     );
@@ -37,7 +44,7 @@ const components = {
           padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
           level={3}
         >
-          Sign in to your account
+          Sign in to PolyBara
         </Heading>
       );
     },
@@ -52,7 +59,7 @@ const components = {
             size="small"
             variation="link"
           >
-            Reset Password
+            Forgot your password?
           </Button>
         </View>
       );
@@ -68,7 +75,7 @@ const components = {
           padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
           level={3}
         >
-          Create a new account
+          Create your PolyBara account
         </Heading>
       );
     },
@@ -83,7 +90,7 @@ const components = {
             size="small"
             variation="link"
           >
-            Back to Sign In
+            Already have an account? Sign In
           </Button>
         </View>
       );
@@ -97,12 +104,9 @@ const components = {
           padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
           level={3}
         >
-          Enter Information:
+          Confirm your account
         </Heading>
       );
-    },
-    Footer() {
-      return <Text>Footer Information</Text>;
     },
   },
   SetupTotp: {
@@ -113,12 +117,16 @@ const components = {
           padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
           level={3}
         >
-          Enter Information:
+          Set up two-factor authentication
         </Heading>
       );
     },
     Footer() {
-      return <Text>Footer Information</Text>;
+      return (
+        <Text textAlign="center">
+          Scan the QR code with your authenticator app.
+        </Text>
+      );
     },
   },
   ConfirmSignIn: {
@@ -129,12 +137,12 @@ const components = {
           padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
           level={3}
         >
-          Enter Information:
+          Confirm your sign-in
         </Heading>
       );
     },
     Footer() {
-      return <Text>Footer Information</Text>;
+      return <Text textAlign="center">Enter the code sent to your email.</Text>;
     },
   },
   ForgotPassword: {
@@ -145,12 +153,9 @@ const components = {
           padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
           level={3}
         >
-          Enter Information:
+          Reset your password
         </Heading>
       );
-    },
-    Footer() {
-      return <Text>Footer Information</Text>;
     },
   },
   ConfirmResetPassword: {
@@ -161,12 +166,16 @@ const components = {
           padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
           level={3}
         >
-          Enter Information:
+          Set a new password
         </Heading>
       );
     },
     Footer() {
-      return <Text>Footer Information</Text>;
+      return (
+        <Text textAlign="center">
+          Your password has been reset successfully.
+        </Text>
+      );
     },
   },
 };
@@ -174,57 +183,63 @@ const components = {
 const formFields = {
   signIn: {
     username: {
+      label: "Email",
       placeholder: "Enter your email",
     },
   },
   signUp: {
+    username: {
+      label: "Email:",
+      placeholder: "Enter your email",
+      order: 1,
+    },
     password: {
       label: "Password:",
-      placeholder: "Enter your Password:",
-      isRequired: false,
+      placeholder: "Enter your password",
+      isRequired: true,
       order: 2,
     },
     confirm_password: {
       label: "Confirm Password:",
-      order: 1,
+      placeholder: "Confirm your password",
+      isRequired: true,
+      order: 3,
     },
   },
   forceNewPassword: {
     password: {
-      placeholder: "Enter your Password:",
+      placeholder: "Enter your new password",
     },
   },
   forgotPassword: {
     username: {
-      placeholder: "Enter your email:",
+      label: "Email:",
+      placeholder: "Enter your email",
     },
   },
   confirmResetPassword: {
     confirmation_code: {
-      placeholder: "Enter your Confirmation Code:",
-      label: "New Label",
-      isRequired: false,
+      placeholder: "Enter your confirmation code",
+      label: "Confirmation Code:",
     },
     confirm_password: {
-      placeholder: "Enter your Password Please:",
+      placeholder: "Enter your new password",
     },
   },
   setupTotp: {
     QR: {
-      totpIssuer: "test issuer",
-      totpUsername: "amplify_qr_test_user",
+      totpIssuer: "PolyBara",
+      totpUsername: "polybara_user",
     },
     confirmation_code: {
-      label: "New Label",
-      placeholder: "Enter your Confirmation Code:",
-      isRequired: false,
+      label: "Confirmation Code:",
+      placeholder: "Enter your confirmation code",
     },
   },
   confirmSignIn: {
     confirmation_code: {
-      label: "New Label",
-      placeholder: "Enter your Confirmation Code:",
-      isRequired: false,
+      label: "Confirmation Code:",
+      placeholder: "Enter your confirmation code",
     },
   },
 };
