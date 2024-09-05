@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
-import { get, post, put, del } from "aws-amplify/api";
+import { get, put, del } from "aws-amplify/api";
 import CustomAuth from "../components/CustomAuth";
 
 export const HomeRouteContext = createContext(undefined);
@@ -89,15 +89,10 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
         path: "/user",
         options: { headers: { Authorization: authToken } },
       }).response;
-      const { activeLanguage } = await userResponse.body.json();
+      const json = await userResponse.body.json();
+      const activeLanguage = json.user.activeLanguage;
 
-      // Step 2: Fetch user's languages
-      const languagesResponse = await get({
-        apiName: "LanguageLearningApp",
-        path: "/languages",
-        options: { headers: { Authorization: authToken } },
-      }).response;
-      const fetchedLanguages = await languagesResponse.body.json();
+      const fetchedLanguages = json.userLanguages;
 
       const transformedLanguages = fetchedLanguages.map((entry) => ({
         ...languages.find((language) => language.name === entry.language),
@@ -113,16 +108,7 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
         },
       }));
 
-      // Step 3: Fetch vocabulary table for active language
-      let wordTable = [];
-      if (activeLanguage) {
-        const vocabResponse = await get({
-          apiName: "LanguageLearningApp",
-          path: `/vocabulary?language=${activeLanguage}`,
-          options: { headers: { Authorization: authToken } },
-        }).response;
-        wordTable = await vocabResponse.body.json();
-      }
+      const wordTable = json.vocabulary;
 
       // Update state with all fetched data
       setState((prevState) => ({

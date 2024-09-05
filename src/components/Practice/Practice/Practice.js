@@ -7,7 +7,6 @@ import PracticeLoading from "../PracticeLoading";
 import "./Practice.scss";
 import {LinearProgress} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
-import {useAuth0} from "@auth0/auth0-react";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import axios from "axios";
 import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
@@ -15,8 +14,7 @@ import {HomeRouteContext} from "../../../contexts/HomeRouteContext";
 const Practice = () => {
     const [sentenceNumber, setSentenceNumber] = useState(0);
     const [sentence, setSentence] = useState(null);
-    const [sentences, setSentences, error] = useFetchSentences("api/ai/generatesentences");
-    const {isAuthenticated, isLoading, getAccessTokenSilently} = useAuth0();
+    const [sentences, setSentences, error] = useFetchSentences();
     const navigate = useNavigate();
     const {updateVocabTable} = useContext(HomeRouteContext);
 
@@ -25,10 +23,8 @@ const Practice = () => {
     }, [sentenceNumber, sentences]);
 
     useEffect(() => {
-        if (isAuthenticated == null) return;
-        if (!isAuthenticated && !isLoading) navigate("/");
         if (error && error.code === 0) navigate("/settings");
-    }, [isAuthenticated, isLoading, error]);
+    }, [error]);
 
     const correctSentences = sentences ? sentences.filter(sentence => sentence.correct).length : 0;
 
@@ -49,6 +45,7 @@ const Practice = () => {
 
     useEffect(() => {
         if (!sentences) return;
+        console.log("sentences: " + sentences);
         const setNextQuestion = () => {
             let nextSentence = -1;
 
@@ -76,7 +73,7 @@ const Practice = () => {
 
                     axios.post(`api/user/finishlesson`, {sentences: filteredSentences}, {
                         headers: {
-                            'Authorization': `Bearer ${await getAccessTokenSilently()}`
+                            'Authorization': `Bearer`
                         }
                     })
                         .catch(error => console.error(error));
