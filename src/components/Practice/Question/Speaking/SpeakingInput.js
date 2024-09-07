@@ -2,7 +2,7 @@ import React, { Fragment, useRef } from "react";
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import { getTokenOrRefresh } from "./token_util";
 import MicIcon from "@mui/icons-material/Mic";
-import MicNoneIcon from "@mui/icons-material/MicNone";
+import MicNoneIcon from "@mui/icons-material/MicNone";  
 
 const pronunciationAssessmentLocaleCodes = {
   Spain: "es-ES",

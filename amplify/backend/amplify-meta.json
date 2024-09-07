@@ -1,0 +1,85 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-polybara-dev-e0d1a-authRole",
+      "UnauthRoleArn": "arn:aws:iam::021891610553:role/amplify-polybara-dev-e0d1a-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::021891610553:role/amplify-polybara-dev-e0d1a-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-polybara-dev-e0d1a-deployment",
+      "UnauthRoleName": "amplify-polybara-dev-e0d1a-unauthRole",
+      "StackName": "amplify-polybara-dev-e0d1a",
+      "StackId": "arn:aws:cloudformation:eu-west-2:021891610553:stack/amplify-polybara-dev-e0d1a/cb8a5b70-6168-11ef-8cce-0af42be99447",
+      "AmplifyAppId": "d1rjy3ett6wlz4"
+    }
+  },
+  "auth": {
+    "userPoolGroups": {
+      "service": "Cognito-UserPool-Groups",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [
+        {
+          "category": "auth",
+          "resourceName": "polybara6ec6a93f6ec6a93f",
+          "attributes": [
+            "UserPoolId",
+            "AppClientIDWeb",
+            "AppClientID",
+            "IdentityPoolId"
+          ]
+        }
+      ],
+      "lastPushTimeStamp": "2024-08-23T17:49:02.108Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-polybara-dev-e0d1a-deployment/amplify-cfn-templates/auth/userPoolGroups-cloudformation-template.json",
+        "logicalId": "authuserPoolGroups"
+      },
+      "output": {
+        "polybaragroupGroupRole": "arn:aws:iam::021891610553:role/eu-west-2_n3l4mvu3z-polybaragroupGroupRole"
+      },
+      "lastPushDirHash": "QWW+HgEiD/x+61aMTVs+9sd3h44="
+    },
+    "polybara6ec6a93f6ec6a93f": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-polybara-dev-e0d1a-deployment/amplify-cfn-templates/auth/polybara6ec6a93f6ec6a93f-cloudformation-template.json",
+        "logicalId": "authpolybara6ec6a93f6ec6a93f"
+      },
+      "lastPushTimeStamp": "2024-08-23T17:49:02.108Z",
+      "output": {
+        "UserPoolId": "eu-west-2_n3l4mvu3z",
+        "AppClientIDWeb": "174305sqijf0mjgjitknu5au7h",
+        "AppClientID": "3d0lur88q82n1njg10fe03nv2p",
+        "HostedUIDomain": "polybara6ec6a93f-6ec6a93f-dev",
+        "IdentityPoolId": "eu-west-2:9c9a78b5-d5bd-41e8-9830-8e2c4888611b",
+        "UserPoolArn": "arn:aws:cognito-idp:eu-west-2:021891610553:userpool/eu-west-2_n3l4mvu3z",
+        "IdentityPoolName": "polybara6ec6a93f_identitypool_6ec6a93f__dev",
+        "OAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://www.miguelklemmsilva.com/\"],\"LogoutURLs\":[\"https://miguelklemmsilva.com/\"]}",
+        "UserPoolName": "polybara6ec6a93f_userpool_6ec6a93f"
+      },
+      "lastPushDirHash": "EVXViWdSPhg9YpKZpe1Yc+baGwY="
+    }
+  }
+}

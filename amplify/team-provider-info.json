@@ -1,0 +1,21 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-polybara-dev-e0d1a-authRole",
+      "UnauthRoleArn": "arn:aws:iam::021891610553:role/amplify-polybara-dev-e0d1a-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::021891610553:role/amplify-polybara-dev-e0d1a-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-polybara-dev-e0d1a-deployment",
+      "UnauthRoleName": "amplify-polybara-dev-e0d1a-unauthRole",
+      "StackName": "amplify-polybara-dev-e0d1a",
+      "StackId": "arn:aws:cloudformation:eu-west-2:021891610553:stack/amplify-polybara-dev-e0d1a/cb8a5b70-6168-11ef-8cce-0af42be99447",
+      "AmplifyAppId": "d1rjy3ett6wlz4"
+    },
+    "categories": {
+      "auth": {
+        "polybara6ec6a93f6ec6a93f": {},
+        "userPoolGroups": {}
+      }
+    }
+  }
+}
