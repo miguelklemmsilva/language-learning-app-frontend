@@ -1,8 +1,9 @@
-import React, { Fragment, useRef } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import { getTokenOrRefresh } from "./token_util";
 import MicIcon from "@mui/icons-material/Mic";
-import MicNoneIcon from "@mui/icons-material/MicNone";  
+import MicNoneIcon from "@mui/icons-material/MicNone";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const pronunciationAssessmentLocaleCodes = {
   Spain: "es-ES",
@@ -28,168 +29,183 @@ const SpeakingInput = ({
 }) => {
   const mediaRecorderRef = useRef(null);
   const recognizerRef = useRef(null);
+  const [speechConfig, setSpeechConfig] = useState(null);
+  const [isInitializing, setIsInitializing] = useState(false);
 
-const sttFromMic = async () => {
-  const tokenObj = await getTokenOrRefresh();
-  const speechConfig = sdk.SpeechConfig.fromAuthorizationToken(
-    tokenObj.authToken,
-    tokenObj.region
-  );
-  speechConfig.setProperty(
-    sdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs,
-    "3000"
-  );
-  speechConfig.setProperty(
-    sdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs,
-    "3000"
-  );
+  useEffect(() => {
+    const initializeSpeechConfig = async () => {
+      const tokenObj = await getTokenOrRefresh();
+      const config = sdk.SpeechConfig.fromAuthorizationToken(
+        tokenObj.authToken,
+        tokenObj.region
+      );
+      config.setProperty(
+        sdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs,
+        "3000"
+      );
+      config.setProperty(
+        sdk.PropertyId.SpeechServiceConnection_InitialSilenceTimeoutMs,
+        "3000"
+      );
+      setSpeechConfig(config);
+    };
 
-  const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+    initializeSpeechConfig();
+  }, [sentence]);
 
-  const pronunciationAssessmentConfig = new sdk.PronunciationAssessmentConfig(
-    sentence?.original || "",
-    sdk.PronunciationAssessmentGradingSystem.HundredMark,
-    sdk.PronunciationAssessmentGranularity.Phoneme,
-    true
-  );
-
-  const localeCode = pronunciationAssessmentLocaleCodes[sentence?.country];
-  if (!localeCode) {
-    console.error("Invalid or missing locale code");
-    setResult("ERROR: Invalid or missing locale code.");
-    return;
-  }
-  speechConfig.speechRecognitionLanguage = localeCode;
-
-  if (recognizerRef.current) {
-    if (listening) {
-      if (
-        mediaRecorderRef.current &&
-        mediaRecorderRef.current.state === "recording"
-      ) {
-        stopRecording();
+  useEffect(() => {
+    if (speechConfig && sentence) {
+      const localeCode = pronunciationAssessmentLocaleCodes[sentence.country];
+      if (localeCode) {
+        speechConfig.speechRecognitionLanguage = localeCode;
       }
-      recognizerRef.current.stopContinuousRecognitionAsync();
-      recognizerRef.current = null;
-      setListening(false);
+    }
+  }, [sentence, speechConfig]);
+
+  const sttFromMic = async () => {
+    if (!speechConfig) {
+      console.error("Speech config not initialized");
+      setResult("ERROR: Speech config not initialized.");
       return;
     }
-  }
 
-  const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
-  pronunciationAssessmentConfig.applyTo(recognizer);
-  recognizerRef.current = recognizer;
-
-  audioElementRef.current.src = "";
-  chunksRef.current = [];
-
-  setResult(null);
-  setScores(null);
-  setListening(true);
-
-  let complete = false;
-
-  recognizer.recognizing = function (s, e) {
-    console.log("recognizing");
-    setResult(e.result);
-  };
-
-  recognizer.recognized = function (s, e) {
-    console.log("recognized");
-    recognizer.stopContinuousRecognitionAsync();
-  };
-
-  recognizer.startContinuousRecognitionAsync();
-
-  startRecording();
-
-  const cancelRecognition = () => {
-    console.log("cancel");
-    if (!complete && recognizerRef.current) {
-      if (
-        mediaRecorderRef.current &&
-        mediaRecorderRef.current.state === "recording"
-      ) {
-        stopRecording();
-      }
-      recognizerRef.current.stopContinuousRecognitionAsync();
-      recognizerRef.current = null;
-      setListening(false);
+    if (listening) {
+      stopRecognition();
+      return;
     }
-  };
 
-  setTimeout(cancelRecognition, 15000);
+    setIsInitializing(true);
 
-  recognizer.recognizeOnceAsync(
-    (result) => {
-      if (result) {
-        const pronunciationResult =
-          sdk.PronunciationAssessmentResult.fromResult(result);
-        recognizer.close();
-        setResult(pronunciationResult);
-        complete = true;
-        stopRecording();
-        setListening(false);
-      } else {
-        setResult("ERROR: No result from speech recognizer.");
-        stopRecording();
-        setListening(false);
-      }
-    },
-    (error) => {
-      console.error(error);
-      complete = false;
-      setResult(
-        "ERROR: Speech was cancelled. Ensure your microphone is working properly."
-      );
-      stopRecording();
-      setListening(false);
-    }
-  );
-};
+    try {
+      const audioConfig = sdk.AudioConfig.fromDefaultMicrophoneInput();
+      const pronunciationAssessmentConfig =
+        new sdk.PronunciationAssessmentConfig(
+          sentence?.original || "",
+          sdk.PronunciationAssessmentGradingSystem.HundredMark,
+          sdk.PronunciationAssessmentGranularity.Phoneme,
+          true
+        );
 
-  const startRecording = () => {
-    if (
-      navigator.mediaDevices &&
-      typeof navigator.mediaDevices.getUserMedia === "function"
-    ) {
-      navigator.mediaDevices
-        .getUserMedia({ audio: true })
-        .then((stream) => {
-          mediaRecorderRef.current = new MediaRecorder(stream);
+      const recognizer = new sdk.SpeechRecognizer(speechConfig, audioConfig);
+      pronunciationAssessmentConfig.applyTo(recognizer);
+      recognizerRef.current = recognizer;
 
-          mediaRecorderRef.current.ondataavailable = (event) => {
-            if (event.data.size > 0) chunksRef.current.push(event.data);
-          };
+      // Reset audio and results
+      audioElementRef.current.src = "";
+      chunksRef.current = [];
+      setResult(null);
+      setScores(null);
 
-          mediaRecorderRef.current.onstop = () => {
-            const audioBlob = new Blob(chunksRef.current, {
-              type: "audio/mpeg",
-            });
-            audioElementRef.current.src = URL.createObjectURL(audioBlob);
-          };
+      recognizer.recognizing = (s, e) => setResult(e.result);
+      recognizer.recognized = (s, e) => {
+        recognizer.stopContinuousRecognitionAsync();
+        stopRecognition();
+      };
 
-          mediaRecorderRef.current.start();
-        })
-        .catch((error) => {
-          console.error("Error accessing the microphone:", error);
+      // Start recording first
+      await startRecording();
+
+      // Then start the recognizer
+      await recognizer.startContinuousRecognitionAsync();
+
+      // Only now set listening to true
+      setListening(true);
+      setIsInitializing(false);
+
+      // Set up timeout to cancel recognition after 15 seconds
+      const timeoutId = setTimeout(() => stopRecognition(), 15000);
+
+      recognizer.recognizeOnceAsync(
+        (result) => {
+          clearTimeout(timeoutId);
+          if (result) {
+            const pronunciationResult =
+              sdk.PronunciationAssessmentResult.fromResult(result);
+            setResult(pronunciationResult);
+          } else {
+            setResult("ERROR: No result from speech recognizer.");
+          }
+          stopRecognition();
+        },
+        (error) => {
+          clearTimeout(timeoutId);
+          console.error(error);
           setResult(
-            "ERROR: Could not access the microphone. Make sure you have granted the necessary permissions."
+            "ERROR: Speech was cancelled. Ensure your microphone is working properly."
           );
-        });
-    } else {
-      console.error("getUserMedia is not supported in this browser.");
-      setResult(
-        "ERROR: getUserMedia is not supported in this browser. Try using a different browser."
+          stopRecognition();
+        }
       );
+    } catch (error) {
+      console.error("Error starting recognition:", error);
+      setResult("ERROR: Failed to start speech recognition.");
+      setIsInitializing(false);
+      setListening(false);
     }
+  };
+
+  const startRecording = async () => {
+    return new Promise((resolve, reject) => {
+      if (
+        navigator.mediaDevices &&
+        typeof navigator.mediaDevices.getUserMedia === "function"
+      ) {
+        navigator.mediaDevices
+          .getUserMedia({ audio: true })
+          .then((stream) => {
+            mediaRecorderRef.current = new MediaRecorder(stream);
+
+            mediaRecorderRef.current.ondataavailable = (event) => {
+              if (event.data.size > 0) chunksRef.current.push(event.data);
+            };
+
+            mediaRecorderRef.current.onstop = () => {
+              const audioBlob = new Blob(chunksRef.current, {
+                type: "audio/mpeg",
+              });
+              audioElementRef.current.src = URL.createObjectURL(audioBlob);
+            };
+
+            mediaRecorderRef.current.start();
+            resolve();
+          })
+          .catch((error) => {
+            console.error("Error accessing the microphone:", error);
+            setResult(
+              "ERROR: Could not access the microphone. Make sure you have granted the necessary permissions."
+            );
+            reject(error);
+          });
+      } else {
+        console.error("getUserMedia is not supported in this browser.");
+        setResult(
+          "ERROR: getUserMedia is not supported in this browser. Try using a different browser."
+        );
+        reject(new Error("getUserMedia not supported"));
+      }
+    });
   };
 
   const stopRecording = () => {
-    mediaRecorderRef.current.stop();
-    mediaRecorderRef.current.stream
-      .getTracks()
-      .forEach((track) => track.stop());
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state === "recording"
+    ) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream
+        .getTracks()
+        .forEach((track) => track.stop());
+    }
+  };
+
+  const stopRecognition = () => {
+    stopRecording();
+    if (recognizerRef.current) {
+      recognizerRef.current.stopContinuousRecognitionAsync();
+      recognizerRef.current = null;
+    }
+    setListening(false);
+    setIsInitializing(false);
   };
 
   return (
@@ -198,8 +214,11 @@ const sttFromMic = async () => {
         className={`question-btn button ${listening ? "listening" : ""}`}
         draggable={false}
         onClick={sttFromMic}
+        disabled={isInitializing}
       >
-        {listening ? (
+        {isInitializing ? (
+          <CircularProgress size={24} />
+        ) : listening ? (
           <MicIcon sx={{ font: "inherit" }} />
         ) : (
           <MicNoneIcon sx={{ font: "inherit" }} />

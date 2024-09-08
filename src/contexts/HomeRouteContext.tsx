@@ -2,7 +2,7 @@ import { useState, useEffect, createContext, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { get, put, del } from "aws-amplify/api";
-import CustomAuth from "../components/CustomAuth";
+import CustomAuth from "../components/Auth/CustomAuth";
 
 export const HomeRouteContext = createContext(undefined);
 

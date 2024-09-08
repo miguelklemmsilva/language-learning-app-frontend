@@ -6,7 +6,7 @@ import {
   HomeRouteProvider,
   HomeRouteContext,
 } from "../../contexts/HomeRouteContext";
-import CustomAuth from "../CustomAuth";
+import CustomAuth from "../Auth/CustomAuth";
 
 interface HomeRouteProps {
   children: React.ReactNode;

@@ -8,6 +8,7 @@ import {
   Button,
 } from "@aws-amplify/ui-react";
 import { ReactNode } from "react";
+import SignInWithGoogle from "./SignInWithGoogle";
 
 const components = {
   Header() {
@@ -38,27 +39,18 @@ const components = {
   SignIn: {
     Header() {
       const { tokens } = useTheme();
-
       return (
-        <Heading
-          padding={`${tokens.space.xl} 0 0 ${tokens.space.xl}`}
-          level={3}
-        >
-          Sign in to PolyBara
-        </Heading>
+        <View textAlign="center" padding={tokens.space.large}>
+          <Heading level={3}>Sign in to PolyBara</Heading>
+          <SignInWithGoogle />
+        </View>
       );
     },
     Footer() {
       const { toForgotPassword } = useAuthenticator();
-
       return (
         <View textAlign="center">
-          <Button
-            fontWeight="normal"
-            onClick={toForgotPassword}
-            size="small"
-            variation="link"
-          >
+          <Button onClick={toForgotPassword} size="small" variation="link">
             Forgot your password?
           </Button>
         </View>
