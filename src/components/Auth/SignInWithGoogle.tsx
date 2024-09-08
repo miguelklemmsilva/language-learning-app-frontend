@@ -38,6 +38,7 @@ const SignInWithGoogle = () => {
     }
   };
 
+  
   return (
     <div>
       <button id="googleSignInButton" />
