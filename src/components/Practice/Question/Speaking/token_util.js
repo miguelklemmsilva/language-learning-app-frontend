@@ -1,18 +1,25 @@
-import axios from 'axios';
 import Cookie from 'universal-cookie';
+import { fetchAuthSession } from "aws-amplify/auth";
+import { get } from "aws-amplify/api";
 
 export async function getTokenOrRefresh() {
     const cookie = new Cookie();
     const speechToken = cookie.get('speech-token');
 
+    const authToken =
+      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+
     if (speechToken === undefined) {
         try {
-            const res = await axios.get('api/auth/get-speech-token');
-            const token = res.data.token;
-            const region = res.data.region;
-            cookie.set('speech-token', region + ':' + token, {maxAge: 540, path: '/'});
+            const response = await get({
+                apiName: "LanguageLearningApp",
+                path: "/issuetoken",
+                options: { headers: { Authorization: authToken } },
+            }).response;
 
-            return { authToken: token, region: region };
+            const token = await response.body.json();
+            cookie.set('speech-token', 'uksouth:' + token, {maxAge: 540, path: '/'});
+            return { authToken: token, region: 'uksouth' };
         } catch (err) {
             console.error(err.response.data);
             return { authToken: null, error: err.response.data };
