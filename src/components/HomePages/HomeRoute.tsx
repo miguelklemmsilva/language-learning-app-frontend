@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Authenticator } from "@aws-amplify/ui-react";
 import {
   HomeRouteProvider,
   HomeRouteContext,
@@ -6,9 +7,8 @@ import {
 import CustomAuth from "../Auth/CustomAuth";
 import Sidebar from "./Navbar/Navbar";
 import Footer from "./Footer";
-import Settings from "./Settings/Settings";
-import { Button } from "../../components/ui/button";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface HomeRouteProps {
   children: React.ReactNode;
@@ -17,12 +17,20 @@ interface HomeRouteProps {
 const HomeRoute: React.FC<HomeRouteProps> = ({ children }) => {
   return (
     <CustomAuth>
+      <AuthenticatedContent>{children}</AuthenticatedContent>
+    </CustomAuth>
+  );
+};
+
+const AuthenticatedContent: React.FC<HomeRouteProps> = ({ children }) => {
+  return (
+    <Authenticator>
       {({ signOut, user }) => (
         <HomeRouteProvider signOut={signOut} user={user}>
           <HomeRouteContent>{children}</HomeRouteContent>
         </HomeRouteProvider>
       )}
-    </CustomAuth>
+    </Authenticator>
   );
 };
 
