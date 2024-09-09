@@ -77,12 +77,21 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
     isLoading: true,
   }));
 
+  async function retrieveCategories() {
+    const authToken =
+      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+
+    try {
+      setState((prevState) => ({ ...prevState, categories }));
+    } catch (e) {
+      console.error("GET call failed: ", e);
+    }
+  }
+
   const initializeData = useCallback(async () => {
     setState((prevState) => ({ ...prevState, isLoading: true }));
     const authToken =
       (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-
-              console.log("authToken", authToken);
 
     try {
       // Step 1: Fetch active language
@@ -112,6 +121,18 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
 
       const wordTable = json.vocabulary;
 
+      const request = await get({
+        apiName: "LanguageLearningApp",
+        path: `/categories?language=${activeLanguage}`,
+        options: {
+          headers: {
+            Authorization: authToken,
+          },
+        },
+      }).response;
+
+      const categories = await request.body.json();
+
       // Update state with all fetched data
       setState((prevState) => ({
         ...prevState,
@@ -119,6 +140,7 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
         selectedLanguages: transformedLanguages,
         initialLanguages: transformedLanguages,
         activeLanguage,
+        categories,
         isLoading: false,
       }));
     } catch (error) {
@@ -214,9 +236,23 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
             },
           },
         });
+
+        const request = await get({
+          apiName: "LanguageLearningApp",
+          path: `/categories?language=${languageName}`,
+          options: {
+            headers: {
+              Authorization: authToken,
+            },
+          },
+        }).response;
+
+        const categories = await request.body.json();
+
         setState((prevState) => ({
           ...prevState,
           activeLanguage: languageName,
+          categories,
         }));
         await updateVocabTable(languageName);
       } catch (e) {

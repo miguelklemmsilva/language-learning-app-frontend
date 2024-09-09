@@ -60,9 +60,16 @@ function VocabularyTablePage() {
     }
   }, [alert, isAlertHovered]);
 
+    function sanitizeInput(input) {
+      // Convert special characters to Unicode escape sequences
+      return input.replace(/[^\u0000-\u007F]/g, function (char) {
+        return "\\u" + char.charCodeAt(0).toString(16).padStart(4, "0");
+      });
+    }
+
   async function addWords(words, validate) {
     setIsAddingVocabulary(true);
-    let cleanWords = cleanString(words.toLowerCase());
+    let cleanWords = sanitizeInput(cleanString(words.toLowerCase()));
 
     // limit it to the first 50 words
     const wordsArray = cleanWords.split(/\s+/);
@@ -96,7 +103,6 @@ function VocabularyTablePage() {
       const response = await request.response;
       const { body } = response;
       const addedWords = await body.json();
-      console.log(addedWords);
       setAlert({
         open: true,
         message: `Added words: ${addedWords}`,
@@ -197,7 +203,7 @@ function VocabularyTablePage() {
                   setCategoryDialogOpen(true);
                 }}
               >
-                {category.category}
+                {category.name}
               </button>
             ))}
           </div>
@@ -280,13 +286,13 @@ function CategoryDialog({
   if (!category) return null;
   const wordsForCategory = category.words;
   const combinedTable = wordsForCategory.map((word) => {
-    const wordObj = wordTable.find((w) => w.word_id === word.word_id);
+    const wordObj = wordTable.find((w) => w.word === word.word);
     const foundInWordTable = !!wordObj;
     return { ...wordObj, ...word, foundInWordTable };
   });
 
   const addAllWords = () => {
-    addWords(wordsForCategory.map((word) => word.word));
+    addWords(wordsForCategory.map((word) => word.word).toString().split(",").join(" "), false);
   };
 
   return (
