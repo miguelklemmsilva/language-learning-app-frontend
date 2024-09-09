@@ -16,7 +16,7 @@ const Listening = ({
   const [correct, setCorrect] = useState(false);
 
   const onSubmit = () => {
-    let correct = cleanString(answer) === cleanString(sentence.original);
+    let correct = cleanString(answer).toLowerCase() === cleanString(sentence.original).toLowerCase();
     setCorrect(correct);
     let feedback;
     if (correct)
