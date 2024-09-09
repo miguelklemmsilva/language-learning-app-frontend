@@ -62,8 +62,7 @@ function VocabularyTablePage() {
 
   async function addWords(words, validate) {
     setIsAddingVocabulary(true);
-
-    let cleanWords = cleanString(words);
+    let cleanWords = cleanString(words.toLowerCase());
 
     // limit it to the first 50 words
     const wordsArray = cleanWords.split(/\s+/);
@@ -97,14 +96,14 @@ function VocabularyTablePage() {
       const response = await request.response;
       const { body } = response;
       const addedWords = await body.json();
-      console.log(addedWords)
+      console.log(addedWords);
       setAlert({
         open: true,
         message: `Added words: ${addedWords}`,
         type: "success",
       }); // Update the alert state here
 
-        updateVocabTable();
+      updateVocabTable();
     } catch (e) {
       console.error("PUT call failed: ", e);
       setAlert({
