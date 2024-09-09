@@ -9,6 +9,7 @@ import Sidebar from "./Navbar/Navbar";
 import Footer from "./Footer";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Settings from "./Settings/Settings";
 
 interface HomeRouteProps {
   children: React.ReactNode;
@@ -49,7 +50,7 @@ const HomeRouteContent: React.FC<HomeRouteProps> = ({ children }) => {
 
   if (!activeLanguage) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex flex-col justify-center">
         <Settings />
         <SignOutButton signOut={signOut} />
       </div>

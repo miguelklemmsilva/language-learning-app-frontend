@@ -1,13 +1,8 @@
-import React, {useContext, useEffect} from "react";
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {useAuth0} from "@auth0/auth0-react";
-import {HomeRouteContext} from "../../contexts/HomeRouteContext";
 import "./Finished.scss";
 import TranslateIcon from "@mui/icons-material/Translate";
 import HearingIcon from "@mui/icons-material/Hearing";
 import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
-import Listening from "./Question/Listening/Listening";
 import ListeningButton from "./Question/Listening/ListeningButton";
 
 function Finished({sentences}) {
