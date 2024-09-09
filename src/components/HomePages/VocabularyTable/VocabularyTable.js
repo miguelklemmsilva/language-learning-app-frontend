@@ -56,6 +56,7 @@ const VocabularyTable = ({wordTable, isHome, isCategoryView, addWords, isAddingV
 
     const getDictionaryLink = (word) => {
         if (!context.activeLanguage) return null;
+        return;
         const country = context.activeLanguage;
         return `https://www.collinsdictionary.com/dictionary/${country.toLowerCase()}-english/${word.replace(' ', '-')}`;
     }
@@ -128,7 +129,7 @@ const VocabularyTable = ({wordTable, isHome, isCategoryView, addWords, isAddingV
                 <TableRow key={`${word.language}#${word.word}`}>
                   <TableCell>
                     <a
-                      href={getDictionaryLink(word.word)}
+                      href={getDictionaryLink(word)}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -155,7 +156,7 @@ const VocabularyTable = ({wordTable, isHome, isCategoryView, addWords, isAddingV
                       {!word.foundInWordTable && isCategoryView && (
                         <button
                           className="button add-btn generic-btn"
-                          onClick={() => addWords([word.word])}
+                          onClick={() => addWords(word.word)}
                         >
                           {isAddingVocabulary ? (
                             <CircularProgress
