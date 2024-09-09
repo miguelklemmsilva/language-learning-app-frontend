@@ -82,6 +82,8 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
     const authToken =
       (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
 
+              console.log("authToken", authToken);
+
     try {
       // Step 1: Fetch active language
       const userResponse = await get({

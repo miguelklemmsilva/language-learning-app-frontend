@@ -17,6 +17,22 @@ Amplify.configure({
     Cognito: {
       userPoolId,
       userPoolClientId,
+      loginWith: {
+        oauth: {
+          redirectSignIn: [
+            "http://localhost:3000/home",
+            "https://miguelklemmsilva.com/home",
+          ],
+          redirectSignOut: [
+            "http://localhost:3000",
+            "https://miguelklemmsilva.com",
+          ],
+          domain: "poly-bara.auth.eu-west-2.amazoncognito.com",
+          scopes: ["email", "openid"],
+          responseType: "code",
+          providers: ["Google"],
+        },
+      },
     },
   },
   API: {

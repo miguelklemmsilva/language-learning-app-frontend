@@ -8,7 +8,6 @@ import {
   Button,
 } from "@aws-amplify/ui-react";
 import { ReactNode } from "react";
-import SignInWithGoogle from "./SignInWithGoogle";
 
 const components = {
   Header() {
@@ -42,7 +41,6 @@ const components = {
       return (
         <View textAlign="center" padding={tokens.space.large}>
           <Heading level={3}>Sign in to PolyBara</Heading>
-          <SignInWithGoogle />
         </View>
       );
     },
@@ -238,7 +236,10 @@ const formFields = {
 
 export default function CustomAuth({ children }: { children: ReactNode }) {
   return (
-    <Authenticator formFields={formFields} components={components}>
+    <Authenticator
+      socialProviders={['google']} formFields={formFields}
+      components={components}
+    >
       {children}
     </Authenticator>
   );
