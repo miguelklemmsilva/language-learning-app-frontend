@@ -62,7 +62,7 @@ const HomeRouteContent: React.FC<HomeRouteProps> = ({ children }) => {
       <Sidebar />
       <div className="flex flex-col flex-grow">
         <main className="flex-grow overflow-auto p-6">{children}</main>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </div>
   );
