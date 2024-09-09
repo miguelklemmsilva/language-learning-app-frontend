@@ -56,21 +56,28 @@ const Practice = () => {
   useEffect(() => {
     if (!sentences) return;
     const setNextQuestion = () => {
+      const exerciseOrder = ["translation", "speaking", "listening"];
       let nextSentence = -1;
 
+      // First, try to find the next uncompleted sentence of the current type
+      const currentType = sentences[sentenceNumber]?.type;
       for (let i = sentenceNumber + 1; i < sentences.length; i++) {
-        if (!sentences[i].correct) {
+        if (!sentences[i].correct && sentences[i].type === currentType) {
           nextSentence = i;
           break;
         }
       }
 
+      // If not found, look for the next type in the order
       if (nextSentence === -1) {
-        for (let i = 0; i <= sentenceNumber; i++) {
-          if (!sentences[i].correct) {
-            nextSentence = i;
-            break;
+        for (const type of exerciseOrder) {
+          for (let i = 0; i < sentences.length; i++) {
+            if (!sentences[i].correct && sentences[i].type === type) {
+              nextSentence = i;
+              break;
+            }
           }
+          if (nextSentence !== -1) break;
         }
       }
 
