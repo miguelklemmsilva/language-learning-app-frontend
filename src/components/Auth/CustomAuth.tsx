@@ -2,7 +2,6 @@ import { Authenticator, useAuthenticator } from "@aws-amplify/ui-react";
 import {
   useTheme,
   View,
-  Image,
   Text,
   Heading,
   Button,

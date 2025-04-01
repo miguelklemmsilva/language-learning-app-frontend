@@ -38,7 +38,7 @@ Amplify.configure({
   API: {
     REST: {
       LanguageLearningApp: {
-        endpoint: "https://93lmq6rvx4.execute-api.eu-west-2.amazonaws.com/prod",
+        endpoint: "https://api.miguelklemmsilva.com",
         region,
       },
     },
