@@ -1,12 +1,30 @@
-import { useState, useEffect, createContext, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  createContext,
+  useCallback,
+  useContext,
+  ReactNode,
+} from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchAuthSession } from "aws-amplify/auth";
+import { fetchAuthSession, AuthUser } from "aws-amplify/auth";
 import { get, put, del } from "aws-amplify/api";
 import CustomAuth from "../components/Auth/CustomAuth";
+import { readJson } from "../api/readJson";
+import {
+  Category,
+  Language,
+  RemoveUserLanguageResponse,
+  UserResponse,
+  Word,
+} from "../types/api";
+import {
+  CountryOption,
+  LanguageOption,
+  LanguageSettings,
+} from "../types/language";
 
-export const HomeRouteContext = createContext(undefined);
-
-const defaultSettings = {
+const defaultSettings: LanguageSettings = {
   index: 0,
   exercises: {
     translation: true,
@@ -15,9 +33,9 @@ const defaultSettings = {
   },
 };
 
-const languages = [
+const languages: LanguageOption[] = [
   {
-    name: "Spanish",
+    name: Language.Spanish,
     countries: [
       { name: "Spain", flag: "Flags/Spanish/es.png" },
       { name: "Mexico", flag: "Flags/Spanish/mx.png" },
@@ -26,7 +44,7 @@ const languages = [
     settings: defaultSettings,
   },
   {
-    name: "Portuguese",
+    name: Language.Portuguese,
     countries: [
       { name: "Brazil", flag: "Flags/Portuguese/br.png" },
       { name: "Portugal", flag: "Flags/Portuguese/pt.png" },
@@ -34,22 +52,22 @@ const languages = [
     settings: defaultSettings,
   },
   {
-    name: "Japanese",
+    name: Language.Japanese,
     countries: [{ name: "Japan", flag: "Flags/Japanese/jp.png" }],
     settings: defaultSettings,
   },
   {
-    name: "German",
+    name: Language.German,
     countries: [{ name: "Germany", flag: "Flags/German/de.png" }],
     settings: defaultSettings,
   },
   {
-    name: "Italian",
+    name: Language.Italian,
     countries: [{ name: "Italy", flag: "Flags/Italian/it.png" }],
     settings: defaultSettings,
   },
   {
-    name: "French",
+    name: Language.French,
     countries: [
       { name: "France", flag: "Flags/French/fr.png" },
       { name: "Canada", flag: "Flags/French/ca.png" },
@@ -65,10 +83,60 @@ languages.forEach((language) => {
   });
 });
 
-export const HomeRouteProvider = ({ children, signOut, user }) => {
+interface HomeRouteState {
+  wordTable: Word[];
+  selectedLanguages: LanguageOption[];
+  initialLanguages: LanguageOption[];
+  categories: Category[];
+  activeLanguage: Language | null;
+  isLoading: boolean;
+}
+
+export interface HomeRouteContextValue extends HomeRouteState {
+  updateVocabTable: (language?: Language | null) => Promise<void>;
+  handleRemoveWord: (word: { word: string }) => Promise<void>;
+  handleSetActive: (languageName: Language) => Promise<void>;
+  handleLanguageSelect: (language: LanguageOption) => void;
+  handleRemoveLanguage: (language: LanguageOption) => Promise<void>;
+  handleOptionsChange: (updatedLanguage: LanguageOption) => void;
+  handleSave: (language: LanguageOption) => Promise<void>;
+  getSelectedLanguageSettings: () => LanguageSettings | null;
+  getActiveCountry: () => CountryOption | null;
+  languages: LanguageOption[];
+  signOut?: () => void;
+  user?: AuthUser;
+}
+
+export const HomeRouteContext = createContext<HomeRouteContextValue | undefined>(
+  undefined
+);
+
+export function useHomeRoute(): HomeRouteContextValue {
+  const context = useContext(HomeRouteContext);
+  if (!context) {
+    throw new Error("useHomeRoute must be used within HomeRouteProvider");
+  }
+  return context;
+}
+
+interface HomeRouteProviderProps {
+  children: ReactNode;
+  signOut?: () => void;
+  user?: AuthUser;
+}
+
+async function authToken(): Promise<string> {
+  return (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+}
+
+export const HomeRouteProvider = ({
+  children,
+  signOut,
+  user,
+}: HomeRouteProviderProps) => {
   const navigate = useNavigate();
 
-  const [state, setState] = useState(() => ({
+  const [state, setState] = useState<HomeRouteState>(() => ({
     wordTable: [],
     selectedLanguages: [],
     initialLanguages: [],
@@ -77,63 +145,54 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
     isLoading: true,
   }));
 
-  async function retrieveCategories() {
-    const authToken =
-      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-
-    try {
-      setState((prevState) => ({ ...prevState, categories }));
-    } catch (e) {
-      console.error("GET call failed: ", e);
-    }
-  }
-
   const initializeData = useCallback(async () => {
     setState((prevState) => ({ ...prevState, isLoading: true }));
-    const authToken =
-      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+    const token = await authToken();
 
     try {
-      // Step 1: Fetch active language
       const userResponse = await get({
         apiName: "LanguageLearningApp",
         path: "/user",
-        options: { headers: { Authorization: authToken } },
+        options: { headers: { Authorization: token } },
       }).response;
-      const json = await userResponse.body.json();
-      const activeLanguage = json.user.activeLanguage;
+      const json = await readJson<UserResponse>(userResponse);
+      const activeLanguage = json.user.activeLanguage ?? null;
 
-      const fetchedLanguages = json.userLanguages;
-
-      const transformedLanguages = fetchedLanguages.map((entry) => ({
-        ...languages.find((language) => language.name === entry.language),
-        settings: {
-          index: languages
-            .find((language) => language.name === entry.language)
-            .countries.findIndex((country) => country.name === entry.country),
-          exercises: {
-            translation: entry.translation,
-            listening: entry.listening,
-            speaking: entry.speaking,
+      const transformedLanguages: LanguageOption[] = [];
+      for (const entry of json.userLanguages ?? []) {
+        const match = languages.find((language) => language.name === entry.language);
+        if (!match) continue;
+        transformedLanguages.push({
+          ...match,
+          settings: {
+            index: match.countries.findIndex(
+              (country) => country.name === entry.country
+            ),
+            exercises: {
+              translation: entry.translation,
+              listening: entry.listening,
+              speaking: entry.speaking,
+            },
           },
-        },
-      }));
+        });
+      }
 
-      const wordTable = json.vocabulary;
+      const wordTable = (json.vocabulary ?? []).filter(
+        (word): word is Word => word != null
+      );
 
       const request = await get({
         apiName: "LanguageLearningApp",
         path: `/categories?language=${activeLanguage}`,
         options: {
           headers: {
-            Authorization: authToken,
+            Authorization: token,
           },
         },
       }).response;
 
-      const categories = await request.body.json();
+      const categories = await readJson<Category[]>(request);
 
-      // Update state with all fetched data
       setState((prevState) => ({
         ...prevState,
         wordTable,
@@ -154,12 +213,11 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
   }, [initializeData]);
 
   const updateVocabTable = useCallback(
-    async (language) => {
+    async (language?: Language | null) => {
       const languageToUse = language || state.activeLanguage;
       if (!languageToUse) return;
 
-      const authToken =
-        (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+      const token = await authToken();
 
       try {
         const request = get({
@@ -167,14 +225,13 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
           path: `/vocabulary?language=${languageToUse}`,
           options: {
             headers: {
-              Authorization: authToken,
+              Authorization: token,
             },
           },
         });
 
         const response = await request.response;
-        const { body } = response;
-        const fetchedResponse = await body.json();
+        const fetchedResponse = await readJson<Word[]>(response);
         setState((prevState) => ({ ...prevState, wordTable: fetchedResponse }));
       } catch (e) {
         console.error("GET call failed: ", e);
@@ -190,16 +247,13 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
   }, [state.activeLanguage, updateVocabTable]);
 
   const handleRemoveWord = useCallback(
-    async (word) => {
+    async (word: { word: string }) => {
       setState((prevState) => ({
         ...prevState,
-        wordTable: prevState.wordTable.filter(
-          (item) => item.word !== word.word
-        ),
+        wordTable: prevState.wordTable.filter((item) => item.word !== word.word),
       }));
 
-      const authToken =
-        (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+      const token = await authToken();
 
       try {
         await del({
@@ -207,7 +261,7 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
           path: `/vocabulary?language=${state.activeLanguage}&word=${word.word}`,
           options: {
             headers: {
-              Authorization: authToken,
+              Authorization: token,
             },
           },
         });
@@ -219,17 +273,16 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
   );
 
   const handleSetActive = useCallback(
-    async (languageName) => {
+    async (languageName: Language) => {
       try {
-        const authToken =
-          (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+        const token = await authToken();
 
         await put({
           apiName: "LanguageLearningApp",
           path: "/user",
           options: {
             headers: {
-              Authorization: authToken,
+              Authorization: token,
             },
             body: {
               activeLanguage: languageName,
@@ -242,12 +295,12 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
           path: `/categories?language=${languageName}`,
           options: {
             headers: {
-              Authorization: authToken,
+              Authorization: token,
             },
           },
         }).response;
 
-        const categories = await request.body.json();
+        const categories = await readJson<Category[]>(request);
 
         setState((prevState) => ({
           ...prevState,
@@ -262,65 +315,7 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
     [updateVocabTable]
   );
 
-  const handleLanguageSelect = useCallback(
-    (language) => {
-      setState((prevState) => {
-        const newSelectedLanguages = [...prevState.selectedLanguages, language];
-        if (newSelectedLanguages.length === 1) {
-          handleSetActive(language.name);
-        }
-        return {
-          ...prevState,
-          selectedLanguages: newSelectedLanguages,
-          initialLanguages: [...prevState.initialLanguages, { ...language }],
-        };
-      });
-
-      handleSave({ ...language, settings: defaultSettings });
-    },
-    [handleSetActive]
-  );
-
-  const handleRemoveLanguage = useCallback(
-    async (language) => {
-      setState((prevState) => ({
-        ...prevState,
-        selectedLanguages: prevState.selectedLanguages.filter(
-          (item) => item !== language
-        ),
-      }));
-
-      const authToken =
-        (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-
-      try {
-        const request = del({
-          apiName: "LanguageLearningApp",
-          path: `/language?language=${language.name}`,
-          options: {
-            headers: {
-              Authorization: authToken,
-            },
-          },
-        });
-
-        const response = await request.response;
-        const { body } = response;
-        const fetchedResponse = await body.json();
-
-        setState((prevState) => ({
-          ...prevState,
-          activeLanguage: fetchedResponse.activeLanguage,
-        }));
-        updateVocabTable();
-      } catch (e) {
-        console.error("DELETE call failed: ", e);
-      }
-    },
-    [updateVocabTable]
-  );
-
-  const handleOptionsChange = useCallback((updatedLanguage) => {
+  const handleOptionsChange = useCallback((updatedLanguage: LanguageOption) => {
     setState((prevState) => ({
       ...prevState,
       selectedLanguages: prevState.selectedLanguages.map((item) =>
@@ -330,7 +325,7 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
   }, []);
 
   const handleSave = useCallback(
-    async (language) => {
+    async (language: LanguageOption) => {
       setState((prevState) => ({
         ...prevState,
         initialLanguages: prevState.initialLanguages.map((item) =>
@@ -338,8 +333,10 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
         ),
       }));
 
-      const authToken =
-        (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
+      const country = language.countries[language.settings.index];
+      if (!country) return;
+
+      const token = await authToken();
 
       try {
         await put({
@@ -347,11 +344,11 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
           path: "/language",
           options: {
             headers: {
-              Authorization: authToken,
+              Authorization: token,
             },
             body: {
               language: language.name,
-              country: language.countries[language.settings.index].name,
+              country: country.name,
               translation: language.settings.exercises.translation,
               listening: language.settings.exercises.listening,
               speaking: language.settings.exercises.speaking,
@@ -373,6 +370,64 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
     [navigate, state.activeLanguage]
   );
 
+  const handleLanguageSelect = useCallback(
+    (language: LanguageOption) => {
+      setState((prevState) => {
+        const newSelectedLanguages = [...prevState.selectedLanguages, language];
+        if (newSelectedLanguages.length === 1) {
+          handleSetActive(language.name);
+        }
+        return {
+          ...prevState,
+          selectedLanguages: newSelectedLanguages,
+          initialLanguages: [...prevState.initialLanguages, { ...language }],
+        };
+      });
+
+      handleSave({ ...language, settings: defaultSettings });
+    },
+    [handleSetActive, handleSave]
+  );
+
+  const handleRemoveLanguage = useCallback(
+    async (language: LanguageOption) => {
+      setState((prevState) => ({
+        ...prevState,
+        selectedLanguages: prevState.selectedLanguages.filter(
+          (item) => item !== language
+        ),
+      }));
+
+      const token = await authToken();
+
+      try {
+        const request = del({
+          apiName: "LanguageLearningApp",
+          path: `/language?language=${language.name}`,
+          options: {
+            headers: {
+              Authorization: token,
+            },
+          },
+        });
+
+        const response = await request.response;
+        const fetchedResponse = await readJson<RemoveUserLanguageResponse>(
+          response as unknown as { body: { json: () => Promise<unknown> } }
+        );
+
+        setState((prevState) => ({
+          ...prevState,
+          activeLanguage: fetchedResponse.activeLanguage ?? null,
+        }));
+        updateVocabTable();
+      } catch (e) {
+        console.error("DELETE call failed: ", e);
+      }
+    },
+    [updateVocabTable]
+  );
+
   const getSelectedLanguageSettings = useCallback(() => {
     if (!state.activeLanguage) return null;
 
@@ -392,7 +447,7 @@ export const HomeRouteProvider = ({ children, signOut, user }) => {
 
     if (!activeLangObj || !activeLangObj.countries) return null;
 
-    return activeLangObj.countries[activeLangObj.settings.index] || null;
+    return activeLangObj.countries[activeLangObj.settings.index] ?? null;
   }, [state.activeLanguage, state.selectedLanguages]);
 
   return (

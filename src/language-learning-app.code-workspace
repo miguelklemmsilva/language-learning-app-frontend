@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../language-learning-app"
+		},
+		{
+			"path": "../../language-learning-app-service"
+		}
+	],
+	"settings": {}
+}

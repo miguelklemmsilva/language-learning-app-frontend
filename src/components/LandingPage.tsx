@@ -1,3 +1,4 @@
+import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mic, Headphones, Languages, LucideIcon, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ const LandingPage = () => {
     description: string;
   }
 
-  const FeatureCard: React.FC<FeatureCardProps> = ({
+  const FeatureCard: FC<FeatureCardProps> = ({
     title,
     icon: Icon,
     description,

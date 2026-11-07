@@ -1,18 +1,18 @@
-import React, { memo, useContext } from "react";
+import { memo } from "react";
 import "./Navbar.scss";
 import { Link, useLocation } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import TableChartIcon from "@mui/icons-material/TableChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { HomeRouteContext } from "../../../contexts/HomeRouteContext";
+import { useHomeRoute } from "../../../contexts/HomeRouteContext";
 
 const Navbar = () => {
   const location = useLocation();
 
-  const { signOut } = useContext(HomeRouteContext);
+  const { signOut } = useHomeRoute();
 
-  const isActive = (path) => {
+  const isActive = (path: string) => {
     return location.pathname === path;
   };
 
@@ -70,9 +70,7 @@ const Navbar = () => {
               </Link>
               <div
                 className="nav-link-container logout"
-                onClick={() =>
-                  signOut()
-                }
+                onClick={() => signOut?.()}
               >
                 <div className="img-wrapper">
                   <LogoutIcon fontSize="inherit" />
@@ -117,7 +115,7 @@ const Navbar = () => {
         </Link>
         <div
           className="nav-link-container logout"
-          onClick={signOut}
+          onClick={() => signOut?.()}
         >
           <div className="icon-wrapper">
             <LogoutIcon fontSize="inherit" />

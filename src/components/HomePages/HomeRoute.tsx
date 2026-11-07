@@ -6,7 +6,6 @@ import {
 } from "../../contexts/HomeRouteContext";
 import CustomAuth from "../Auth/CustomAuth";
 import Sidebar from "./Navbar/Navbar";
-import Footer from "./Footer";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Settings from "./Settings/Settings";
