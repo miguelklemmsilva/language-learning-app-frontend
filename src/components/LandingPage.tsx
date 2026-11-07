@@ -3,15 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { Mic, Headphones, Languages, LucideIcon, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { useThemeColor } from "../hooks/useThemeColor";
 
 const LandingPage = () => {
   const navigate = useNavigate();
+  const primary = useThemeColor({}, "primary");
+  const onPrimary = useThemeColor({ light: "#ffffff", dark: "#000000" }, "text");
 
   const notAuth = () => (
     <div className="flex flex-col items-center">
       <Button
-        className="w-full max-w-[700px] text-xl font-semibold py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white"
-        onClick={() => navigate("/home")}
+        className="w-full max-w-[700px] text-xl font-semibold py-3 px-4"
+        style={{ backgroundColor: primary, color: onPrimary }}
+        onClick={() => navigate("/sign-in")}
       >
         Get Started
       </Button>
@@ -41,7 +45,7 @@ const LandingPage = () => {
   );
 
   return (
-    <div className="flex flex-col items-center bg-gray-100">
+    <div className="flex flex-col items-center">
       <div className="max-w-7xl w-full px-4 py-8 space-y-8">
         <Card className="w-full">
           <CardContent className="p-8 space-y-4">
@@ -120,8 +124,9 @@ const LandingPage = () => {
               Ready to enhance your language skills?
             </h2>
             <Button
-              className="w-full max-w-[700px] text-xl font-semibold py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white"
-              onClick={() => navigate("/home")}
+              className="w-full max-w-[700px] text-xl font-semibold py-3 px-4"
+              style={{ backgroundColor: primary, color: onPrimary }}
+              onClick={() => navigate("/sign-in")}
             >
               Begin Your Journey
             </Button>

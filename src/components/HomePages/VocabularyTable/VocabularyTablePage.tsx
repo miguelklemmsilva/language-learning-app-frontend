@@ -1,17 +1,16 @@
 import "./VocabularyTablePage.scss";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
-import { HomeRouteContext } from "../../../contexts/HomeRouteContext";
 import VocabularyTable from "./VocabularyTable";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { CircularProgress, Alert, Dialog } from "@mui/material";
 import PublishIcon from "@mui/icons-material/Publish";
-import { fetchAuthSession } from "aws-amplify/auth";
-import { put } from "aws-amplify/api";
 import { useNavigate } from "react-router-dom";
-import { readJson } from "../../../api/readJson";
 import { Category } from "../../../types/api";
 import { VocabularyTableRow } from "../../../types/practice";
+import { useAddVocabulary, useCategories, useVocabulary } from "../../../api/vocabularyService";
+import { useSaveLanguage } from "../../../api/userService";
+import { useActiveLanguageSelection } from "../../../hooks/useActiveLanguageSelection";
 
 interface AlertState {
   open: boolean;
@@ -20,11 +19,15 @@ interface AlertState {
 }
 
 function VocabularyTablePage() {
-  const context = useContext(HomeRouteContext);
+  const { data: wordTable = [] } = useVocabulary();
+  const { data: categories = [] } = useCategories();
+  const addVocabulary = useAddVocabulary();
+  const saveLanguage = useSaveLanguage();
+  const { activeLanguage, settings, country, activeLanguageOption } =
+    useActiveLanguageSelection();
   const [openModal, setOpenModal] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
   const [words, setWords] = useState("");
-  const [isAddingVocabulary, setIsAddingVocabulary] = useState(false);
   const [alert, setAlert] = useState<AlertState>({
     open: false,
     message: "",
@@ -35,10 +38,6 @@ function VocabularyTablePage() {
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
 
   const navigate = useNavigate();
-
-  const wordTable = context?.wordTable ?? [];
-  const activeLanguage = context?.activeLanguage;
-  const categories = context?.categories ?? [];
   const filteredTable = wordTable.filter((word) => {
     return word.minutesUntilDue <= 0;
   });
@@ -74,8 +73,7 @@ function VocabularyTablePage() {
   }
 
   async function addWords(wordsToAdd: string) {
-    if (!context) return;
-    setIsAddingVocabulary(true);
+    if (!activeLanguage) return;
     let cleanWords = sanitizeInput(cleanString(wordsToAdd.toLowerCase()));
 
     const wordsArray = cleanWords.split(/\s+/);
@@ -86,37 +84,17 @@ function VocabularyTablePage() {
 
     const limitedWordsArray = wordsArray.slice(0, 50);
 
-    cleanWords = limitedWordsArray.join(" ");
-
-    const authToken =
-      (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-
     try {
-      const request = put({
-        apiName: "LanguageLearningApp",
-        path: "/vocabulary",
-        options: {
-          headers: {
-            Authorization: authToken,
-          },
-          body: {
-            vocabulary: limitedWordsArray,
-            language: activeLanguage ?? null,
-          },
-        },
+      const addedWords = await addVocabulary.mutateAsync({
+        language: activeLanguage,
+        vocabulary: limitedWordsArray,
       });
-
-      const response = await request.response;
-      const addedWords = await readJson<string[]>(response);
       setAlert({
         open: true,
         message: `Added words: ${addedWords}`,
         type: "success",
       });
-
-      context.updateVocabTable();
-    } catch (e) {
-      console.error("PUT call failed: ", e);
+    } catch {
       setAlert({
         open: true,
         message: `Error adding vocabulary`,
@@ -124,7 +102,6 @@ function VocabularyTablePage() {
       });
     } finally {
       setOpenModal(false);
-      setIsAddingVocabulary(false);
     }
   }
 
@@ -139,18 +116,7 @@ function VocabularyTablePage() {
     else setOpenModal(false);
   }
 
-  if (!context) return null;
-
-  const {
-    getActiveCountry,
-    getSelectedLanguageSettings,
-    handleSave,
-    selectedLanguages,
-  } = context;
-  const settings = getSelectedLanguageSettings();
-  const activeLanguageOption = selectedLanguages.find(
-    (lang) => lang.name === activeLanguage
-  );
+  const isAddingVocabulary = addVocabulary.isPending;
 
   return (
     <div className="main-content">
@@ -170,7 +136,7 @@ function VocabularyTablePage() {
           <div className="txt big">
             <strong>Your vocabulary for {activeLanguage}</strong>
           </div>
-          <img className="flag-img big" src={getActiveCountry()?.flag} alt="" />
+          <img className="flag-img big" src={country?.flag} alt="" />
         </div>
         <div className="welcome-container">
           <div className="add-vocab-button-wrapper">
@@ -191,10 +157,14 @@ function VocabularyTablePage() {
               <div className="practice-button-wrapper">
                 <button
                   onClick={async () => {
-                    if (activeLanguageOption) handleSave(activeLanguageOption);
-                    // fuck it good enough
-                    await new Promise((resolve) => setTimeout(resolve, 100));
-                    navigate("/practice");
+                    try {
+                      if (activeLanguageOption) {
+                        await saveLanguage.mutateAsync(activeLanguageOption);
+                      }
+                      navigate("/practice");
+                    } catch {
+                      return;
+                    }
                   }}
                   className="practice-btn button"
                 >

@@ -1,10 +1,12 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { get } from "aws-amplify/api";
 import { fetchAuthSession } from "aws-amplify/auth";
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import Cookie from "universal-cookie";
-import { HomeRouteContext } from "../contexts/HomeRouteContext";
 import { readJson } from "../api/readJson";
+import { getSelectedLanguageSettings } from "../constants/languages";
+import { useLanguageStore } from "../stores/languageStore";
+import { useUserStore } from "../stores/userStore";
 import { Sentence, SentencesResponse } from "../types/api";
 import {
   ExerciseType,
@@ -234,11 +236,8 @@ const useFetchSentences = (): [
 ] => {
   const [sentences, setSentences] = useState<PracticeSentence[]>();
   const [error, setError] = useState<FetchSentencesError | null>(null);
-  const context = useContext(HomeRouteContext);
 
   useEffect(() => {
-    const getSelectedLanguageSettings = context?.getSelectedLanguageSettings;
-
     async function getSentences() {
       console.log("Starting getSentences function");
       const cookie = new Cookie();
@@ -300,7 +299,10 @@ const useFetchSentences = (): [
           })
         );
 
-        const languageSettings = getSelectedLanguageSettings?.();
+        const languageSettings = getSelectedLanguageSettings(
+          useLanguageStore.getState().selectedLanguages,
+          useUserStore.getState().userData?.user.activeLanguage
+        );
         const enabledExercises = languageSettings?.exercises;
 
         const processedSentences = sentencesWithVoice.flatMap(

@@ -5,7 +5,7 @@ import CustomTooltip from "../../CustomTooltip";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { post } from "aws-amplify/api";
 import { readJson } from "../../../../api/readJson";
-import { VerifySentenceResponse } from "../../../../types/api";
+import { TranslationVerdict, VerifySentenceResponse } from "../../../../types/api";
 import { PracticeSentence, VerifySentenceResult } from "../../../../types/practice";
 
 interface AlignmentRange {
@@ -160,7 +160,7 @@ const Translation = ({
 
     const exact = cleanString(answer) === cleanString(comparisonString);
 
-    if (exact) return { isCorrect: true, exact: true };
+    if (exact) return { verdict: "correct", isCorrect: true, exact: true };
 
     try {
       const authToken =
@@ -180,10 +180,16 @@ const Translation = ({
       }).response;
 
       const verified = await readJson<VerifySentenceResponse>(response);
-      return verified;
+      const verdict: TranslationVerdict =
+        verified.verdict ?? (verified.isCorrect ? "correct" : "incorrect");
+      return {
+        ...verified,
+        verdict,
+        isCorrect: verdict !== "incorrect",
+      };
     } catch (e) {
       console.error(e);
-      return { isCorrect: false, exact: false };
+      return { verdict: "incorrect", isCorrect: false, exact: false };
     }
   };
 

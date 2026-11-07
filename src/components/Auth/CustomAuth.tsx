@@ -7,15 +7,16 @@ import {
   Button,
 } from "@aws-amplify/ui-react";
 import { ReactNode } from "react";
+import { useThemeColor } from "../../hooks/useThemeColor";
 
 const components = {
   Header() {
     const { tokens } = useTheme();
+    const color = useThemeColor({}, "text");
 
     return (
       <View textAlign="center" padding={tokens.space.large}>
-        {/* Replace the Amplify logo with your branding */}
-        <Text fontSize={tokens.fontSizes.xl} fontWeight="bold">
+        <Text fontSize={tokens.fontSizes.xl} fontWeight="bold" color={color}>
           PolyBara
         </Text>
       </View>
@@ -24,10 +25,11 @@ const components = {
 
   Footer() {
     const { tokens } = useTheme();
+    const color = useThemeColor({}, "text");
 
     return (
       <View textAlign="center" padding={tokens.space.large}>
-        <Text color={tokens.colors.neutral[80]}>
+        <Text color={color}>
           &copy; {new Date().getFullYear()} PolyBara. All Rights Reserved.
         </Text>
       </View>

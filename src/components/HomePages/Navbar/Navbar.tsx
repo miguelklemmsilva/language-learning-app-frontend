@@ -5,12 +5,11 @@ import HomeIcon from "@mui/icons-material/Home";
 import TableChartIcon from "@mui/icons-material/TableChart";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useHomeRoute } from "../../../contexts/HomeRouteContext";
+import { useSignOut } from "../../../hooks/useSignOut";
 
 const Navbar = () => {
   const location = useLocation();
-
-  const { signOut } = useHomeRoute();
+  const signOut = useSignOut();
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -70,7 +69,7 @@ const Navbar = () => {
               </Link>
               <div
                 className="nav-link-container logout"
-                onClick={() => signOut?.()}
+                onClick={signOut}
               >
                 <div className="img-wrapper">
                   <LogoutIcon fontSize="inherit" />
@@ -115,7 +114,7 @@ const Navbar = () => {
         </Link>
         <div
           className="nav-link-container logout"
-          onClick={() => signOut?.()}
+          onClick={signOut}
         >
           <div className="icon-wrapper">
             <LogoutIcon fontSize="inherit" />

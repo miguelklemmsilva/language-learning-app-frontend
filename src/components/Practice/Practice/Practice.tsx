@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import useFetchSentences from "../../../hooks/useFetchSentences";
 import Question from "../Question/Question";
@@ -8,7 +8,7 @@ import "./Practice.scss";
 import { LinearProgress } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { HomeRouteContext } from "../../../contexts/HomeRouteContext";
+import { useQueryClient } from "@tanstack/react-query";
 import { post } from "aws-amplify/api";
 import { fetchAuthSession } from "aws-amplify/auth";
 import { PracticeSentence } from "../../../types/practice";
@@ -18,7 +18,7 @@ const Practice = () => {
   const [sentence, setSentence] = useState<PracticeSentence | null>(null);
   const [sentences, setSentences, error] = useFetchSentences();
   const navigate = useNavigate();
-  const context = useContext(HomeRouteContext);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (sentences) setSentence(sentences[sentenceNumber] ?? null);
@@ -106,7 +106,7 @@ const Practice = () => {
         };
 
         finishLesson().then(() => {
-          context?.updateVocabTable();
+          void queryClient.invalidateQueries({ queryKey: ["vocabulary"] });
         });
       }
 

@@ -1,7 +1,8 @@
 .main-content {
   margin-left: 300px;
   display: flex;
-  background-color: #f8f8ff;
+  background-color: var(--app-background, #ffffff);
+  color: var(--app-text, #11181c);
   padding: 50px;
   justify-content: center;
 
@@ -12,6 +13,10 @@
   &.lp {
     gap: 20px
   }
+}
+
+.onboarding-shell .main-content {
+  margin-left: 0;
 }
 
 .content-container {
@@ -41,22 +46,22 @@
   justify-content: center;
   text-decoration: none;
   font: inherit;
-  color: black;
+  color: inherit;
   padding: 0;
   padding-block: 0;
   padding-inline: 0;
   transition: 0.2s ease-in-out;
 
   &.blue {
-    color: white;
-    background-color: #3a61ff;
+    color: var(--app-primary-foreground, #ffffff);
+    background-color: var(--app-primary, #db78ff);
     transition: background-color 0.2s ease-in-out;
     border: 2px solid transparent;
 
     &:hover {
-      background-color: white;
-      color: #3a61ff;
-      border: 2px solid #3a61ff;
+      background-color: var(--app-background, #ffffff);
+      color: var(--app-primary, #db78ff);
+      border: 2px solid var(--app-primary, #db78ff);
     }
   }
 
@@ -142,6 +147,7 @@
     padding: 40px;
     box-sizing: border-box;
     background-color: #cfdcff;
+    color: #11181c;
     border-radius: 20px;
     margin: 10px;
     flex: 1;
@@ -210,7 +216,7 @@
     border-radius: 20px;
     flex-direction: column;
     text-decoration: none;
-    color: inherit;
+    color: #11181c;
     height: fit-content;
     margin: 10px;
 
@@ -265,7 +271,7 @@
     background-color: #cfdcff;
     border-radius: 20px;
     text-decoration: none;
-    color: inherit;
+    color: #11181c;
     margin: 10px;
 
     .table-wrapper.home {

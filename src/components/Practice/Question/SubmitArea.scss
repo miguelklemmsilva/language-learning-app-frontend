@@ -65,6 +65,23 @@
     }
   }
 
+  &.technically-correct {
+    background-color: #fff4cc;
+    color: #9a6700;
+
+    .eval {
+      background-color: #e6a100;
+      color: white;
+      border: 2px solid transparent;
+
+      &:hover {
+        background-color: transparent;
+        border: 2px solid #e6a100;
+        color: #9a6700;
+      }
+    }
+  }
+
   .sentence-eval-buttons-wrapper {
     display: flex;
     flex-direction: column;

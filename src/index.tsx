@@ -2,6 +2,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
+import "@aws-amplify/ui-react/styles.css";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {

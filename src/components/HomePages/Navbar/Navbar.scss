@@ -6,9 +6,10 @@
   min-height: 500px;
   min-width: 300px;
   max-width: 300px;
-  border-right: 3px solid #e6e6e6;
+  border-right: 3px solid var(--app-border, #e6e6e6);
   flex-direction: column;
-  background-color: white;
+  background-color: var(--app-card, #ffffff);
+  color: var(--app-text, #11181c);
 }
 
 .sections {
@@ -28,7 +29,7 @@
   position: fixed;
   height: 75px;
   bottom: 0;
-  background-color: white;
+  background-color: var(--app-card, #ffffff);
   flex-direction: row;
   justify-content: space-between;
   z-index: 999;
@@ -37,9 +38,9 @@
     flex: 1;
     display: grid;
     place-items: center;
-    border-top: 2px solid #e6e6e6;
+    border-top: 2px solid var(--app-border, #e6e6e6);
     transition: 0.25s ease-in-out;
-    color: #b0b0b0;
+    color: var(--app-icon, #b0b0b0);
 
     &.logout {
       margin-top: 0;
@@ -51,8 +52,8 @@
     }
 
     &.active {
-      border-top: 2px solid #578bff;
-      color: #578bff;
+      border-top: 2px solid var(--app-primary, #db78ff);
+      color: var(--app-primary, #db78ff);
     }
   }
 
@@ -83,7 +84,7 @@
   .nav-link-container {
     justify-content: center;
     text-decoration: none;
-    color: black;
+    color: var(--app-text, #11181c);
   }
 
   .nav-title {
@@ -116,7 +117,7 @@
     gap: 15px;
     align-items: center;
     flex-wrap: wrap;
-    color: black;
+    color: var(--app-text, #11181c);
     text-decoration: none;
     padding: 15px;
     border: none;
@@ -132,7 +133,7 @@
 
   .nav-link-container {
     font-size: 20px;
-    color: #b0b0b0;
+    color: var(--app-icon, #b0b0b0);
     transition: background-color 0.25s ease-in-out, margin-right 0.2s ease-out;
   }
 
@@ -140,16 +141,16 @@
     margin-right: -3px;
     padding-right: 3px;
 
-    border-right: 3px solid #578bff;
-    color: #626262;
+    border-right: 3px solid var(--app-primary, #db78ff);
+    color: var(--app-text, #11181c);
 
     .img-wrapper {
-      color: #578bff;
+      color: var(--app-primary, #db78ff);
     }
   }
 
   .nav-link-container:hover {
-    background-color: #f1f1f1;
+    background-color: var(--app-hover, #f1f1f1);
     cursor: pointer;
   }
 

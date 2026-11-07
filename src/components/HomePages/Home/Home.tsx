@@ -1,8 +1,9 @@
-import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import "../HomePage.scss";
-import { HomeRouteContext } from "../../../contexts/HomeRouteContext";
+import { useVocabulary } from "../../../api/vocabularyService";
+import { useSaveLanguage } from "../../../api/userService";
+import { useActiveLanguageSelection } from "../../../hooks/useActiveLanguageSelection";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import TranslateIcon from "@mui/icons-material/Translate";
 import HearingIcon from "@mui/icons-material/Hearing";
@@ -10,28 +11,15 @@ import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
 import VocabularyTable from "../VocabularyTable/VocabularyTable";
 
 function Home() {
-  const context = useContext(HomeRouteContext);
   const navigate = useNavigate();
-
-  if (!context) return null;
-
-  const {
-    wordTable,
-    activeLanguage,
-    getActiveCountry,
-    getSelectedLanguageSettings,
-    selectedLanguages,
-    handleSave,
-  } = context;
+  const { data: wordTable = [] } = useVocabulary();
+  const saveLanguage = useSaveLanguage();
+  const { activeLanguage, settings, country, activeLanguageOption } =
+    useActiveLanguageSelection();
 
   const filteredTable = wordTable.filter((word) => {
     return word.minutesUntilDue <= 0;
   });
-
-  const settings = getSelectedLanguageSettings();
-  const activeLanguageOption = selectedLanguages.find(
-    (lang) => lang.name === activeLanguage
-  );
 
   const practiceButton = () => {
     if (
@@ -43,10 +31,14 @@ function Home() {
       return (
         <button
           onClick={async () => {
-            if (activeLanguageOption) handleSave(activeLanguageOption);
-            // fuck it good enough
-            await new Promise((resolve) => setTimeout(resolve, 100));
-            navigate("/practice");
+            try {
+              if (activeLanguageOption) {
+                await saveLanguage.mutateAsync(activeLanguageOption);
+              }
+              navigate("/practice");
+            } catch {
+              return;
+            }
           }}
           className="practice-btn button"
         >
@@ -85,7 +77,7 @@ function Home() {
             <div className="txt">
               <strong>Studying {activeLanguage}</strong>
             </div>
-            <img className="flag-img big" src={getActiveCountry()?.flag} alt="" />
+            <img className="flag-img big" src={country?.flag} alt="" />
           </div>
           <div className="welcome-container">
             <div className="messages-container">
@@ -116,7 +108,7 @@ function Home() {
                         Studying <strong>{activeLanguage}</strong> from
                       </div>
                     </div>
-                    <img src={getActiveCountry()?.flag} alt="" className="flag-img" />
+                    <img src={country?.flag} alt="" className="flag-img" />
                   </div>
                   <div className="active-exercises info">
                     <div>Active exercises:</div>

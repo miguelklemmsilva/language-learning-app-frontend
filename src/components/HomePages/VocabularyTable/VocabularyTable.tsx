@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import {
   Pagination,
   PaginationItem,
@@ -13,7 +13,8 @@ import {
 } from "@mui/material";
 import "./VocabularyTable.scss";
 import calculateTime from "../calculateTime";
-import { HomeRouteContext } from "../../../contexts/HomeRouteContext";
+import { useRemoveWord } from "../../../api/vocabularyService";
+import { useActiveLanguageSelection } from "../../../hooks/useActiveLanguageSelection";
 import CircularProgress from "@mui/material/CircularProgress";
 import { VocabularyTableRow } from "../../../types/practice";
 
@@ -34,7 +35,8 @@ const VocabularyTable = ({
   addWords,
   isAddingVocabulary,
 }: VocabularyTableProps) => {
-  const context = useContext(HomeRouteContext);
+  const removeWord = useRemoveWord();
+  const { activeLanguage } = useActiveLanguageSelection();
   const [order, setOrder] = useState<"asc" | "desc">("asc");
   const [orderBy, setOrderBy] = useState<SortKey>("word");
   const [page, setPage] = useState(1);
@@ -86,7 +88,7 @@ const VocabularyTable = ({
   };
 
   const getDictionaryLink = (_word: VocabularyTableRow): undefined => {
-    if (!context?.activeLanguage) return undefined;
+    if (!activeLanguage) return undefined;
     return undefined;
   };
 
@@ -200,7 +202,7 @@ const VocabularyTable = ({
                     )}
                     {(word.foundInWordTable || !isCategoryView) && (
                       <button
-                        onClick={() => context?.handleRemoveWord(word)}
+                        onClick={() => removeWord.mutate(word.word)}
                         className="button delete-btn generic-btn"
                       >
                         REMOVE

@@ -64,28 +64,38 @@ const TranslationSubmitArea = ({
       </div>
     );
 
+  const verdict = correct.verdict ?? (correct.isCorrect ? "correct" : "incorrect");
+  const tone =
+    verdict === "technicallyCorrect" ? "technically-correct" : verdict;
+  const title =
+    verdict === "technicallyCorrect"
+      ? "Technically correct"
+      : verdict === "correct"
+        ? "Correct!"
+        : "Incorrect";
+
   return (
-    <div className={`submit-wrapper ${correct.isCorrect ? "correct" : "incorrect"}`}>
+    <div className={`submit-wrapper ${tone}`}>
       <div className="feedback">
         <div style={{ display: "grid", placeItems: "center" }}>
           <div className="visual-feedback">
-            {correct.isCorrect ? (
-              <CheckIcon sx={{ font: "inherit" }} />
-            ) : (
+            {verdict === "incorrect" ? (
               <ClearIcon sx={{ font: "inherit" }} />
+            ) : (
+              <CheckIcon sx={{ font: "inherit" }} />
             )}
           </div>
         </div>
         <div>
           <div className="feedback-title">
-            {correct.isCorrect ? "Correct!" : "Incorrect"}&nbsp;
+            {title}&nbsp;
             <div className="true-center">
               <ListeningButton sentence={sentence} small={true} />
             </div>
           </div>
           <div>
             <div dangerouslySetInnerHTML={{ __html: result }}></div>
-            {!correct.isCorrect && (
+            {verdict !== "correct" && correct.explanation && (
               <>
                 <div style={{ marginBottom: "10px" }}></div>
                 <Divider />

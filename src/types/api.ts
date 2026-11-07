@@ -91,7 +91,10 @@ export interface VerifySentenceRequest {
   language: Language;
 }
 
+export type TranslationVerdict = "correct" | "incorrect" | "technicallyCorrect";
+
 export interface VerifySentenceResponse {
+  verdict?: TranslationVerdict;
   isCorrect: boolean;
   explanation?: string | null;
 }
