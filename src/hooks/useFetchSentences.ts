@@ -3,7 +3,14 @@ import { get } from "aws-amplify/api";
 import { fetchAuthSession } from "aws-amplify/auth";
 import * as sdk from "microsoft-cognitiveservices-speech-sdk";
 import Cookie from "universal-cookie";
+import { saveSentenceAudio } from "../api/practiceService";
 import { readJson } from "../api/readJson";
+import {
+  canStoreSpeech,
+  playbackType,
+  readSentenceAudio,
+  writeSentenceAudio,
+} from "../lib/sentenceAudio";
 import { getSelectedLanguageSettings } from "../constants/languages";
 import { useLanguageStore } from "../stores/languageStore";
 import { useUserStore } from "../stores/userStore";
@@ -202,6 +209,7 @@ function toPracticeSentence(
   sentence: Sentence,
   type: ExerciseType,
   voice: string | null,
+  contentType?: string,
   error?: string
 ): PracticeSentence {
   return {
@@ -214,6 +222,7 @@ function toPracticeSentence(
     mistakes: sentence.mistakes ?? 0,
     type,
     voice,
+    voiceContentType: contentType,
     error,
   };
 }
@@ -253,7 +262,7 @@ const useFetchSentences = (): [
         }).response;
 
         const json = await readJson<SentencesResponse>(response);
-        console.log("Fetched sentences:", json);
+        console.log(`Fetched ${json.sentences?.length ?? 0} sentences`);
 
         const { sentences: fetchedSentences, issueToken } = json;
 
@@ -274,6 +283,24 @@ const useFetchSentences = (): [
 
         const sentencesWithVoice = await Promise.all(
           fetchedSentences.map(async (sentence, index) => {
+            const stored = sentence.voice
+              ? null
+              : readSentenceAudio(sentence.original, sentence.country);
+            const readyVoice = sentence.voice ?? stored?.voice ?? null;
+            if (readyVoice) {
+              const contentType = playbackType(
+                readyVoice,
+                sentence.voiceContentType ?? stored?.contentType
+              );
+              return {
+                sentence,
+                voice: readyVoice,
+                contentType,
+                upload: !sentence.voice && canStoreSpeech(readyVoice),
+                error: undefined,
+              };
+            }
+
             try {
               console.log(
                 `Processing sentence ${index + 1}/${fetchedSentences.length}`
@@ -283,13 +310,23 @@ const useFetchSentences = (): [
                 sentence.country ?? "",
                 issueToken
               );
+              const contentType = playbackType(voiceData);
+              writeSentenceAudio(sentence.original, voiceData, contentType, sentence.country);
               console.log(`Sentence ${index + 1} processed successfully`);
-              return { sentence, voice: voiceData, error: undefined };
+              return {
+                sentence,
+                voice: voiceData,
+                contentType,
+                upload: canStoreSpeech(voiceData),
+                error: undefined,
+              };
             } catch (sentenceError) {
               console.error(`Error processing sentence ${index + 1}:`, sentenceError);
               return {
                 sentence,
                 voice: null,
+                contentType: undefined,
+                upload: false,
                 error:
                   sentenceError instanceof Error
                     ? sentenceError.message
@@ -299,6 +336,23 @@ const useFetchSentences = (): [
           })
         );
 
+        const toStore = sentencesWithVoice.flatMap((item) => {
+          if (!item.upload || !item.voice) return [];
+          return [
+            {
+              word: item.sentence.word,
+              language: item.sentence.language,
+              voice: item.voice,
+              contentType: item.contentType,
+            },
+          ];
+        });
+        if (toStore.length > 0) {
+          void saveSentenceAudio(toStore).catch((uploadError) => {
+            console.error("Could not store sentence audio:", uploadError);
+          });
+        }
+
         const languageSettings = getSelectedLanguageSettings(
           useLanguageStore.getState().selectedLanguages,
           useUserStore.getState().userData?.user.activeLanguage
@@ -306,22 +360,22 @@ const useFetchSentences = (): [
         const enabledExercises = languageSettings?.exercises;
 
         const processedSentences = sentencesWithVoice.flatMap(
-          ({ sentence, voice, error: voiceError }) => {
+          ({ sentence, voice, contentType, error: voiceError }) => {
             const sentenceTypes: PracticeSentence[] = [];
 
             if (enabledExercises?.translation) {
               sentenceTypes.push(
-                toPracticeSentence(sentence, "translation", voice, voiceError)
+                toPracticeSentence(sentence, "translation", voice, contentType, voiceError)
               );
             }
             if (enabledExercises?.listening) {
               sentenceTypes.push(
-                toPracticeSentence(sentence, "listening", voice, voiceError)
+                toPracticeSentence(sentence, "listening", voice, contentType, voiceError)
               );
             }
             if (enabledExercises?.speaking) {
               sentenceTypes.push(
-                toPracticeSentence(sentence, "speaking", voice, voiceError)
+                toPracticeSentence(sentence, "speaking", voice, contentType, voiceError)
               );
             }
 

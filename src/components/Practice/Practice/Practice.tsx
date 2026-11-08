@@ -11,6 +11,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useQueryClient } from "@tanstack/react-query";
 import { post } from "aws-amplify/api";
 import { fetchAuthSession } from "aws-amplify/auth";
+import { forgetMasteredSentenceAudio } from "../../../lib/sentenceAudio";
 import { PracticeSentence } from "../../../types/practice";
 
 const Practice = () => {
@@ -103,6 +104,7 @@ const Practice = () => {
               },
             },
           }).response;
+          forgetMasteredSentenceAudio(sentences);
         };
 
         finishLesson().then(() => {

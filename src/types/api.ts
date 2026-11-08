@@ -74,6 +74,7 @@ export interface Sentence {
   mistakes: number;
   translation?: string | null;
   voice?: string | null;
+  voiceContentType?: string | null;
   language: Language;
   alignment?: string | null;
   country?: string | null;
@@ -88,6 +89,7 @@ export interface SentencesResponse {
 export interface VerifySentenceRequest {
   original: string;
   translation: string;
+  word: string;
   language: Language;
 }
 

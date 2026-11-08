@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import { playbackType } from "../../../../lib/sentenceAudio";
 import { PracticeSentence } from "../../../../types/practice";
 
 interface ListeningButtonProps {
@@ -31,7 +32,9 @@ const ListeningButton = ({ sentence, small }: ListeningButtonProps) => {
 
       const audioData = new Uint8Array(base64ToArrayBuffer());
 
-      const audioBlob = new Blob([audioData], { type: "audio/mpeg" });
+      const audioBlob = new Blob([audioData], {
+        type: playbackType(sentence.voice ?? "", sentence.voiceContentType),
+      });
       const audioURL = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioURL);
       audioRef.current = audio;

@@ -75,12 +75,6 @@ const Translation = ({
     return formattedObjects;
   };
 
-  function sanitizeInput(input: string) {
-    return input.replace(/[^\u0000-\u007F]/g, function (char) {
-      return "\\u" + char.charCodeAt(0).toString(16).padStart(4, "0");
-    });
-  }
-
   const renderTranslation = () => {
     const alignments = formatAlignment(sentence.alignment);
     const translation = sentence.translation;
@@ -158,7 +152,8 @@ const Translation = ({
   const checkTranslation = async (): Promise<VerifySentenceResult> => {
     const comparisonString = cleanEmptyArea(sentence.original);
 
-    const exact = cleanString(answer) === cleanString(comparisonString);
+    const exact =
+      cleanString(answer).toLowerCase() === cleanString(comparisonString).toLowerCase();
 
     if (exact) return { verdict: "correct", isCorrect: true, exact: true };
 
@@ -173,7 +168,8 @@ const Translation = ({
           headers: { Authorization: authToken },
           body: {
             original: cleanEmptyArea(sentence.translation ?? ""),
-            translation: sanitizeInput(answer),
+            translation: cleanEmptyArea(answer),
+            word: sentence.word,
             language: sentence.language,
           },
         },
