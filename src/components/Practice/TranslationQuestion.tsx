@@ -3,7 +3,9 @@ import { readError } from "../../api/client";
 import { verifySentence } from "../../api/practiceService";
 import { PrimaryButton } from "../ui/PrimaryButton";
 import { AlignedPrompt } from "./AlignedPrompt";
-import { LessonOutcome, PracticeSentence, VerifySentenceResponse } from "../../types/practice";
+import { AnswerField } from "./AnswerField";
+import { VerifySentenceResponse } from "../../types/api";
+import { LessonOutcome, PracticeSentence } from "../../types/practice";
 
 type TranslationQuestionProps = {
   sentence: PracticeSentence;
@@ -74,21 +76,13 @@ export function TranslationQuestion({
       ) : (
         <p className="sentence">{sentence.original}</p>
       )}
-      <textarea
-        className="answer"
+      <AnswerField
         value={answer}
+        onChange={setAnswer}
+        language={sentence.language}
         disabled={Boolean(result)}
         placeholder={`Write it in ${sentence.language}`}
-        autoCapitalize="none"
-        autoCorrect="off"
-        spellCheck={false}
-        onChange={(event) => setAnswer(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
-            event.preventDefault();
-            void submit();
-          }
-        }}
+        onSubmit={() => void submit()}
       />
       {error ? <p className="bad-text">{error}</p> : null}
       {result ? (

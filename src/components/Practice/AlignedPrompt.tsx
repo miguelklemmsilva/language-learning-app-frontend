@@ -3,7 +3,7 @@ import { readError } from "../../api/client";
 import { useAddVocabulary, useMarkForPractice, useVocabulary } from "../../api/vocabularyService";
 import { PrimaryButton } from "../ui/PrimaryButton";
 import { Icon } from "../ui/Icon";
-import { alignedHint, encodeWord, parseAlignment } from "../../lib/text";
+import { alignedPromptParts, encodeWord } from "../../lib/text";
 import { hasWord, sameWord } from "../../lib/words";
 import { Language } from "../../types/api";
 
@@ -15,26 +15,6 @@ type AlignedPromptProps = {
   onWordAdded?: (word: string) => void;
   onWordRevision?: (word: string) => void;
 };
-
-type PromptPart = {
-  text: string;
-  hint?: string;
-};
-
-function promptParts(translation: string, original: string, alignment?: string | null): PromptPart[] {
-  const ranges = parseAlignment(alignment);
-  const tokens = translation.split(/(\s+)/);
-  let cursor = 0;
-
-  return tokens.map((token) => {
-    const start = cursor;
-    const end = cursor + token.length - 1;
-    cursor += token.length;
-    if (!token.trim()) return { text: token };
-    const hint = alignedHint(original, translation, ranges, start, end);
-    return hint ? { text: token, hint } : { text: token };
-  });
-}
 
 export function AlignedPrompt({
   translation,
@@ -52,7 +32,7 @@ export function AlignedPrompt({
   const [practiced, setPracticed] = useState<string[]>([]);
   const [pending, setPending] = useState<{ hint: string; action: "add" | "practice" } | null>(null);
   const [actionError, setActionError] = useState<{ hint: string; message: string } | null>(null);
-  const parts = promptParts(translation, original, alignment);
+  const parts = alignedPromptParts(translation, original, alignment);
   const selected = selectedIndex === null ? null : parts[selectedIndex] ?? null;
   const hintable = parts.some((part) => part.hint);
 
@@ -106,7 +86,7 @@ export function AlignedPrompt({
 
   return (
     <div className="stack">
-      {hintable ? <p className="help">Tap a highlighted word for a hint.</p> : null}
+      {hintable ? <p className="help">Tap a highlight for a hint.</p> : null}
       <div className="prompt">
         {parts.map((part, index) => {
           if (!part.text.trim()) return null;

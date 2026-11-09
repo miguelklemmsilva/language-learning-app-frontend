@@ -98,7 +98,7 @@ async function synthesize(text: string, country: string, token: string, host: st
       (error) => {
         window.clearTimeout(timeout);
         synthesizer.close();
-        reject(error instanceof Error ? error : new Error("Could not create the audio for this sentence."));
+        reject(new Error(typeof error === "string" ? error : "Could not create the audio for this sentence."));
       }
     );
   });
@@ -288,8 +288,13 @@ export async function completePronunciation() {
   session = null;
 
   const result = await new Promise<PronunciationResult | null>((resolve) => {
-    const finish = () => resolve(current.latest);
-    const timer = window.setTimeout(finish, 1600);
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve(current.latest);
+    };
+    const timer = window.setTimeout(finish, 2000);
     const previous = current.recognizer.recognized;
     current.recognizer.recognized = (sender, event) => {
       previous?.call(current.recognizer, sender, event);
@@ -301,7 +306,7 @@ export async function completePronunciation() {
     current.recognizer.stopContinuousRecognitionAsync(
       () => {
         window.clearTimeout(timer);
-        finish();
+        window.setTimeout(finish, 500);
       },
       () => {
         window.clearTimeout(timer);

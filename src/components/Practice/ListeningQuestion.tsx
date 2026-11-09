@@ -4,6 +4,7 @@ import { PrimaryButton } from "../ui/PrimaryButton";
 import { Icon } from "../ui/Icon";
 import { answersMatch } from "../../lib/text";
 import { playSpeech } from "../../lib/speech";
+import { AnswerField } from "./AnswerField";
 import { LessonOutcome, PracticeSentence } from "../../types/practice";
 
 type ListeningQuestionProps = {
@@ -53,15 +54,13 @@ export function ListeningQuestion({ sentence, token, speechHost, onGrade }: List
         {playing ? <span className="spinner small on-primary" /> : <Icon name="volume" size={32} />}
       </button>
       {audioError ? <p className="bad-text" style={{ textAlign: "center" }}>{audioError}</p> : null}
-      <textarea
-        className="answer"
+      <AnswerField
         value={answer}
+        onChange={setAnswer}
+        language={sentence.language}
         disabled={correct !== null}
         placeholder="Type what you hear"
-        autoCapitalize="none"
-        autoCorrect="off"
-        spellCheck={false}
-        onChange={(event) => setAnswer(event.target.value)}
+        onSubmit={submit}
       />
       {correct !== null ? (
         <div className={`feedback ${correct ? "good" : "bad"}`}>

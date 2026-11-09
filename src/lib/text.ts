@@ -18,9 +18,13 @@ export function answersMatch(left: string, right: string) {
 }
 
 function escapeUnicode(value: string) {
-    return value.replace(/[^\u0000-\u007F]/g, (char) => {
-        return '\\u' + char.charCodeAt(0).toString(16).padStart(4, '0');
-    });
+    let encoded = '';
+    for (let index = 0; index < value.length; index += 1) {
+        const code = value.charCodeAt(index);
+        const char = value[index] ?? '';
+        encoded += code < 128 ? char : `\\u${code.toString(16).padStart(4, '0')}`;
+    }
+    return encoded;
 }
 
 export function encodeWord(word: string) {
@@ -279,4 +283,55 @@ export function alignedHint(
     const { links, owners } = linkedWords(originalWords, translatedWords, ranges);
     const selected = expandFunctionPhrase(clicked, links.get(clicked.start) ?? [], originalWords, owners);
     return hintPhrase(original, selected, originalWords);
+}
+
+export type PromptPart = {
+    text: string;
+    hint?: string;
+};
+
+export function alignedPromptParts(translation: string, original: string, alignment?: string | null) {
+    const ranges = parseAlignment(alignment);
+    const tokens = translation.split(/(\s+)/);
+    const parts: PromptPart[] = [];
+    let cursor = 0;
+
+    for (const token of tokens) {
+        const start = cursor;
+        const end = cursor + token.length - 1;
+        cursor += token.length;
+        if (!token.trim()) {
+            parts.push({ text: token });
+            continue;
+        }
+
+        const hint = alignedHint(original, translation, ranges, start, end);
+        parts.push(hint ? { text: token, hint } : { text: token });
+    }
+
+    return mergeSharedHints(parts);
+}
+
+function mergeSharedHints(parts: PromptPart[]) {
+    const merged: PromptPart[] = [];
+
+    for (const part of parts) {
+        if (!part.hint) {
+            merged.push(part);
+            continue;
+        }
+
+        let splitAt = merged.length;
+        while (splitAt > 0 && !merged[splitAt - 1].text.trim()) splitAt -= 1;
+        const previous = splitAt > 0 ? merged[splitAt - 1] : undefined;
+        if (!previous?.hint || previous.hint !== part.hint) {
+            merged.push({ text: part.text, hint: part.hint });
+            continue;
+        }
+
+        const gap = merged.splice(splitAt).map((item) => item.text).join('');
+        previous.text = `${previous.text}${gap || ' '}${part.text}`.replace(/\s+/g, ' ').trim();
+    }
+
+    return merged;
 }
