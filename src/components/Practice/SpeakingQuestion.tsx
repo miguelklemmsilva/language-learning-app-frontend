@@ -158,10 +158,19 @@ export function SpeakingQuestion({ sentence, token, speechHost, onGrade }: Speak
     setPreparing(true);
     try {
       stopping.current = false;
-      await beginPronunciation(sentence.original, sentence.country || "", token, speechHost, (text) => {
-        if (mounted.current) setHeard(text);
-      });
-      if (!mounted.current) return;
+      await beginPronunciation(
+        sentence.original,
+        sentence.country || "",
+        token,
+        speechHost,
+        (text) => {
+          if (mounted.current) setHeard(text);
+        },
+        () => {
+          if (mounted.current) void finishRecording();
+        }
+      );
+      if (!mounted.current || stopping.current) return;
       setRecordingUrl(null);
       setRecording(true);
     } catch (recordError) {
@@ -204,10 +213,10 @@ export function SpeakingQuestion({ sentence, token, speechHost, onGrade }: Speak
   return (
     <div className="stack">
       <div className="stack-tight">
-        <p className="kicker accent">Speaking</p>
-        <p className="help">
-          Listen, then say the sentence aloud. It finishes when the words match. You can also tap the microphone to stop.
-        </p>
+      <p className="kicker accent">Speaking</p>
+      <p className="help">
+        Listen, then say the sentence aloud. It finishes when you pause, or when the words match. You can also tap the microphone to stop.
+      </p>
       </div>
       <p className="sentence">{sentence.original}</p>
       {sentence.translation ? <p className="muted">{sentence.translation}</p> : null}
