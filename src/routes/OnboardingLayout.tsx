@@ -1,19 +1,14 @@
-import { useMemo } from "react";
 import { Outlet } from "react-router-dom";
-import { useColorScheme } from "../hooks/useColorScheme";
 import { useSignOut } from "../hooks/useSignOut";
-import { createOnboardingStyles } from "./styles";
 
 export default function OnboardingLayout() {
-  const scheme = useColorScheme();
-  const styles = useMemo(() => createOnboardingStyles(scheme), [scheme]);
   const signOut = useSignOut();
 
   return (
-    <div className="onboarding-shell" style={styles.page}>
+    <div className="onboarding-shell">
       <Outlet />
-      <button type="button" style={styles.signOut} onClick={signOut}>
-        Sign Out
+      <button type="button" className="text-button danger onboarding-sign-out" onClick={signOut}>
+        Sign out
       </button>
     </div>
   );

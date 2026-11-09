@@ -237,11 +237,10 @@ const formFields = {
 
 export default function CustomAuth({ children }: { children: ReactNode }) {
   return (
-    <Authenticator
-      socialProviders={['google']} formFields={formFields}
-      components={components}
-    >
-      {children}
-    </Authenticator>
+    <div className="auth-frame">
+      <Authenticator socialProviders={["google"]} formFields={formFields} components={components}>
+        {children}
+      </Authenticator>
+    </div>
   );
 }

@@ -1,111 +1,124 @@
-import { del, get, put } from "aws-amplify/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { API_NAME, authToken } from "./client";
-import { readJson } from "./readJson";
-import { useUserData } from "./userService";
-import { Category, Language, Word } from "../types/api";
+import { apiDelete, apiGet, apiPut } from "./client";
+import { markWordNeedsPractice } from "./practiceService";
+import { sameWord } from "../lib/words";
+import { Category, Language, UserResponse, Word } from "../types/api";
 
-async function fetchVocabulary(language: Language): Promise<Word[]> {
-  const response = await get({
-    apiName: API_NAME,
-    path: `/vocabulary?language=${language}`,
-    options: {
-      headers: { Authorization: await authToken() },
-    },
-  }).response;
-
-  return readJson<Word[]>(response);
-}
-
-async function fetchCategories(language: Language): Promise<Category[]> {
-  const response = await get({
-    apiName: API_NAME,
-    path: `/categories?language=${language}`,
-    options: {
-      headers: { Authorization: await authToken() },
-    },
-  }).response;
-
-  return readJson<Category[]>(response);
-}
-
-export function useVocabulary() {
-  const { data } = useUserData();
-  const language = data?.user.activeLanguage ?? null;
-
+export function useVocabulary(language?: Language | null) {
   return useQuery({
     queryKey: ["vocabulary", language],
-    queryFn: () => fetchVocabulary(language as Language),
-    enabled: language != null,
-    staleTime: 15 * 60 * 1000,
+    queryFn: async () => {
+      const words = await apiGet<Array<Word | null>>(
+        `/vocabulary?language=${encodeURIComponent(language ?? "")}`
+      );
+      return words.filter((word): word is Word => Boolean(word?.word));
+    },
+    enabled: Boolean(language),
   });
 }
 
-export function useCategories() {
-  const { data } = useUserData();
-  const language = data?.user.activeLanguage ?? null;
-
+export function useCategories(language?: Language | null) {
   return useQuery({
     queryKey: ["categories", language],
-    queryFn: () => fetchCategories(language as Language),
-    enabled: language != null,
-    staleTime: 15 * 60 * 1000,
+    queryFn: () => apiGet<Category[]>(`/categories?language=${encodeURIComponent(language ?? "")}`),
+    enabled: Boolean(language),
+    staleTime: 24 * 60 * 60 * 1000,
   });
 }
 
-export function useRemoveWord() {
+export function useAddVocabulary(language: Language | null | undefined, allowUnlisted = false) {
   const queryClient = useQueryClient();
-  const { data } = useUserData();
-  const language = data?.user.activeLanguage ?? null;
 
-  return useMutation<void, Error, string, { previous?: Word[] }>({
-    mutationFn: async (word) => {
-      await del({
-        apiName: API_NAME,
-        path: `/vocabulary?language=${language}&word=${word}`,
-        options: {
-          headers: { Authorization: await authToken() },
-        },
-      }).response;
+  return useMutation<string[], Error, string[]>({
+    mutationFn: (vocabulary) => {
+      if (!language) throw new Error("Choose a language first.");
+      return apiPut<string[]>("/vocabulary", { language, vocabulary, allowUnlisted });
+    },
+    onSuccess: async (added) => {
+      if (language && added.length > 0) {
+        await queryClient.cancelQueries({ queryKey: ["vocabulary", language] });
+        const user = queryClient.getQueryData<UserResponse>(["user"]);
+        queryClient.setQueryData<Word[]>(["vocabulary", language], (current) => {
+          const words = current ?? [];
+          const additions = added
+            .filter((word) => !words.some((item) => sameWord(item.word, word)))
+            .map(
+              (word): Word => ({
+                userId: user?.user.userId ?? "",
+                language,
+                word,
+                lastPracticed: Math.floor(Date.now() / 1000),
+                category: null,
+                boxNumber: 0,
+                lastSeen: 0,
+                minutesUntilDue: 0,
+              })
+            );
+          return additions.length > 0 ? [...additions, ...words] : words;
+        });
+      }
+      void queryClient.invalidateQueries({ queryKey: ["vocabulary", language] });
+      void queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+}
+
+export function useMarkForPractice(language: Language | null | undefined) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (word: string) => {
+      if (!language) throw new Error("Choose a language first.");
+      return markWordNeedsPractice(language, word);
+    },
+    onSuccess: async (_result, word) => {
+      if (!language) return;
+      await queryClient.cancelQueries({ queryKey: ["vocabulary", language] });
+      queryClient.setQueryData<Word[]>(["vocabulary", language], (current) =>
+        (current ?? []).map((item) =>
+          sameWord(item.word, word)
+            ? {
+                ...item,
+                boxNumber: 1,
+                minutesUntilDue: 0,
+                lastSeen: 0,
+                lastPracticed: Math.floor(Date.now() / 1000),
+              }
+            : item
+        )
+      );
+      void queryClient.invalidateQueries({ queryKey: ["vocabulary", language] });
+      void queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+}
+
+export function useRemoveVocabulary(language: Language | null | undefined) {
+  const queryClient = useQueryClient();
+
+  return useMutation<unknown, Error, string, { previous?: Word[] }>({
+    mutationFn: (word) => {
+      if (!language) throw new Error("Choose a language first.");
+      return apiDelete(
+        `/vocabulary?language=${encodeURIComponent(language)}&word=${encodeURIComponent(word)}`
+      );
     },
     onMutate: async (word) => {
       await queryClient.cancelQueries({ queryKey: ["vocabulary", language] });
       const previous = queryClient.getQueryData<Word[]>(["vocabulary", language]);
-      queryClient.setQueryData<Word[]>(["vocabulary", language], (current) =>
-        (current ?? []).filter((item) => item.word !== word)
+      queryClient.setQueryData<Word[]>(["vocabulary", language], (old) =>
+        (old ?? []).filter((item) => item.word !== word)
       );
       return { previous };
     },
-    onError: (error, _word, context) => {
-      console.error("DELETE call failed: ", error);
+    onError: (_error, _word, context) => {
       if (context?.previous) {
         queryClient.setQueryData(["vocabulary", language], context.previous);
       }
     },
-  });
-}
-
-export function useAddVocabulary() {
-  const queryClient = useQueryClient();
-
-  return useMutation<string[], Error, { language: Language; vocabulary: string[] }>({
-    mutationFn: async ({ language, vocabulary }) => {
-      const response = await put({
-        apiName: API_NAME,
-        path: "/vocabulary",
-        options: {
-          headers: { Authorization: await authToken() },
-          body: { vocabulary, language },
-        },
-      }).response;
-
-      return readJson<string[]>(response);
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ["vocabulary"] });
-    },
-    onError: (error) => {
-      console.error("PUT call failed: ", error);
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["vocabulary", language] });
+      void queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
 }

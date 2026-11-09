@@ -14,10 +14,12 @@ export const amplifyConfig: ResourcesConfig = {
           redirectSignIn: [
             "http://localhost:3000/home",
             "https://miguelklemmsilva.com/home",
+            "https://www.miguelklemmsilva.com/home",
           ],
           redirectSignOut: [
             "http://localhost:3000",
             "https://miguelklemmsilva.com",
+            "https://www.miguelklemmsilva.com",
           ],
           domain: "poly-bara.auth.eu-west-2.amazoncognito.com",
           scopes: ["email", "openid"],

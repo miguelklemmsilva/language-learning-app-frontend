@@ -56,11 +56,9 @@ const SpeakingInput = ({
   useEffect(() => {
     const initializeSpeechConfig = async () => {
       const tokenObj = await getTokenOrRefresh();
-      if (!tokenObj.authToken || !tokenObj.region) return;
-      const config = sdk.SpeechConfig.fromAuthorizationToken(
-        tokenObj.authToken,
-        tokenObj.region
-      );
+      if (!tokenObj.authToken || !tokenObj.host) return;
+      const config = sdk.SpeechConfig.fromEndpoint(new URL(`https://${tokenObj.host}`));
+      config.authorizationToken = tokenObj.authToken;
       config.setProperty(
         sdk.PropertyId.SpeechServiceConnection_EndSilenceTimeoutMs,
         "3000"

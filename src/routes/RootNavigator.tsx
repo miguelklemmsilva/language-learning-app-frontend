@@ -4,7 +4,8 @@ import LandingPage from "../components/LandingPage";
 import Home from "../components/HomePages/Home/Home";
 import Practice from "../components/Practice/Practice/Practice";
 import Settings from "../components/HomePages/Settings/Settings";
-import VocabularyTablePage from "../components/HomePages/VocabularyTable/VocabularyTablePage";
+import WordsPage from "../components/words/WordsPage";
+import { OnboardingCountry, OnboardingLanguage, OnboardingLevel } from "../components/onboarding/Onboarding";
 import AppLayout from "./AppLayout";
 import AuthLayout from "./AuthLayout";
 import AuthenticatedLayout from "./AuthenticatedLayout";
@@ -20,44 +21,30 @@ export default function RootNavigator() {
       <Route element={<AuthLayout />}>
         <Route
           path="/"
-          element={
-            authStatus === "authenticated" ? (
-              <Navigate to="/home" replace />
-            ) : (
-              <LandingPage />
-            )
-          }
+          element={authStatus === "authenticated" ? <Navigate to="/home" replace /> : <LandingPage />}
         />
         <Route
           path="/sign-in"
-          element={
-            authStatus === "authenticated" ? (
-              <Navigate to="/home" replace />
-            ) : (
-              <SignInPage />
-            )
-          }
+          element={authStatus === "authenticated" ? <Navigate to="/home" replace /> : <SignInPage />}
         />
       </Route>
       <Route element={<RequireAuth authStatus={authStatus} />}>
         <Route element={<AuthenticatedLayout />}>
           <Route element={<OnboardingLayout />}>
-            <Route path="/onboarding" element={<Settings />} />
+            <Route path="/onboarding" element={<OnboardingLanguage />} />
+            <Route path="/onboarding/level" element={<OnboardingLevel />} />
+            <Route path="/onboarding/country" element={<OnboardingCountry />} />
           </Route>
           <Route element={<AppLayout />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/vocabularytable" element={<VocabularyTablePage />} />
+            <Route path="/vocabulary" element={<WordsPage />} />
+            <Route path="/vocabularytable" element={<Navigate to="/vocabulary" replace />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/practice" element={<Practice />} />
           </Route>
+          <Route path="/practice" element={<Practice />} />
         </Route>
       </Route>
-      <Route
-        path="*"
-        element={
-          <Navigate to={authStatus === "authenticated" ? "/home" : "/"} replace />
-        }
-      />
+      <Route path="*" element={<Navigate to={authStatus === "authenticated" ? "/home" : "/"} replace />} />
     </Routes>
   );
 }

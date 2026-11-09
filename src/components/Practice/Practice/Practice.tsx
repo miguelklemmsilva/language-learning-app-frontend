@@ -1,199 +1,119 @@
-import { useCallback, useEffect, useState } from "react";
-import CloseIcon from "@mui/icons-material/Close";
-import useFetchSentences from "../../../hooks/useFetchSentences";
-import Question from "../Question/Question";
-import Finished from "../Finished";
-import PracticeLoading from "../PracticeLoading";
-import "./Practice.scss";
-import { LinearProgress } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { useQueryClient } from "@tanstack/react-query";
-import { post } from "aws-amplify/api";
-import { fetchAuthSession } from "aws-amplify/auth";
-import { forgetMasteredSentenceAudio } from "../../../lib/sentenceAudio";
-import { PracticeSentence } from "../../../types/practice";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useUserData } from "../../../api/userService";
+import { LoadingScreen } from "../../../routes/LoadingScreen";
+import { PrimaryButton } from "../../ui/PrimaryButton";
+import { Icon } from "../../ui/Icon";
+import { LessonComplete } from "../LessonComplete";
+import { ListeningQuestion } from "../ListeningQuestion";
+import { SpeakingQuestion } from "../SpeakingQuestion";
+import { TranslationQuestion } from "../TranslationQuestion";
+import { useLesson } from "../../../hooks/useLesson";
+import { isRecording, stopPlayback, stopRecording } from "../../../lib/speech";
 
-const Practice = () => {
-  const [sentenceNumber, setSentenceNumber] = useState(0);
-  const [sentence, setSentence] = useState<PracticeSentence | null>(null);
-  const [sentences, setSentences, error] = useFetchSentences();
+export default function Practice() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { data, isLoading } = useUserData();
+  const active = data?.userLanguages?.find((item) => item.language === data.user.activeLanguage);
+  const lesson = useLesson(active);
 
   useEffect(() => {
-    if (sentences) setSentence(sentences[sentenceNumber] ?? null);
-  }, [sentenceNumber, sentences]);
-
-  useEffect(() => {
-    if (error && error.code === 0) navigate("/settings");
-  }, [error, navigate]);
-
-  const correctSentences = sentences
-    ? sentences.filter((item) => item.correct).length
-    : 0;
-
-  const updateSentence = useCallback(
-    (correct: boolean) => {
-      if (!sentences) return;
-      const updatedSentences = sentences.map((item, idx) => {
-        if (idx === sentenceNumber) {
-          if (correct)
-            return {
-              ...item,
-              correct: true,
-            };
-          else
-            return {
-              ...item,
-              mistakes: item.mistakes + 1,
-            };
-        }
-        return item;
-      });
-      setSentences(updatedSentences);
-    },
-    [sentences, setSentences, sentenceNumber]
-  );
-
-  useEffect(() => {
-    if (!sentences) return;
-    const setNextQuestion = () => {
-      const exerciseOrder = ["translation", "speaking", "listening"] as const;
-      let nextSentence = -1;
-
-      const currentType = sentences[sentenceNumber]?.type;
-      for (let i = sentenceNumber + 1; i < sentences.length; i++) {
-        const candidate = sentences[i];
-        if (candidate && !candidate.correct && candidate.type === currentType) {
-          nextSentence = i;
-          break;
-        }
-      }
-
-      if (nextSentence === -1) {
-        for (const type of exerciseOrder) {
-          for (let i = 0; i < sentences.length; i++) {
-            const candidate = sentences[i];
-            if (candidate && !candidate.correct && candidate.type === type) {
-              nextSentence = i;
-              break;
-            }
-          }
-          if (nextSentence !== -1) break;
-        }
-      }
-
-      if (nextSentence === -1) {
-        const finishLesson = async () => {
-          const authToken =
-            (await fetchAuthSession()).tokens?.idToken?.toString() ?? "";
-
-          await post({
-            apiName: "LanguageLearningApp",
-            path: "/finishlesson",
-            options: {
-              headers: { Authorization: authToken },
-              body: {
-                sentences: sentences.map((item) => ({
-                  mistakes: item.mistakes,
-                  word: item.word,
-                  language: item.language,
-                  type: item.type,
-                })),
-              },
-            },
-          }).response;
-          forgetMasteredSentenceAudio(sentences);
-        };
-
-        finishLesson().then(() => {
-          void queryClient.invalidateQueries({ queryKey: ["vocabulary"] });
-        });
-      }
-
-      setSentenceNumber(nextSentence);
+    return () => {
+      stopPlayback();
+      if (isRecording()) void stopRecording();
     };
+  }, []);
 
-    setNextQuestion();
-    // Run only when the sentence list changes. Re-running on sentenceNumber skips questions.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sentences]);
-
-  if (error) {
-    if (error.code)
-      return (
-        <div style={{ justifyContent: "center" }} className="main-content no-margin">
-          <div className="practice-container">
-            <h1>No words to practice!</h1>
-            <h2>Add some words into your vocabulary table to practice</h2>
-            <Link
-              to={"/vocabularytable"}
-              className="button blue generic"
-              style={{ width: "100%" }}
-            >
-              <div className="button-txt">Go to vocabulary table</div>
-              <div className="arrow-wrapper">
-                <ArrowForwardIcon />
-              </div>
-            </Link>
-          </div>
-        </div>
-      );
-    else
-      return (
-        <div className="main-content no-margin">
-          <div className="practice-container">
-            <h1>Something went wrong while generating sentences!</h1>
-            <h2>
-              Try logging out then logging back in or switching to another language and
-              switching back.
-            </h2>
-          </div>
-          <Link to={"/home"} className="button blue generic" style={{ width: "100%" }}>
-            <div className="button-txt">Go Home</div>
-            <div className="arrow-wrapper">
-              <ArrowForwardIcon />
-            </div>
-          </Link>
-        </div>
-      );
+  function leave() {
+    if (lesson.status === "ready") {
+      const confirmed = window.confirm("Leave lesson? Progress is saved when you finish the lesson.");
+      if (!confirmed) return;
+    }
+    navigate("/home");
   }
 
-  if (sentences) {
-    if (sentenceNumber >= 0) {
-      return (
-        <div style={{ justifyContent: "center" }} className="main-content no-margin">
-          <div className="practice-container">
-            <div className="top-container">
-              <Link to="/home">
-                <div style={{ display: "grid", padding: "10px" }}>
-                  <CloseIcon sx={{ color: "#9f9f9f" }} />
-                </div>
-              </Link>
-              <div className="progress-bar-container">
-                <LinearProgress
-                  variant="determinate"
-                  value={(correctSentences * 100) / sentences.length}
-                />
-              </div>
-              <div style={{ padding: "10px" }}>
-                {correctSentences}/{sentences.length}
-              </div>
-            </div>
-            <div className="question-component-wrapper">
-              {sentence && (
-                <Question
-                  sentence={sentence}
-                  updateSentence={updateSentence}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    } else return <Finished sentences={sentences} />;
-  } else return <PracticeLoading />;
-};
+  if (isLoading || (!active && lesson.status === "loading")) {
+    return <LoadingScreen label="Preparing your lesson…" />;
+  }
 
-export default Practice;
+  const progress = lesson.sentences.length === 0 ? 0 : lesson.solved / lesson.sentences.length;
+
+  return (
+    <div className="practice-screen">
+      <div className="practice-header">
+        <button type="button" className="icon-button" onClick={leave} aria-label="Close lesson">
+          <Icon name="close" size={26} />
+        </button>
+        <div className="progress-track" aria-hidden="true">
+          <div className="progress-fill" style={{ width: `${Math.round(progress * 100)}%` }} />
+        </div>
+        <div className="practice-count">
+          {lesson.sentences.length === 0 ? "" : `${lesson.solved}/${lesson.sentences.length}`}
+        </div>
+      </div>
+      <div className="practice-body">
+        {lesson.status === "loading" ? (
+          <div className="page-message">
+            <span className="spinner" />
+            <p className="muted">Writing sentences…</p>
+          </div>
+        ) : null}
+        {lesson.status === "empty" ? (
+          <div className="page-message">
+            <h1 className="title">Nothing is due</h1>
+            <p className="muted">Add words, or come back when the ones you already know are ready to review.</p>
+            <PrimaryButton label="Go to words" onClick={() => navigate("/vocabulary", { replace: true })} />
+          </div>
+        ) : null}
+        {lesson.status === "error" ? (
+          <div className="page-message">
+            <h1 className="title">Could not start the lesson</h1>
+            <p className="muted">{lesson.errorMessage}</p>
+            <PrimaryButton label="Back home" onClick={() => navigate("/home")} />
+          </div>
+        ) : null}
+        {lesson.status === "ready" && lesson.current?.type === "translation" ? (
+          <TranslationQuestion
+            key={`${lesson.index}-${lesson.attempt}`}
+            sentence={lesson.current}
+            onGrade={lesson.grade}
+            onWordAdded={lesson.noteAddedWord}
+            onWordRevision={lesson.noteRevisionWord}
+            canComeBackLater={lesson.sentences.some(
+              (item, itemIndex) => itemIndex !== lesson.index && !item.correct && item.type === "translation"
+            )}
+          />
+        ) : null}
+        {lesson.status === "ready" && lesson.current?.type === "listening" ? (
+          <ListeningQuestion
+            key={`${lesson.index}-${lesson.attempt}`}
+            sentence={lesson.current}
+            token={lesson.token}
+            speechHost={lesson.speechHost}
+            onGrade={lesson.grade}
+          />
+        ) : null}
+        {lesson.status === "ready" && lesson.current?.type === "speaking" ? (
+          <SpeakingQuestion
+            key={`${lesson.index}-${lesson.attempt}`}
+            sentence={lesson.current}
+            token={lesson.token}
+            speechHost={lesson.speechHost}
+            onGrade={lesson.grade}
+          />
+        ) : null}
+        {lesson.status === "done" ? (
+          <LessonComplete
+            sentences={lesson.sentences}
+            addedWords={lesson.addedWords}
+            revisionWords={lesson.revisionWords}
+            saving={lesson.saving}
+            error={lesson.finishError}
+            onRetry={lesson.retrySave}
+            onDone={() => navigate("/home")}
+          />
+        ) : null}
+      </div>
+    </div>
+  );
+}

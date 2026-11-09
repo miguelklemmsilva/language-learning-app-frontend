@@ -1,124 +1,89 @@
-import { Language, UserLanguage } from "../types/api";
-import {
-  CountryOption,
-  LanguageOption,
-  LanguageSettings,
-} from "../types/language";
+import { Language } from "../types/api";
 
-export function createDefaultSettings(): LanguageSettings {
-  return {
-    index: 0,
-    exercises: {
-      translation: true,
-      listening: true,
-      speaking: true,
-    },
-  };
-}
+export type CountryInfo = {
+  name: string;
+  flag: string;
+  locale: string;
+  voices: string[];
+};
 
-export const defaultSettings = createDefaultSettings();
+export type LanguageInfo = {
+  language: Language;
+  label: string;
+  flag: string;
+  countries: CountryInfo[];
+};
 
-export const languages: LanguageOption[] = [
+export const LANGUAGES: LanguageInfo[] = [
   {
-    name: Language.Spanish,
+    language: Language.Spanish,
+    label: "Spanish",
+    flag: "🇲🇽",
     countries: [
-      { name: "Spain", flag: "Flags/Spanish/es.png" },
-      { name: "Mexico", flag: "Flags/Spanish/mx.png" },
-      { name: "Argentina", flag: "Flags/Spanish/ar.png" },
+      { name: "Spain", flag: "🇪🇸", locale: "es-ES", voices: ["es-ES-ElviraNeural", "es-ES-AlvaroNeural", "es-ES-AbrilNeural"] },
+      { name: "Mexico", flag: "🇲🇽", locale: "es-MX", voices: ["es-MX-DaliaNeural", "es-MX-JorgeNeural", "es-MX-BeatrizNeural"] },
+      { name: "Argentina", flag: "🇦🇷", locale: "es-AR", voices: ["es-AR-ElenaNeural", "es-AR-TomasNeural"] },
     ],
-    settings: createDefaultSettings(),
   },
   {
-    name: Language.Portuguese,
+    language: Language.German,
+    label: "German",
+    flag: "🇩🇪",
     countries: [
-      { name: "Brazil", flag: "Flags/Portuguese/br.png" },
-      { name: "Portugal", flag: "Flags/Portuguese/pt.png" },
+      { name: "Germany", flag: "🇩🇪", locale: "de-DE", voices: ["de-DE-KatjaNeural", "de-DE-ConradNeural", "de-DE-AmalaNeural"] },
     ],
-    settings: createDefaultSettings(),
   },
   {
-    name: Language.Japanese,
-    countries: [{ name: "Japan", flag: "Flags/Japanese/jp.png" }],
-    settings: createDefaultSettings(),
-  },
-  {
-    name: Language.German,
-    countries: [{ name: "Germany", flag: "Flags/German/de.png" }],
-    settings: createDefaultSettings(),
-  },
-  {
-    name: Language.Italian,
-    countries: [{ name: "Italy", flag: "Flags/Italian/it.png" }],
-    settings: createDefaultSettings(),
-  },
-  {
-    name: Language.French,
+    language: Language.Portuguese,
+    label: "Portuguese",
+    flag: "🇧🇷",
     countries: [
-      { name: "France", flag: "Flags/French/fr.png" },
-      { name: "Canada", flag: "Flags/French/ca.png" },
+      { name: "Brazil", flag: "🇧🇷", locale: "pt-BR", voices: ["pt-BR-FranciscaNeural", "pt-BR-AntonioNeural", "pt-BR-BrendaNeural"] },
+      { name: "Portugal", flag: "🇵🇹", locale: "pt-PT", voices: ["pt-PT-RaquelNeural", "pt-PT-DuarteNeural", "pt-PT-FernandaNeural"] },
     ],
-    settings: createDefaultSettings(),
+  },
+  {
+    language: Language.French,
+    label: "French",
+    flag: "🇫🇷",
+    countries: [
+      { name: "France", flag: "🇫🇷", locale: "fr-FR", voices: ["fr-FR-DeniseNeural", "fr-FR-HenriNeural", "fr-FR-BrigitteNeural"] },
+      { name: "Canada", flag: "🇨🇦", locale: "fr-CA", voices: ["fr-CA-SylvieNeural", "fr-CA-JeanNeural", "fr-CA-AntoineNeural"] },
+    ],
+  },
+  {
+    language: Language.Italian,
+    label: "Italian",
+    flag: "🇮🇹",
+    countries: [
+      { name: "Italy", flag: "🇮🇹", locale: "it-IT", voices: ["it-IT-ElsaNeural", "it-IT-DiegoNeural", "it-IT-IsabellaNeural"] },
+    ],
+  },
+  {
+    language: Language.Japanese,
+    label: "Japanese",
+    flag: "🇯🇵",
+    countries: [
+      { name: "Japan", flag: "🇯🇵", locale: "ja-JP", voices: ["ja-JP-NanamiNeural", "ja-JP-KeitaNeural", "ja-JP-AoiNeural"] },
+    ],
   },
 ];
 
-if (typeof window !== "undefined") {
-  languages.forEach((language) => {
-    language.countries.forEach((country) => {
-      const img = new Image();
-      img.src = country.flag;
-    });
-  });
+export function languageInfo(language: Language | null | undefined) {
+  return LANGUAGES.find((item) => item.language === language);
 }
 
-export function toLanguageOptions(
-  userLanguages: UserLanguage[] | null | undefined
-): LanguageOption[] {
-  const transformed: LanguageOption[] = [];
+export function countryInfo(language: Language | null | undefined, country: string | null | undefined) {
+  const info = languageInfo(language);
+  return info?.countries.find((item) => item.name === country) ?? info?.countries[0];
+}
 
-  for (const entry of userLanguages ?? []) {
-    const match = languages.find((language) => language.name === entry.language);
-    if (!match) continue;
-
-    transformed.push({
-      ...match,
-      settings: {
-        index: match.countries.findIndex((country) => country.name === entry.country),
-        exercises: {
-          translation: entry.translation,
-          listening: entry.listening,
-          speaking: entry.speaking,
-        },
-      },
-    });
+export function voiceFor(country: string) {
+  for (const language of LANGUAGES) {
+    const match = language.countries.find((item) => item.name === country);
+    if (!match || match.voices.length === 0) continue;
+    const index = Math.floor(Math.random() * match.voices.length);
+    return { locale: match.locale, voice: match.voices[index] ?? match.voices[0] };
   }
-
-  return transformed;
-}
-
-export function getSelectedLanguageSettings(
-  selectedLanguages: LanguageOption[],
-  activeLanguage: Language | null | undefined
-): LanguageSettings | null {
-  if (!activeLanguage) return null;
-
-  const activeLanguageOption = selectedLanguages.find(
-    (language) => language.name === activeLanguage
-  );
-
-  return activeLanguageOption?.settings ?? null;
-}
-
-export function getActiveCountry(
-  selectedLanguages: LanguageOption[],
-  activeLanguage: Language | null | undefined
-): CountryOption | null {
-  if (!activeLanguage) return null;
-
-  const activeLanguageOption = selectedLanguages.find(
-    (language) => language.name === activeLanguage
-  );
-
-  if (!activeLanguageOption) return null;
-
-  return activeLanguageOption.countries[activeLanguageOption.settings.index] ?? null;
+  return { locale: "en-US", voice: "en-US-JennyNeural" };
 }

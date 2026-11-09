@@ -1,187 +1,114 @@
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import "../HomePage.scss";
+import { useUserData } from "../../../api/userService";
 import { useVocabulary } from "../../../api/vocabularyService";
-import { useSaveLanguage } from "../../../api/userService";
-import { useActiveLanguageSelection } from "../../../hooks/useActiveLanguageSelection";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import TranslateIcon from "@mui/icons-material/Translate";
-import HearingIcon from "@mui/icons-material/Hearing";
-import RecordVoiceOverIcon from "@mui/icons-material/RecordVoiceOver";
-import VocabularyTable from "../VocabularyTable/VocabularyTable";
+import { LoadingScreen } from "../../../routes/LoadingScreen";
+import { PrimaryButton } from "../../ui/PrimaryButton";
+import { Icon, IconName } from "../../ui/Icon";
+import { WordRow } from "../../words/WordRow";
+import { countryInfo, languageInfo } from "../../../constants/languages";
+import { formatMinutes } from "../../../lib/text";
+import { dueWords, nextDueMinutes } from "../../../lib/words";
 
-function Home() {
+const EXERCISES: { key: "translation" | "listening" | "speaking"; label: string; icon: IconName }[] = [
+  { key: "translation", label: "Translate", icon: "language" },
+  { key: "listening", label: "Listen", icon: "headset" },
+  { key: "speaking", label: "Speak", icon: "mic" },
+];
+
+export default function Home() {
   const navigate = useNavigate();
-  const { data: wordTable = [] } = useVocabulary();
-  const saveLanguage = useSaveLanguage();
-  const { activeLanguage, settings, country, activeLanguageOption } =
-    useActiveLanguageSelection();
+  const { data, isLoading, isError, refetch } = useUserData();
+  const activeLanguage = data?.user.activeLanguage;
+  const active = data?.userLanguages?.find((item) => item.language === activeLanguage);
+  const vocabulary = useVocabulary(activeLanguage);
+  const info = languageInfo(activeLanguage);
+  const country = countryInfo(activeLanguage, active?.country);
+  const words = vocabulary.data ?? [];
+  const due = dueWords(words);
+  const exercisesOn = Boolean(active?.translation || active?.listening || active?.speaking);
+  const upcoming = nextDueMinutes(words);
 
-  const filteredTable = wordTable.filter((word) => {
-    return word.minutesUntilDue <= 0;
-  });
+  if (isLoading || vocabulary.isLoading || !activeLanguage) return <LoadingScreen />;
 
-  const practiceButton = () => {
-    if (
-      filteredTable.length > 0 &&
-      (settings?.exercises.translation ||
-        settings?.exercises.listening ||
-        settings?.exercises.speaking)
-    ) {
-      return (
-        <button
-          onClick={async () => {
-            try {
-              if (activeLanguageOption) {
-                await saveLanguage.mutateAsync(activeLanguageOption);
-              }
-              navigate("/practice");
-            } catch {
-              return;
-            }
-          }}
-          className="practice-btn button"
-        >
-          <div className="button-txt">PRACTICE</div>
-          <div className="arrow-wrapper">
-            <ArrowForwardIcon fontSize="inherit" />
-          </div>
-        </button>
-      );
-    } else if (filteredTable.length <= 0) {
-      return (
-        <Link to="/vocabularytable" className="practice-btn button">
-          <div className="button-txt">ADD TO VOCABULARY TABLE</div>
-          <div className="arrow-wrapper">
-            <ArrowForwardIcon fontSize="inherit" />
-          </div>
-        </Link>
-      );
-    } else {
-      return (
-        <Link to="/settings" className="practice-btn button">
-          <div className="button-txt">SELECT EXERCISES</div>
-          <div className="arrow-wrapper">
-            <ArrowForwardIcon fontSize="inherit" />
-          </div>
-        </Link>
-      );
-    }
-  };
+  if (isError || vocabulary.isError || !data || !active || !info) {
+    return (
+      <div className="page">
+        <div className="page-message">
+          <h1 className="title">Could not load your studies</h1>
+          <PrimaryButton
+            label="Try again"
+            onClick={() => {
+              void refetch();
+              void vocabulary.refetch();
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  let actionLabel = "Practice";
+  let actionPath = "/practice";
+  let actionDetail = due.length === 1 ? "1 word is ready." : `${due.length} words are ready.`;
+  if (!exercisesOn) {
+    actionLabel = "Choose exercises";
+    actionPath = "/settings";
+    actionDetail = "Turn on translation, listening, or speaking.";
+  } else if (due.length === 0 && words.length === 0) {
+    actionLabel = "Add words";
+    actionPath = "/vocabulary";
+    actionDetail = "Start with a few words you want to learn.";
+  } else if (due.length === 0) {
+    actionLabel = "Review words";
+    actionPath = "/vocabulary";
+    actionDetail = upcoming === null ? "You are caught up." : `Next review ${formatMinutes(upcoming).toLowerCase()}.`;
+  }
 
   return (
-    <div className="main-content">
-      {
-        <div className="content-container">
-          <div className="header-container">
-            <div className="txt">
-              <strong>Studying {activeLanguage}</strong>
-            </div>
-            <img className="flag-img big" src={country?.flag} alt="" />
-          </div>
-          <div className="welcome-container">
-            <div className="messages-container">
-              <div className="message">
-                You have <strong>{filteredTable.length}</strong>{" "}
-                {filteredTable.length === 1 ? "word" : "words"} to practice for{" "}
-                {activeLanguage}!
-              </div>
-            </div>
-            <div className="practice-button-wrapper">{practiceButton()}</div>
-          </div>
-          <div className="info-container">
-            <Link to="/settings" className="language-settings">
-              <div className="language-settings-container">
-                <div className="header-container" style={{ flexWrap: "nowrap" }}>
-                  <strong>Language Settings</strong>
-                  <div className="button">
-                    <div className="button-txt">Configure</div>
-                    <div className="arrow-wrapper">
-                      <ArrowForwardIcon />
-                    </div>
-                  </div>
-                </div>
-                <div className="info-content">
-                  <div className="info">
-                    <div className="info-txt">
-                      <div>
-                        Studying <strong>{activeLanguage}</strong> from
-                      </div>
-                    </div>
-                    <img src={country?.flag} alt="" className="flag-img" />
-                  </div>
-                  <div className="active-exercises info">
-                    <div>Active exercises:</div>
-                    <div className="exercises-container">
-                      <div
-                        className="exercise"
-                        style={
-                          settings?.exercises.translation
-                            ? { color: "green" }
-                            : { color: "red" }
-                        }
-                      >
-                        <TranslateIcon fontSize="inherit" />
-                      </div>
-                      <div
-                        className="exercise"
-                        style={
-                          settings?.exercises.listening
-                            ? { color: "green" }
-                            : { color: "red" }
-                        }
-                      >
-                        <HearingIcon fontSize="inherit" />
-                      </div>
-                      <div
-                        className="exercise"
-                        style={
-                          settings?.exercises.speaking
-                            ? { color: "green" }
-                            : { color: "red" }
-                        }
-                      >
-                        <RecordVoiceOverIcon fontSize="inherit" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Link>
-            <div className="home-table-container">
-              <div className="header-container">
-                <div className="horizontal-align-txt">
-                  <strong>Your due words</strong>
-                </div>
-                <Link to="/vocabularytable" className="button vocab-add-btn">
-                  <div className="button-txt">View Table</div>
-                  <div className="arrow-wrapper">
-                    <ArrowForwardIcon />
-                  </div>
-                </Link>
-              </div>
-              {filteredTable.length > 0 ? (
-                <VocabularyTable wordTable={filteredTable} isHome={true} />
-              ) : (
-                <div>
-                  <div className="header-container">
-                    You have no words to practice for {activeLanguage}!
-                  </div>
-                  <br />
-                  <Link to="/vocabularytable" className="button vocab-add-btn">
-                    <div className="button-txt">Add more words here</div>
-                    <div className="arrow-wrapper">
-                      <ArrowForwardIcon />
-                    </div>
-                  </Link>
-                </div>
-              )}
-            </div>
-          </div>
+    <div className="page">
+      <div className="spread">
+        <div>
+          <p className="kicker">Studying</p>
+          <h1 className="title">{info.label}</h1>
+          <p className="muted">
+            {country?.flag} {active.country}
+          </p>
         </div>
-      }
+        <span className="flag-xl">{info.flag}</span>
+      </div>
+      <section className="hero">
+        <p className="hero-count">{due.length}</p>
+        <p className="muted" style={{ marginTop: -8 }}>
+          {actionDetail}
+        </p>
+        <div className="wrap">
+          {EXERCISES.map((exercise) => {
+            const enabled = Boolean(active[exercise.key]);
+            return (
+              <span key={exercise.key} className={enabled ? "exercise-chip on" : "exercise-chip"}>
+                <Icon name={exercise.icon} size={16} />
+                {exercise.label}
+              </span>
+            );
+          })}
+        </div>
+        <PrimaryButton label={actionLabel} onClick={() => navigate(actionPath)} />
+      </section>
+      <div className="spread">
+        <h2 className="section-title">Due now</h2>
+        <button type="button" className="text-button" onClick={() => navigate("/vocabulary")}>
+          All words
+        </button>
+      </div>
+      {due.length === 0 ? (
+        <p className="muted">{words.length === 0 ? "Your word list is empty." : "Nothing is due. Enjoy the break."}</p>
+      ) : (
+        <div className="stack-tight">
+          {due.slice(0, 8).map((word) => (
+            <WordRow key={word.word} word={word} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
-
-export default Home;

@@ -1,128 +1,23 @@
-import { memo } from "react";
-import "./Navbar.scss";
-import { Link, useLocation } from "react-router-dom";
-import HomeIcon from "@mui/icons-material/Home";
-import TableChartIcon from "@mui/icons-material/TableChart";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useSignOut } from "../../../hooks/useSignOut";
+import { NavLink } from "react-router-dom";
+import { Icon } from "../../ui/Icon";
 
-const Navbar = () => {
-  const location = useLocation();
-  const signOut = useSignOut();
+const TABS = [
+  { to: "/home", label: "Home", icon: "home" },
+  { to: "/vocabulary", label: "Words", icon: "book" },
+  { to: "/settings", label: "Settings", icon: "settings" },
+] as const;
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
+export default function Navbar() {
   return (
-    <>
-      <nav role="navigation" className="navbar">
-        <div className="sections desktop">
-          <div className="section top">
-            <Link to="/" className="nav-link-container">
-              <div className="nav-link-wrapper">
-                <div className="nav-title">PolyBara</div>
-              </div>
-            </Link>
-          </div>
-          <div className="section center">
-            <div>
-              <Link
-                to="/home"
-                className={`nav-link-container ${
-                  isActive("/home") ? "active" : ""
-                }`}
-              >
-                <div className="img-wrapper">
-                  <HomeIcon fontSize="inherit" />
-                </div>
-                <div className="nav-link-wrapper">
-                  <div className="nav-title">Home</div>
-                </div>
-              </Link>
-              <Link
-                to="/vocabularytable"
-                className={`nav-link-container ${
-                  isActive("/vocabularytable") ? "active" : ""
-                }`}
-              >
-                <div className="img-wrapper">
-                  <TableChartIcon fontSize="inherit" />
-                </div>
-                <div className="nav-link-wrapper">
-                  <div className="nav-title">Vocabulary Table</div>
-                </div>
-              </Link>
-              <Link
-                to="/settings"
-                className={`nav-link-container ${
-                  isActive("/settings") ? "active" : ""
-                }`}
-              >
-                <div className="img-wrapper">
-                  <SettingsIcon fontSize="inherit" />
-                </div>
-                <div className="nav-link-wrapper">
-                  <div className="nav-title">Language Settings</div>
-                </div>
-              </Link>
-              <div
-                className="nav-link-container logout"
-                onClick={signOut}
-              >
-                <div className="img-wrapper">
-                  <LogoutIcon fontSize="inherit" />
-                </div>
-                <div className="nav-link-wrapper">
-                  <div className="nav-title">Log out</div>
-                </div>  
-              </div>
-            </div>
-          </div>
-          <div className="section bottom"></div>
-        </div>
+    <div className="tabbar">
+      <nav aria-label="Main">
+        {TABS.map((tab) => (
+          <NavLink key={tab.to} to={tab.to} className={({ isActive }) => (isActive ? "tab active" : "tab")}>
+            <Icon name={tab.icon} size={22} />
+            {tab.label}
+          </NavLink>
+        ))}
       </nav>
-      <div className="sections mobile">
-        <Link
-          to="/home"
-          className={`nav-link-container ${isActive("/home") ? "active" : ""}`}
-        >
-          <div className="icon-wrapper">
-            <HomeIcon fontSize="inherit" />
-          </div>
-        </Link>
-        <Link
-          to="/vocabularytable"
-          className={`nav-link-container ${
-            isActive("/vocabularytable") ? "active" : ""
-          }`}
-        >
-          <div className="icon-wrapper">
-            <TableChartIcon fontSize="inherit" />
-          </div>
-        </Link>
-        <Link
-          to="/settings"
-          className={`nav-link-container ${
-            isActive("/settings") ? "active" : ""
-          }`}
-        >
-          <div className="icon-wrapper">
-            <SettingsIcon fontSize="inherit" />
-          </div>
-        </Link>
-        <div
-          className="nav-link-container logout"
-          onClick={signOut}
-        >
-          <div className="icon-wrapper">
-            <LogoutIcon fontSize="inherit" />
-          </div>
-        </div>
-      </div>
-    </>
+    </div>
   );
-};
-
-export default memo(Navbar);
+}

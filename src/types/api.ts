@@ -84,6 +84,7 @@ export interface Sentence {
 export interface SentencesResponse {
   sentences: Sentence[];
   issueToken: string;
+  speechHost: string;
 }
 
 export interface VerifySentenceRequest {

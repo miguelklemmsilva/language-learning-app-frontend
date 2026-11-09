@@ -5,7 +5,7 @@ import { readJson } from "../../../../api/readJson";
 
 export async function getTokenOrRefresh(): Promise<{
   authToken: string | null;
-  region: string;
+  host: string;
   error?: unknown;
 }> {
   const cookie = new Cookie();
@@ -22,23 +22,23 @@ export async function getTokenOrRefresh(): Promise<{
         options: { headers: { Authorization: authorization } },
       }).response;
 
-      const token = await readJson<string>(response);
-      cookie.set("speech-token", "uksouth:" + token, { maxAge: 540, path: "/" });
-      return { authToken: token, region: "uksouth" };
+      const issued = await readJson<{ token: string; host: string }>(response);
+      cookie.set("speech-token", `${issued.host}:${issued.token}`, { maxAge: 540, path: "/" });
+      return { authToken: issued.token, host: issued.host };
     } catch (err) {
       const data =
         typeof err === "object" && err !== null && "response" in err
           ? (err as { response?: { data?: unknown } }).response?.data
           : err;
       console.error(data);
-      return { authToken: null, region: "uksouth", error: data };
+      return { authToken: null, host: "", error: data };
     }
   } else {
     const tokenValue = String(speechToken);
     const idx = tokenValue.indexOf(":");
     return {
       authToken: tokenValue.slice(idx + 1),
-      region: tokenValue.slice(0, idx),
+      host: tokenValue.slice(0, idx),
     };
   }
 }

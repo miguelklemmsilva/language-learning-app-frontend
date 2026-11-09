@@ -156,9 +156,10 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer) => {
   return window.btoa(binary);
 };
 
-async function synthesizeText(text: string, voiceName: string, token: string) {
+async function synthesizeText(text: string, voiceName: string, token: string, host: string) {
   console.log(`Synthesizing text: "${text}" with voice: ${voiceName}`);
-  const speechConfig = sdk.SpeechConfig.fromAuthorizationToken(token, "uksouth");
+  const speechConfig = sdk.SpeechConfig.fromEndpoint(new URL(`https://${host}`));
+  speechConfig.authorizationToken = token;
   speechConfig.speechSynthesisVoiceName = voiceName;
 
   const audioConfig = sdk.AudioConfig.fromStreamOutput(new DiscardingPushStream());
@@ -191,7 +192,8 @@ async function synthesizeText(text: string, voiceName: string, token: string) {
 const synthesizeSentenceVoice = async (
   completion: string,
   country: string,
-  token: string
+  token: string,
+  host: string
 ) => {
   const voicesArray = countryVoices[country];
   if (!voicesArray || voicesArray.length === 0) {
@@ -201,7 +203,7 @@ const synthesizeSentenceVoice = async (
   if (!voiceName) {
     throw new Error(`No voices available for country: ${country}`);
   }
-  const voiceData = await synthesizeText(completion, voiceName, token);
+  const voiceData = await synthesizeText(completion, voiceName, token, host);
   return arrayBufferToBase64(voiceData);
 };
 
@@ -264,9 +266,9 @@ const useFetchSentences = (): [
         const json = await readJson<SentencesResponse>(response);
         console.log(`Fetched ${json.sentences?.length ?? 0} sentences`);
 
-        const { sentences: fetchedSentences, issueToken } = json;
+        const { sentences: fetchedSentences, issueToken, speechHost } = json;
 
-        cookie.set("speech-token", "uksouth:" + issueToken, {
+        cookie.set("speech-token", `${speechHost}:${issueToken}`, {
           maxAge: 540,
           path: "/",
         });
@@ -275,8 +277,8 @@ const useFetchSentences = (): [
           throw new Error("No sentences received from the API");
         }
 
-        if (!issueToken) {
-          throw new Error("No issueToken received from the API");
+        if (!issueToken || !speechHost) {
+          throw new Error("No speech token received from the API");
         }
 
         console.log(`Processing ${fetchedSentences.length} sentences`);
@@ -308,7 +310,8 @@ const useFetchSentences = (): [
               const voiceData = await synthesizeSentenceVoice(
                 sentence.original,
                 sentence.country ?? "",
-                issueToken
+                issueToken,
+                speechHost
               );
               const contentType = playbackType(voiceData);
               writeSentenceAudio(sentence.original, voiceData, contentType, sentence.country);

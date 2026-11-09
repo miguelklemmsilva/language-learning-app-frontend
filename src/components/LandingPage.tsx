@@ -1,140 +1,71 @@
-import { FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mic, Headphones, Languages, LucideIcon, Bot } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { useThemeColor } from "../hooks/useThemeColor";
+import { LANGUAGES } from "../constants/languages";
+import { PrimaryButton } from "./ui/PrimaryButton";
+import { Icon, IconName } from "./ui/Icon";
 
-const LandingPage = () => {
+const FEATURES: { title: string; icon: IconName; description: string }[] = [
+  {
+    title: "Translation",
+    icon: "language",
+    description: "Translate sentences, check hints, and decide when an answer is close enough.",
+  },
+  {
+    title: "Listening",
+    icon: "headset",
+    description: "Hear a sentence in your chosen accent and type what you heard.",
+  },
+  {
+    title: "Speaking",
+    icon: "mic",
+    description: "Say the sentence and get scores for accuracy, fluency, and completeness.",
+  },
+  {
+    title: "Your words",
+    icon: "book",
+    description: "Add words one at a time or from a dictionary, then review them when they are due.",
+  },
+];
+
+export default function LandingPage() {
   const navigate = useNavigate();
-  const primary = useThemeColor({}, "primary");
-  const onPrimary = useThemeColor({ light: "#ffffff", dark: "#000000" }, "text");
-
-  const notAuth = () => (
-    <div className="flex flex-col items-center">
-      <Button
-        className="w-full max-w-[700px] text-xl font-semibold py-3 px-4"
-        style={{ backgroundColor: primary, color: onPrimary }}
-        onClick={() => navigate("/sign-in")}
-      >
-        Get Started
-      </Button>
-    </div>
-  );
-
-  interface FeatureCardProps {
-    title: string;
-    icon: LucideIcon;
-    description: string;
-  }
-
-  const FeatureCard: FC<FeatureCardProps> = ({
-    title,
-    icon: Icon,
-    description,
-  }) => (
-    <Card className="flex flex-col">
-      <CardHeader>
-        <h3 className="text-xl font-semibold">{title}</h3>
-      </CardHeader>
-      <CardContent className="flex items-center gap-4">
-        <Icon size={50} />
-        <p>{description}</p>
-      </CardContent>
-    </Card>
-  );
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="max-w-7xl w-full px-4 py-8 space-y-8">
-        <Card className="w-full">
-          <CardContent className="p-8 space-y-4">
-            <h1 className="text-5xl font-bold">PolyBara</h1>
-            <p className="text-lg">
-              Experience personalized language learning with PolyBara. Our
-              AI-powered tools assist with translation, listening, and speaking
-              exercises. Create custom vocabulary lists tailored to your
-              learning objectives and progress at your own pace.
-            </p>
-            {notAuth()}
-          </CardContent>
-        </Card>
-
-        <Card className="w-full">
-          <CardContent className="p-8 space-y-4">
-            <h2 className="text-2xl font-semibold">
-              Supported Languages and Regions:
-            </h2>
-            <div className="flex flex-wrap gap-4 justify-center">
-              {[
-                "Spanish/es",
-                "Spanish/mx",
-                "Spanish/ar",
-                "Portuguese/br",
-                "Portuguese/pt",
-                "Italian/it",
-                "French/fr",
-                "German/de",
-                "Japanese/jp",
-              ].map((flag) => (
-                <img
-                  key={flag}
-                  src={`/Flags/${flag}.png`}
-                  alt=""
-                  className="w-24 h-16 object-cover rounded shadow-md"
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="w-full">
-          <CardContent className="p-8 space-y-8">
-            <h2 className="text-3xl font-bold text-center">
-              Advanced AI-Powered Features
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <FeatureCard
-                title="AI-Assisted Conversations"
-                icon={Bot}
-                description="Engage with GPT-4 powered AI to practice writing and comprehension in your target language. Enhance your skills through interactive dialogue."
-              />
-              <FeatureCard
-                title="Translation and Grammar Assistance"
-                icon={Languages}
-                description="Improve your language accuracy with our AI proofreader. Receive guidance on grammar and phrasing to refine your language skills."
-              />
-              <FeatureCard
-                title="AI Speech Synthesis"
-                icon={Headphones}
-                description="Listen to AI-generated speech that mimics native pronunciation and intonation. Some languages offer multiple regional accents for comprehensive learning."
-              />
-              <FeatureCard
-                title="Pronunciation Feedback"
-                icon={Mic}
-                description="Utilize Azure AI for real-time pronunciation assessment. Receive constructive feedback to improve your accent and speaking confidence."
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="w-full">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-semibold mb-4">
-              Ready to enhance your language skills?
-            </h2>
-            <Button
-              className="w-full max-w-[700px] text-xl font-semibold py-3 px-4"
-              style={{ backgroundColor: primary, color: onPrimary }}
-              onClick={() => navigate("/sign-in")}
-            >
-              Begin Your Journey
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+    <div className="landing">
+      <section className="landing-card">
+        <h1>PolyBara</h1>
+        <p>
+          Practice the language you are studying with translation, listening, and speaking. Keep a word list,
+          and come back when those words are ready to review.
+        </p>
+        <PrimaryButton label="Get started" onClick={() => navigate("/sign-in")} />
+      </section>
+      <section className="landing-card">
+        <h2>Languages</h2>
+        <div className="wrap">
+          {LANGUAGES.map((language) => (
+            <span key={language.language} className="chip">
+              <span aria-hidden="true">{language.flag}</span>
+              {language.label}
+            </span>
+          ))}
+        </div>
+      </section>
+      <section className="landing-card">
+        <h2>Practice</h2>
+        <div className="feature-grid">
+          {FEATURES.map((feature) => (
+            <article key={feature.title} className="feature-card">
+              <Icon name={feature.icon} size={28} />
+              <h3>{feature.title}</h3>
+              <p className="muted">{feature.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="landing-card">
+        <h2>Ready to practice?</h2>
+        <PrimaryButton label="Begin" onClick={() => navigate("/sign-in")} />
+      </section>
     </div>
   );
-};
-
-export default LandingPage;
+}
